@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clubs Sportifs - Accueil</title>
+    
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>Recherche de Clubs Sportifs</h1>
+    </header>
+
+    <main>
+        <!-- Zone pour le formulaire de recherche par rayon -->
+        <section id="search-section">
+            <input type="text" id="location-input" placeholder="Saisissez une ville ou un code postal...">
+            <input type="number" id="radius-input" placeholder="Rayon (ex: 10 km)">
+            <button id="search-btn">Rechercher</button>
+        </section>
+
+        <!-- Zone où la carte s'affichera -->
+        <section id="map-container">
+            <div id="map"></div>
+        </section>
+    </main>
+
+    <!-- JS de Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    
+    <script src="map.js"></script>
+</body>
+</html>
