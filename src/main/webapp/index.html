@@ -2,97 +2,213 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Club Sportif</title>
+    <title>Club de Sport</title>
 
-    <!-- Style rapide -->
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(to right, #ff9a9e, #fad0c4);
+        /* =========================
+           RESET GLOBAL
+           (supprime les marges par défaut du navigateur)
+        ========================= */
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
         }
 
-        header {
-            background: #ff6f91;
+        /* =========================
+           STYLE DU BODY
+           (fond général de la page)
+        ========================= */
+        body {
+            background: #eafcff;
+            height: 100vh;
+        }
+
+        /* =========================
+           BARRE DE NAVIGATION
+           (en haut de la page)
+        ========================= */
+        .navbar {
+            display: flex; /* aligne gauche et droite sur une ligne */
+            justify-content: space-between; /* espace entre gauche et droite */
+            align-items: center; /* centre verticalement */
+            padding: 20px 40px;
+            background: #0ea5b7;
+        }
+
+        /* Titre dans la navbar */
+        .nav-left h1 {
             color: white;
-            padding: 15px;
-            text-align: center;
+            margin-right: 30px;
         }
 
-        nav {
-            background: #ffb6c1;
-            padding: 10px;
-            text-align: center;
-        }
-
-        nav a {
-            margin: 10px;
+        /* Liens de navigation */
+        .nav-left a {
+            margin-right: 15px;
             text-decoration: none;
-            color: black;
+            color: white;
+        }
+
+        /* Partie droite de la navbar */
+        .nav-right {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* =========================
+           BOUTONS
+           (inscription / connexion)
+        ========================= */
+        .btn {
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-decoration: none;
             font-weight: bold;
         }
 
-        .container {
-            max-width: 800px;
-            margin: 30px auto;
+        /* bouton inscription */
+        .inscription {
             background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+            color: #0ea5b7;
         }
 
-        button {
-            background: #ff6f91;
+        /* bouton connexion */
+        .connexion {
+            border: 2px solid white;
             color: white;
+        }
+
+        /* effet au survol du bouton connexion */
+        .connexion:hover {
+            background: white;
+            color: #0ea5b7;
+        }
+
+        /* =========================
+           SECTION HERO
+           (partie centrale de la page)
+        ========================= */
+        .hero {
+            display: flex;
+            flex-direction: column; /* empile les éléments verticalement */
+            justify-content: center; /* centre verticalement */
+            align-items: center; /* centre horizontalement */
+            height: 70vh;
+            text-align: center;
+            gap: 15px; /* espace entre les éléments */
+        }
+
+        /* titre principal */
+        .hero h2 {
+            font-size: 28px; /* taille réduite */
+            color: #0ea5b7;
+        }
+
+        /* texte secondaire */
+        .hero p {
+            font-size: 14px; /* taille réduite */
+        }
+
+        /* =========================
+           BARRE DE RECHERCHE
+           (champ + bouton)
+        ========================= */
+        .search-box {
+            display: flex;
+            flex-direction: column; /* input + bouton en colonne */
+            gap: 10px;
+            align-items: center;
+        }
+
+        /* champ de recherche */
+        .search-box input {
+            padding: 8px;
+            width: 200px;
+            border: 2px solid #0ea5b7;
+            border-radius: 20px;
+            outline: none;
+            font-size: 13px;
+        }
+
+        /* bouton recherche */
+        .search-box button {
+            padding: 8px 12px;
             border: none;
-            padding: 10px;
-            border-radius: 5px;
+            border-radius: 20px;
+            background: #0ea5b7;
+            color: white;
             cursor: pointer;
+            font-size: 13px;
         }
 
-        button:hover {
-            background: #ff3f6c;
+        /* effet hover bouton recherche */
+        .search-box button:hover {
+            background: #0b8ea0;
         }
 
+        /* =========================
+           FOOTER
+           (bas de page)
+        ========================= */
         footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
             text-align: center;
             padding: 10px;
-            background: #ffb6c1;
-            margin-top: 20px;
+            background: #0ea5b7;
+            color: white;
         }
     </style>
 </head>
 
 <body>
 
-<header>
-    <h1>Club Sportif</h1>
-</header>
+<!-- =========================
+     NAVBAR
+========================= -->
+<div class="navbar">
 
-<nav>
-    <a href="#">Accueil</a>
-    <a href="#">Activités</a>
-    <a href="#">Contact</a>
-</nav>
+    <!-- partie gauche : logo + liens -->
+    <div class="nav-left">
+        <h1>⚽ Club Sportif</h1>
+        <a href="#">Accueil</a>
+        <a href="#">Activités</a>
+    </div>
 
-<div class="container">
-    <h2>Bienvenue</h2>
-    <p>Inscris-toi à notre club sportif pour rester en forme 💪</p>
+    <!-- partie droite : boutons -->
+    <div class="nav-right">
+        <a href="#" class="btn inscription">S'inscrire</a>
+        <a href="#" class="btn connexion">Connexion</a>
+    </div>
 
-    <form>
-        <label>Nom :</label><br>
-        <input type="text"><br><br>
-
-        <label>Email :</label><br>
-        <input type="email"><br><br>
-
-        <button type="submit">S'inscrire</button>
-    </form>
 </div>
 
+<!-- =========================
+     HERO
+========================= -->
+<div class="hero">
+
+    <!-- titre principal -->
+    <h2>Bienvenue dans notre club</h2>
+
+    <!-- sous-titre -->
+    <p>Recherchez une activité sportive</p>
+
+    <!-- barre de recherche -->
+    <div class="search-box">
+        <input type="text" placeholder="Rechercher un sport...">
+        <button>Rechercher</button>
+    </div>
+
+</div>
+
+<!-- =========================
+     FOOTER
+========================= -->
 <footer>
-    © 2026 Club Sportif
+    <p>© 2026 Club Sportif</p>
 </footer>
 
 </body>
