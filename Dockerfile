@@ -1,4 +1,4 @@
-FROM tomcat:10-jdk17
+FROM tomcat:10-jdk21
 
 # Supprimer les applis par défaut de Tomcat
 RUN rm -rf /usr/local/tomcat/webapps/*
