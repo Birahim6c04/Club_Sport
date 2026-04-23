@@ -8,25 +8,36 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Script d'import des données du Ministère des Sports dans la base MySQL.
+ *
+ * Importe 4 fichiers :
+ *   - liste-federations.csv  : liste des 120 fédérations sportives
+ *   - clubs-data-2023.csv    : clubs par commune et par fédération
+ *   - lic-data-2023.csv      : licences par commune, fédération, âge et sexe
+ *   - communes-geo.csv       : coordonnées GPS et codes postaux des communes
+ */
 public class ImportCSV {
 
-    // ======== CONFIG ========
+    // ========== CONFIGURATION ==========
     static final String DB_URL  = "jdbc:mysql://localhost:3306/clubs_sportifs?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
     static final String DB_USER = "root";
     static final String DB_PASS = "rootpassword";
 
     static final String FICHIER_FEDERATIONS = "data/liste-federations.csv";
-    static final String FICHIER_CLUBS       = "data/clubs-data-2019.csv";
-    static final String FICHIER_LICENCES    = "data/lic-data-2019.csv";
-    // ========================
+    static final String FICHIER_CLUBS       = "data/clubs-data-2023.csv";
+    static final String FICHIER_LICENCES    = "data/lic-data-2023.csv";
+    static final String FICHIER_GEO         = "data/communes-geo.csv";
+    // ====================================
 
     public static void main(String[] args) throws Exception {
         Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
-        conn.setAutoCommit(false);
+        conn.setAutoCommit(false); // On gère les commits nous-mêmes (meilleure performance)
         System.out.println("Connexion OK");
 
         importFederations(conn);
         importCommunes(conn);
+        importCoordonnees(conn);
         importClubs(conn);
         importLicences(conn);
 
@@ -35,36 +46,27 @@ public class ImportCSV {
         System.out.println("Import terminé !");
     }
 
-    // -------- 1. Fédérations --------
+    /**
+     * 1. Importe les fédérations sportives.
+     * Fichier : liste-federations.csv (colonnes : Libellé fédération ; Code fédération)
+     */
     static void importFederations(Connection conn) throws Exception {
         System.out.println("Import fédérations...");
+
         PreparedStatement ps = conn.prepareStatement(
-            "INSERT IGNORE INTO federation (code_federation, nom_federation) VALUES (?, ?)");
+            "INSERT INTO federation (code_federation, nom_federation) VALUES (?, ?)");
 
         BufferedReader br = new BufferedReader(new FileReader(FICHIER_FEDERATIONS));
-        String enTete = br.readLine();
-        String[] colonnes = enTete.split(";", -1);
-
-        int idxNom = -1, idxCode = -1;
-        for (int i = 0; i < colonnes.length; i++) {
-            String nom = nettoyer(colonnes[i]).toLowerCase();
-            if (nom.contains("libell") || nom.equals("nom") || nom.contains("nom fédération")) idxNom = i;
-            else if (nom.contains("code")) idxCode = i;
-        }
-
-        if (idxNom < 0 || idxCode < 0) {
-            System.out.println("En-tête : " + enTete);
-            throw new RuntimeException("Colonnes nom/code introuvables dans " + FICHIER_FEDERATIONS);
-        }
+        br.readLine(); // saute l'en-tête
 
         String ligne;
         int count = 0;
         while ((ligne = br.readLine()) != null) {
-            String[] c = ligne.split(";", -1);
-            if (c.length <= Math.max(idxNom, idxCode)) continue;
+            String[] c = ligne.split(";");
+            if (c.length < 2) continue;
 
-            String nomFed  = nettoyer(c[idxNom]);
-            String codeFed = nettoyer(c[idxCode]);
+            String nomFed  = c[0].trim();
+            String codeFed = c[1].trim();
             if (codeFed.isEmpty()) continue;
 
             ps.setString(1, codeFed);
@@ -78,69 +80,113 @@ public class ImportCSV {
         System.out.println("  -> " + count + " fédérations");
     }
 
-    // -------- 2. Communes (déduites de clubs-data-2023.csv) --------
+    /**
+     * 2. Importe les communes.
+     * Source : clubs-data-2023.csv (on extrait les communes uniques)
+     * Un HashSet évite d'insérer plusieurs fois la même commune.
+     */
     static void importCommunes(Connection conn) throws Exception {
         System.out.println("Import communes...");
+
         PreparedStatement ps = conn.prepareStatement(
-            "INSERT IGNORE INTO commune (code_commune, nom_commune, departement, region, code_qpv, nom_qpv, statut_geo) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?)");
+            "INSERT INTO commune (code_commune, nom_commune, departement, region) VALUES (?, ?, ?, ?)");
 
-        Set<String> vues = new HashSet<>();
+        Set<String> dejaVu = new HashSet<>();
         BufferedReader br = new BufferedReader(new FileReader(FICHIER_CLUBS));
-
-        String enTete = br.readLine();
-        Map<String, Integer> idx = indexerColonnes(enTete);
+        Map<String, Integer> idx = indexerEnTete(br.readLine());
 
         String ligne;
         while ((ligne = br.readLine()) != null) {
             String[] c = ligne.split(";", -1);
 
-            String code = nettoyerCodeCommune(getCol(c, idx, "code commune"));
-            if (code.isEmpty() || code.length() > 5 || !vues.add(code)) continue;
+            String code = formaterCodeCommune(lire(c, idx, "code commune"));
+            if (code.isEmpty() || !dejaVu.add(code)) continue;
 
             ps.setString(1, code);
-            ps.setString(2, getCol(c, idx, "commune"));
-            ps.setString(3, getCol(c, idx, "département"));
-            ps.setString(4, getCol(c, idx, "région"));
-            ps.setString(5, nullSiVide(getCol(c, idx, "code qpv")));
-            ps.setString(6, nullSiVide(getCol(c, idx, "nom qpv")));
-            ps.setString(7, nullSiVide(getCol(c, idx, "statut géo")));
+            ps.setString(2, lire(c, idx, "commune"));
+            ps.setString(3, lire(c, idx, "département"));
+            ps.setString(4, lire(c, idx, "région"));
             ps.addBatch();
         }
         ps.executeBatch();
         ps.close();
         br.close();
-        System.out.println("  -> " + vues.size() + " communes");
+        System.out.println("  -> " + dejaVu.size() + " communes");
     }
 
-    // -------- 3. Stats clubs --------
-    // Colonnes : Code Commune ; Commune ; Code QPV ; Nom QPV ; Département ; Région ; Statut géo ; Code ; Fédération ; Clubs ; EPA ; Total
+    /**
+     * 3. Ajoute les coordonnées GPS et les codes postaux aux communes existantes.
+     * Source : communes-geo.csv (fichier de data.gouv.fr)
+     * Nécessaire pour la recherche par rayon géographique.
+     */
+    static void importCoordonnees(Connection conn) throws Exception {
+        System.out.println("Import coordonnées GPS...");
+
+        PreparedStatement ps = conn.prepareStatement(
+            "UPDATE commune SET latitude = ?, longitude = ?, code_postal = ? WHERE code_commune = ?");
+
+        BufferedReader br = new BufferedReader(new FileReader(FICHIER_GEO));
+        Map<String, Integer> idx = indexerEnTete(br.readLine());
+
+        int iCode = idx.get("code_commune_insee");
+        int iLat  = idx.get("latitude");
+        int iLon  = idx.get("longitude");
+        int iCP   = idx.get("code_postal");
+
+        String ligne;
+        int count = 0;
+        while ((ligne = br.readLine()) != null) {
+            String[] c = ligne.split(",", -1);
+            if (c.length <= iLon) continue;
+
+            String code = formaterCodeCommune(c[iCode]);
+            if (code.isEmpty() || c[iLat].isEmpty() || c[iLon].isEmpty()) continue;
+
+            try {
+                ps.setDouble(1, Double.parseDouble(c[iLat]));
+                ps.setDouble(2, Double.parseDouble(c[iLon]));
+                ps.setString(3, c[iCP].trim());
+                ps.setString(4, code);
+                ps.addBatch();
+                count++;
+            } catch (NumberFormatException e) {
+                // lat/lon invalides → on ignore
+            }
+        }
+        ps.executeBatch();
+        ps.close();
+        br.close();
+        System.out.println("  -> " + count + " communes mises à jour avec GPS");
+    }
+
+    /**
+     * 4. Importe les statistiques de clubs (nombre de clubs par commune × fédération).
+     * Fichier : clubs-data-2023.csv (colonnes : ...Code, Fédération, Clubs, EPA, Total)
+     */
     static void importClubs(Connection conn) throws Exception {
         System.out.println("Import club_stats...");
+
         PreparedStatement ps = conn.prepareStatement(
-            "INSERT IGNORE INTO club_stats (code_commune, code_federation, annee, clubs, epa, total) " +
+            "INSERT INTO club_stats (code_commune, code_federation, annee, clubs, epa, total) " +
             "VALUES (?, ?, 2023, ?, ?, ?)");
 
         BufferedReader br = new BufferedReader(new FileReader(FICHIER_CLUBS));
-        String enTete = br.readLine();
-        Map<String, Integer> idx = indexerColonnes(enTete);
+        Map<String, Integer> idx = indexerEnTete(br.readLine());
 
         String ligne;
-        int count = 0, ignores = 0;
+        int count = 0;
         while ((ligne = br.readLine()) != null) {
             String[] c = ligne.split(";", -1);
 
-            String codeCommune = nettoyerCodeCommune(getCol(c, idx, "code commune"));
-            String codeFed     = nettoyer(getCol(c, idx, "code"));
-
-            if (codeCommune.isEmpty() || codeFed.isEmpty()) { ignores++; continue; }
-            if (codeCommune.length() > 5 || codeFed.length() > 5) { ignores++; continue; }
+            String codeCommune = formaterCodeCommune(lire(c, idx, "code commune"));
+            String codeFed     = lire(c, idx, "code");
+            if (codeCommune.isEmpty() || codeFed.isEmpty()) continue;
 
             ps.setString(1, codeCommune);
             ps.setString(2, codeFed);
-            ps.setInt(3, toInt(getCol(c, idx, "clubs")));
-            ps.setInt(4, toInt(getCol(c, idx, "epa")));
-            ps.setInt(5, toInt(getCol(c, idx, "total")));
+            ps.setInt(3, toInt(lire(c, idx, "clubs")));
+            ps.setInt(4, toInt(lire(c, idx, "epa")));
+            ps.setInt(5, toInt(lire(c, idx, "total")));
             ps.addBatch();
             count++;
             if (count % 1000 == 0) ps.executeBatch();
@@ -148,14 +194,19 @@ public class ImportCSV {
         ps.executeBatch();
         ps.close();
         br.close();
-        System.out.println("  -> " + count + " lignes (" + ignores + " ignorées)");
+        System.out.println("  -> " + count + " lignes");
     }
 
-    // -------- 4. Stats licences --------
+    /**
+     * 5. Importe les statistiques de licences (tranches d'âge × sexe).
+     * Fichier : lic-data-2023.csv (45 colonnes de données)
+     * Utilise un tableau pour éviter de répéter 45 fois le même code.
+     */
     static void importLicences(Connection conn) throws Exception {
         System.out.println("Import licence_stats...");
 
-        String[] tranches = {
+        // Les 45 colonnes du CSV à récupérer, dans l'ordre d'insertion SQL
+        String[] colonnes = {
             "f - 1 à 4 ans", "f - 5 à 9 ans", "f - 10 à 14 ans", "f - 15 à 19 ans",
             "f - 20 à 24 ans", "f - 25 à 29 ans", "f - 30 à 34 ans", "f - 35 à 39 ans",
             "f - 40 à 44 ans", "f - 45 à 49 ans", "f - 50 à 54 ans", "f - 55 à 59 ans",
@@ -171,10 +222,11 @@ public class ImportCSV {
             "total"
         };
 
+        // Construction dynamique de la requête SQL (évite d'écrire 45 "?" à la main)
         StringBuilder placeholders = new StringBuilder("?,?,2023");
-        for (int i = 0; i < tranches.length; i++) placeholders.append(",?");
+        for (int i = 0; i < colonnes.length; i++) placeholders.append(",?");
 
-        String sql = "INSERT IGNORE INTO licence_stats (code_commune, code_federation, annee, " +
+        String sql = "INSERT INTO licence_stats (code_commune, code_federation, annee, " +
             "f_1_4, f_5_9, f_10_14, f_15_19, f_20_24, f_25_29, f_30_34, f_35_39, f_40_44, " +
             "f_45_49, f_50_54, f_55_59, f_60_64, f_65_69, f_70_74, f_75_79, f_80_99, f_nr, " +
             "h_1_4, h_5_9, h_10_14, h_15_19, h_20_24, h_25_29, h_30_34, h_35_39, h_40_44, " +
@@ -184,79 +236,80 @@ public class ImportCSV {
 
         PreparedStatement ps = conn.prepareStatement(sql);
         BufferedReader br = new BufferedReader(new FileReader(FICHIER_LICENCES));
-        String enTete = br.readLine();
-        Map<String, Integer> idx = indexerColonnes(enTete);
+        Map<String, Integer> idx = indexerEnTete(br.readLine());
 
         String ligne;
-        int count = 0, ignores = 0;
+        int count = 0;
         while ((ligne = br.readLine()) != null) {
             String[] c = ligne.split(";", -1);
 
-            String codeCommune = nettoyerCodeCommune(getCol(c, idx, "code commune"));
-            String codeFed     = nettoyer(getCol(c, idx, "code"));
-
-            if (codeCommune.isEmpty() || codeFed.isEmpty()) { ignores++; continue; }
-            if (codeCommune.length() > 5 || codeFed.length() > 5) { ignores++; continue; }
+            String codeCommune = formaterCodeCommune(lire(c, idx, "code commune"));
+            String codeFed     = lire(c, idx, "code");
+            if (codeCommune.isEmpty() || codeFed.isEmpty()) continue;
 
             int i = 1;
             ps.setString(i++, codeCommune);
             ps.setString(i++, codeFed);
-            for (String tranche : tranches) {
-                ps.setInt(i++, toInt(getCol(c, idx, tranche)));
+            for (String col : colonnes) {
+                ps.setInt(i++, toInt(lire(c, idx, col)));
             }
             ps.addBatch();
             count++;
-            if (count % 500 == 0) ps.executeBatch();
+
+            // Commit par paquets pour éviter un seul énorme commit final
+            if (count % 5000 == 0) {
+                ps.executeBatch();
+                conn.commit();
+                System.out.println("  ... " + count + " lignes");
+            }
         }
         ps.executeBatch();
+        conn.commit();
         ps.close();
         br.close();
-        System.out.println("  -> " + count + " lignes (" + ignores + " ignorées)");
+        System.out.println("  -> " + count + " lignes");
     }
 
     // ============= UTILITAIRES =============
-    static Map<String, Integer> indexerColonnes(String enTete) {
+
+    /**
+     * Lit l'en-tête d'un CSV et retourne une map "nom de colonne → index".
+     * Permet d'accéder aux colonnes par leur nom, peu importe leur ordre.
+     */
+    static Map<String, Integer> indexerEnTete(String enTete) {
         Map<String, Integer> idx = new HashMap<>();
-        String[] cols = enTete.split(";", -1);
+        // Détecte le séparateur : ; pour les CSV ministère, , pour communes-geo
+        String sep = enTete.contains(";") ? ";" : ",";
+        String[] cols = enTete.split(sep, -1);
         for (int i = 0; i < cols.length; i++) {
-            idx.put(nettoyer(cols[i]).toLowerCase(), i);
+            String nom = cols[i].replace("\"", "").replace("\uFEFF", "").trim().toLowerCase();
+            idx.put(nom, i);
         }
         return idx;
     }
 
-    static String getCol(String[] c, Map<String, Integer> idx, String nom) {
-        Integer i = idx.get(nom.toLowerCase());
-        if (i == null || i >= c.length) return "";
-        return nettoyer(c[i]);
+    /** Récupère la valeur d'une colonne par son nom */
+    static String lire(String[] ligne, Map<String, Integer> idx, String nomColonne) {
+        Integer i = idx.get(nomColonne.toLowerCase());
+        if (i == null || i >= ligne.length) return "";
+        return ligne[i].replace("\"", "").trim();
     }
 
-    static String nettoyer(String s) {
+    /**
+     * Complète les codes INSEE sur 5 chiffres (ex: "1004" → "01004").
+     * Excel supprime souvent le 0 initial en sauvegardant en CSV.
+     */
+    static String formaterCodeCommune(String s) {
         if (s == null) return "";
-        s = s.replace("\uFEFF", "").trim();
-        if (s.startsWith("\"") && s.endsWith("\"") && s.length() >= 2) {
-            s = s.substring(1, s.length() - 1);
-        }
-        return s.trim();
-    }
-
-    static String nettoyerCodeCommune(String s) {
-        s = nettoyer(s);
-        if (s.isEmpty()) return "";
-        // Les codes INSEE font 5 chiffres (ex: Paris = 75056, Ambérieu = 01004)
-        // Excel peut avoir tronqué le 0 de tête
+        s = s.trim();
         if (s.length() == 4 && s.matches("\\d+")) s = "0" + s;
         return s;
     }
 
-    static String nullSiVide(String s) {
-        return (s == null || s.isEmpty()) ? null : s;
-    }
-
+    /** Convertit une chaîne en entier, retourne 0 si vide ou invalide */
     static int toInt(String s) {
-        if (s == null) return 0;
-        s = s.trim().replace(" ", "");
-        if (s.isEmpty()) return 0;
-        try { return Integer.parseInt(s); }
+        if (s == null || s.trim().isEmpty()) return 0;
+        try { return Integer.parseInt(s.trim()); }
         catch (NumberFormatException e) { return 0; }
     }
 }

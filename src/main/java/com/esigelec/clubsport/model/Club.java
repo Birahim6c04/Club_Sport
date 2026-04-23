@@ -1,23 +1,22 @@
 package com.esigelec.clubsport.model;
 
-/**
- * Représente une ligne de résultat : clubs affiliés à une fédération dans une commune.
- */
 public class Club {
 
     private String codeCommune;
     private String nomCommune;
     private String region;
     private String departement;
+    private Double latitude;
+    private Double longitude;
     private String codeFederation;
     private String nomFederation;
     private int clubs;
     private int epa;
     private int total;
+    private Double distanceKm;  // uniquement pour recherche par rayon
 
     public Club() {}
 
-    // Getters / Setters
     public String getCodeCommune() { return codeCommune; }
     public void setCodeCommune(String v) { this.codeCommune = v; }
 
@@ -29,6 +28,12 @@ public class Club {
 
     public String getDepartement() { return departement; }
     public void setDepartement(String v) { this.departement = v; }
+
+    public Double getLatitude() { return latitude; }
+    public void setLatitude(Double v) { this.latitude = v; }
+
+    public Double getLongitude() { return longitude; }
+    public void setLongitude(Double v) { this.longitude = v; }
 
     public String getCodeFederation() { return codeFederation; }
     public void setCodeFederation(String v) { this.codeFederation = v; }
@@ -44,4 +49,7 @@ public class Club {
 
     public int getTotal() { return total; }
     public void setTotal(int v) { this.total = v; }
+
+    public Double getDistanceKm() { return distanceKm; }
+    public void setDistanceKm(Double v) { this.distanceKm = v; }
 }

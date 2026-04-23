@@ -26,6 +26,7 @@ CREATE TABLE federation (
 CREATE TABLE commune (
     code_commune   VARCHAR(5)   NOT NULL,
     nom_commune    VARCHAR(100) NOT NULL,
+    code_postal    VARCHAR(5)   DEFAULT NULL,
     departement    VARCHAR(10)  DEFAULT NULL,
     region         VARCHAR(50)  DEFAULT NULL,
     code_qpv       VARCHAR(20)  DEFAULT NULL,
@@ -34,15 +35,17 @@ CREATE TABLE commune (
     latitude       DECIMAL(10,7) DEFAULT NULL,
     longitude      DECIMAL(10,7) DEFAULT NULL,
     PRIMARY KEY (code_commune),
+    INDEX idx_commune_cp (code_postal),
     INDEX idx_commune_region (region),
-    INDEX idx_commune_dept (departement)
+    INDEX idx_commune_dept (departement),
+    INDEX idx_commune_coords (latitude, longitude)
 ) ENGINE=InnoDB;
 
--- Stats clubs (clubs-data-2023.csv)
+-- Stats clubs (clubs-data-2019.csv)
 CREATE TABLE club_stats (
     code_commune    VARCHAR(5) NOT NULL,
     code_federation VARCHAR(5) NOT NULL,
-    annee           SMALLINT   NOT NULL DEFAULT 2023,
+    annee           SMALLINT   NOT NULL DEFAULT 2019,
     clubs           INT DEFAULT 0,   -- colonne "Clubs"
     epa             INT DEFAULT 0,   -- colonne "EPA"
     total           INT DEFAULT 0,   -- colonne "Total"
@@ -54,12 +57,12 @@ CREATE TABLE club_stats (
     INDEX idx_clubstats_fed (code_federation)
 ) ENGINE=InnoDB;
 
--- Stats licences (lic-data-2023.csv)
+-- Stats licences (lic-data-2019.csv)
 -- Tranches par 5 ans, H/F/NR (non renseigné)
 CREATE TABLE licence_stats (
     code_commune    VARCHAR(5) NOT NULL,
     code_federation VARCHAR(5) NOT NULL,
-    annee           SMALLINT   NOT NULL DEFAULT 2023,
+    annee           SMALLINT   NOT NULL DEFAULT 2019,
 
     -- Femmes
     f_1_4     INT DEFAULT 0,
