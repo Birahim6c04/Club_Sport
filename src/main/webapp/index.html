@@ -2,214 +2,138 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Club de Sport</title>
 
-    <style>
-        /* =========================
-           RESET GLOBAL
-           (supprime les marges par défaut du navigateur)
-        ========================= */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
+    <!-- Feuille de style externe -->
+    <link rel="stylesheet" href="style.css">
 
-        /* =========================
-           STYLE DU BODY
-           (fond général de la page)
-        ========================= */
-        body {
-            background: #eafcff;
-            height: 100vh;
-        }
-
-        /* =========================
-           BARRE DE NAVIGATION
-           (en haut de la page)
-        ========================= */
-        .navbar {
-            display: flex; /* aligne gauche et droite sur une ligne */
-            justify-content: space-between; /* espace entre gauche et droite */
-            align-items: center; /* centre verticalement */
-            padding: 20px 40px;
-            background: #0ea5b7;
-        }
-
-        /* Titre dans la navbar */
-        .nav-left h1 {
-            color: white;
-            margin-right: 30px;
-        }
-
-        /* Liens de navigation */
-        .nav-left a {
-            margin-right: 15px;
-            text-decoration: none;
-            color: white;
-        }
-
-        /* Partie droite de la navbar */
-        .nav-right {
-            display: flex;
-            gap: 10px;
-        }
-
-        /* =========================
-           BOUTONS
-           (inscription / connexion)
-        ========================= */
-        .btn {
-            padding: 8px 15px;
-            border-radius: 20px;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        /* bouton inscription */
-        .inscription {
-            background: white;
-            color: #0ea5b7;
-        }
-
-        /* bouton connexion */
-        .connexion {
-            border: 2px solid white;
-            color: white;
-        }
-
-        /* effet au survol du bouton connexion */
-        .connexion:hover {
-            background: white;
-            color: #0ea5b7;
-        }
-
-        /* =========================
-           SECTION HERO
-           (partie centrale de la page)
-        ========================= */
-        .hero {
-            display: flex;
-            flex-direction: column; /* empile les éléments verticalement */
-            justify-content: center; /* centre verticalement */
-            align-items: center; /* centre horizontalement */
-            height: 70vh;
-            text-align: center;
-            gap: 15px; /* espace entre les éléments */
-        }
-
-        /* titre principal */
-        .hero h2 {
-            font-size: 28px; /* taille réduite */
-            color: #0ea5b7;
-        }
-
-        /* texte secondaire */
-        .hero p {
-            font-size: 14px; /* taille réduite */
-        }
-
-        /* =========================
-           BARRE DE RECHERCHE
-           (champ + bouton)
-        ========================= */
-        .search-box {
-            display: flex;
-            flex-direction: column; /* input + bouton en colonne */
-            gap: 10px;
-            align-items: center;
-        }
-
-        /* champ de recherche */
-        .search-box input {
-            padding: 8px;
-            width: 200px;
-            border: 2px solid #0ea5b7;
-            border-radius: 20px;
-            outline: none;
-            font-size: 13px;
-        }
-
-        /* bouton recherche */
-        .search-box button {
-            padding: 8px 12px;
-            border: none;
-            border-radius: 20px;
-            background: #0ea5b7;
-            color: white;
-            cursor: pointer;
-            font-size: 13px;
-        }
-
-        /* effet hover bouton recherche */
-        .search-box button:hover {
-            background: #0b8ea0;
-        }
-
-        /* =========================
-           FOOTER
-           (bas de page)
-        ========================= */
-        footer {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            text-align: center;
-            padding: 10px;
-            background: #0ea5b7;
-            color: white;
-        }
-    </style>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 
 <body>
 
-<!-- =========================
-     NAVBAR
-========================= -->
-<div class="navbar">
+    <!-- =========================
+         NAVBAR
+    ========================= -->
+    <div class="navbar">
 
-    <!-- partie gauche : logo + liens -->
-    <div class="nav-left">
-        <h1>⚽ Club Sportif</h1>
-        <a href="#">Accueil</a>
-        <a href="#">Activités</a>
+        <!-- Partie gauche : logo + liens -->
+        <div class="nav-left">
+            <h1>⚽ Club Sportif</h1>
+            <a href="#">Accueil</a>
+            <a href="#">Activités</a>
+        </div>
+
+        <!-- Partie droite : boutons -->
+        <div class="nav-right">
+            <a href="#" class="btn inscription">S'inscrire</a>
+            <a href="#" class="btn connexion">Se connecter</a>
+        </div>
+
     </div>
 
-    <!-- partie droite : boutons -->
-    <div class="nav-right">
-        <a href="#" class="btn inscription">S'inscrire</a>
-        <a href="#" class="btn connexion">Connexion</a>
+    <!-- =========================
+         HERO
+    ========================= -->
+    <div class="hero">
+
+        <!-- Titre principal -->
+        <h2>Bienvenue dans notre club</h2>
+
+        <!-- Sous-titre -->
+        <p>Recherchez une activité sportive</p>
+
+        <!-- Barre de recherche -->
+        <div class="search-box">
+            <input type="text" placeholder="Rechercher un sport...">
+            <button>Rechercher</button>
+        </div>
+
     </div>
 
-</div>
-
-<!-- =========================
-     HERO
-========================= -->
-<div class="hero">
-
-    <!-- titre principal -->
-    <h2>Bienvenue dans notre club</h2>
-
-    <!-- sous-titre -->
-    <p>Recherchez une activité sportive</p>
-
-    <!-- barre de recherche -->
-    <div class="search-box">
-        <input type="text" placeholder="Rechercher un sport...">
-        <button>Rechercher</button>
+    <!-- =========================
+         SECTION CARTE
+    ========================= -->
+    <div class="map-section">
+        <h3>📍 Nous trouver</h3>
+        <div id="map"></div>
     </div>
 
-</div>
+    <!-- =========================
+         FOOTER
+    ========================= -->
+    <footer>
+        <p>© 2026 Club Sportif</p>
+    </footer>
 
-<!-- =========================
-     FOOTER
-========================= -->
-<footer>
-    <p>© 2026 Club Sportif</p>
-</footer>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Script carte France avec départements -->
+    <script>
+        // Carte sans zoom initial fixe : fitBounds se chargera du cadrage
+        const map = L.map('map', { zoomSnap: 0.25 });
+
+        // Fond OSM standard (comme l'exemple)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        }).addTo(map);
+
+        // GeoJSON simplifié des départements (~100 Ko)
+        fetch('https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/departements-version-simplifiee.geojson')
+            .then(res => res.json())
+            .then(data => {
+                const geojsonLayer = L.geoJSON(data, {
+                    style: {
+                        color: '#0ea5b7',
+                        weight: 1.5,
+                        fillColor: '#c8f3f8',
+                        fillOpacity: 0.35
+                    },
+                    onEachFeature: function(feature, layer) {
+                        const nom  = feature.properties.nom;
+                        const code = feature.properties.code;
+
+                        layer.bindTooltip('<b>' + code + '</b> — ' + nom, {
+                            sticky: true,
+                            className: 'dept-tooltip'
+                        });
+
+                        layer.on('mouseover', function() {
+                            this.setStyle({ fillColor: '#0ea5b7', fillOpacity: 0.5, weight: 2.5 });
+                        });
+                        layer.on('mouseout', function() {
+                            this.setStyle({ fillColor: '#c8f3f8', fillOpacity: 0.35, weight: 1.5 });
+                        });
+                    }
+                }).addTo(map);
+
+                // Cadrage automatique sur la France métropolitaine
+                map.fitBounds(geojsonLayer.getBounds(), { padding: [20, 20] });
+            })
+            .catch(function() {
+                document.getElementById('map').innerHTML =
+                    '<p style="text-align:center;padding:40px;color:#0ea5b7">Impossible de charger la carte.</p>';
+            });
+    </script>
+
+    <style>
+        .dept-tooltip {
+            background: #0ea5b7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            padding: 4px 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        .leaflet-tooltip-bottom.dept-tooltip::before {
+            border-bottom-color: #0ea5b7;
+        }
+    </style>
 
 </body>
 </html>

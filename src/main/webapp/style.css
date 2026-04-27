@@ -1,0 +1,174 @@
+/* =========================
+   RESET GLOBAL
+========================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* =========================
+   BODY
+========================= */
+body {
+    background: #eafcff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* =========================
+   BARRE DE NAVIGATION
+========================= */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    background: #0ea5b7;
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.nav-left h1 {
+    color: white;
+    margin-right: 20px;
+}
+
+.nav-left a {
+    margin-right: 15px;
+    text-decoration: none;
+    color: white;
+}
+
+.nav-right {
+    display: flex;
+    gap: 10px;
+}
+
+/* =========================
+   BOUTONS
+========================= */
+.btn {
+    padding: 8px 15px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.inscription {
+    background: white;
+    color: #0ea5b7;
+}
+
+.connexion {
+    border: 2px solid white;
+    color: white;
+}
+
+.connexion:hover {
+    background: white;
+    color: #0ea5b7;
+}
+
+/* =========================
+   SECTION HERO
+========================= */
+.hero {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 20px 40px;
+    text-align: center;
+    gap: 15px;
+}
+
+.hero h2 {
+    font-size: 28px;
+    color: #0ea5b7;
+}
+
+.hero p {
+    font-size: 14px;
+    color: #444;
+}
+
+/* =========================
+   BARRE DE RECHERCHE
+========================= */
+.search-box {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.search-box input {
+    padding: 8px;
+    width: 220px;
+    border: 2px solid #0ea5b7;
+    border-radius: 20px;
+    outline: none;
+    font-size: 13px;
+}
+
+.search-box button {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 20px;
+    background: #0ea5b7;
+    color: white;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+.search-box button:hover {
+    background: #0b8ea0;
+}
+
+/* =========================
+   SECTION CARTE
+========================= */
+.map-section {
+    max-width: 900px;
+    margin: 0 auto 50px;
+    width: 90%;
+}
+
+.map-section h3 {
+    color: #0ea5b7;
+    font-size: 20px;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+#map {
+    width: 100%;
+    height: 380px;
+    border-radius: 16px;
+    border: 3px solid #0ea5b7;
+    box-shadow: 0 6px 24px rgba(14, 165, 183, 0.18);
+    z-index: 0;
+}
+
+/* =========================
+   FOOTER
+========================= */
+footer {
+    margin-top: auto;
+    width: 100%;
+    text-align: center;
+    padding: 14px;
+    background: #0ea5b7;
+    color: white;
+    font-size: 13px;
+}
