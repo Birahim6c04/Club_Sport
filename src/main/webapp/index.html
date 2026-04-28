@@ -1,58 +1,50 @@
-<!DOCTYPE html>
+
+	<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ma première page</title>
+    <title>Ma Position en Direct</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-        }
-        header {
-            background: #3498db;
-            color: white;
-            padding: 15px;
-            text-align: center;
-        }
-        section {
-            background: white;
-            padding: 20px;
-            margin-top: 20px;
-            border-radius: 8px;
-        }
-        footer {
-            text-align: center;
-            margin-top: 30px;
-            color: #555;
-        }
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        #status { font-weight: bold; color: #555; }
+        .result { font-size: 1.2em; color: #007bff; margin-top: 20px; }
     </style>
 </head>
-<body>
+<body onload="obtenirPosition()">
 
-    <header>
-        <h1>Bienvenue sur ma page HTML</h1>
-    </header>
+    <h1>Géolocalisation Immédiate</h1>
+    <p id="status">Demande d'autorisation en cours...</p>
+    
+    <div id="affichage" class="result"></div>
 
-    <section>
-        <h2>Présentation</h2>
-        <p>Ceci est un exemple simple de page web écrite en HTML et un peu de CSS.</p>
-    </section>
+    <script>
+        function obtenirPosition() {
+            const status = document.querySelector('#status');
+            const affichage = document.querySelector('#affichage');
 
-    <section>
-        <h2>Liste d'exemples</h2>
-        <ul>
-            <li>Élément de liste 1</li>
-            <li>Élément de liste 2</li>
-            <li>Élément de liste 3</li>
-        </ul>
-    </section>
+            // 1. Vérifier si le navigateur supporte la géolocalisation
+            if (!navigator.geolocation) {
+                status.textContent = "La géolocalisation n'est pas supportée par votre navigateur.";
+            } else {
+                // 2. Tenter de récupérer la position
+                navigator.geolocation.getCurrentPosition(succes, erreur);
+            }
 
-    <footer>
-        <p>© 2026 - Ma page HTML</p>
-    </footer>
+            // En cas de succès
+            function succes(position) {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                
+                status.textContent = "📍 Coordonnées trouvées :";
+                affichage.innerHTML = `Latitude : <b>${lat}</b> <br> Longitude : <b>${lng}</b>`;
+            }
 
+            // En cas d'erreur (refus de l'utilisateur, etc.)
+            function erreur() {
+                status.textContent = "Impossible de récupérer votre position (accès refusé ou signal faible).";
+                status.style.color = "red";
+            }
+        }
+    </script>
 </body>
 </html>
