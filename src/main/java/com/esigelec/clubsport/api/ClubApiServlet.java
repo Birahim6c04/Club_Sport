@@ -79,7 +79,9 @@ public class ClubApiServlet extends HttpServlet {
             String federation = req.getParameter("federation");
             String region     = req.getParameter("region");
             String commune    = req.getParameter("commune");
-            String rayonStr   = req.getParameter("rayon");
+            String rayonStr   = req.getParameter("rayon");        
+            String codePostal = req.getParameter("codePostal");
+
 
             // --- Cas A : recherche par RAYON ---
             // Si on a une commune et un rayon, on fait la recherche géographique
@@ -114,7 +116,7 @@ public class ClubApiServlet extends HttpServlet {
                 return;
             }
 
-            List<Club> clubs = clubDAO.rechercher(federation, region);
+            List<Club> clubs = clubDAO.rechercher(federation, region,codePostal);
             out.write(gson.toJson(clubs));
 
         } catch (IllegalArgumentException e) {

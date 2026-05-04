@@ -43,6 +43,7 @@ public class ClubController extends HttpServlet {
         String region     = req.getParameter("region");
         String commune    = req.getParameter("commune");
         String rayonStr   = req.getParameter("rayon");
+        String codePostal = req.getParameter("codePostal");
 
         try {
             List<Club> clubs;
@@ -52,8 +53,8 @@ public class ClubController extends HttpServlet {
                 clubs = service.rechercherParRayon(federation, commune, rayon);
                 req.setAttribute("modeRecherche", "rayon");
             } else {
-                clubs = service.rechercher(federation, region);
-                req.setAttribute("modeRecherche", "zone");
+            	clubs = service.rechercher(federation, region, codePostal);
+            	req.setAttribute("modeRecherche", "zone");
             }
 
             req.setAttribute("clubs", clubs);
@@ -64,6 +65,7 @@ public class ClubController extends HttpServlet {
             req.setAttribute("regionChoisie", region);
             req.setAttribute("communeChoisie", commune);
             req.setAttribute("rayonChoisi", rayonStr);
+            req.setAttribute("codePostalChoisi", codePostal);
 
         } catch (IllegalArgumentException e) {
             req.setAttribute("erreur", e.getMessage());

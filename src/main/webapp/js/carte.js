@@ -122,19 +122,24 @@ function initialiserAutocompletion() {
 function chargerMarqueurs() {
     let url = window.contextPath + '/carte/donnees?federation=' + window.federationChoisie;
 
-    // Si recherche par RAYON : on passe commune + rayon
+    // Si recherche par RAYON
     if (window.modeRecherche === 'rayon' && window.communeChoisie && window.rayonChoisi) {
         url += '&commune=' + window.communeChoisie + '&rayon=' + window.rayonChoisi;
     }
-    // Sinon recherche par ZONE : on passe la région
-    else if (window.regionChoisie) {
-        url += '&region=' + encodeURIComponent(window.regionChoisie);
+    // Sinon recherche par ZONE
+    else {
+        if (window.regionChoisie) {
+            url += '&region=' + encodeURIComponent(window.regionChoisie);
+        }
+        if (window.codePostalChoisi) {
+            url += '&codePostal=' + window.codePostalChoisi;
+        }
     }
 
     fetch(url)
         .then(res => res.json())
         .then(clubs => {
-            // Supprime les anciens marqueurs et le cercle
+            // ... le reste de la fonction reste pareil
             marqueurs.forEach(m => map.removeLayer(m));
             marqueurs = [];
             if (cercleRayon) {
@@ -146,22 +151,31 @@ function chargerMarqueurs() {
             clubs.forEach(club => {
                 if (club.latitude && club.longitude) {
                     const marker = L.marker([club.latitude, club.longitude]).addTo(map);
-                    marker.bindPopup(
-                        '<b>' + club.nomCommune + '</b><br>' +
-                        club.nomFederation + '<br>' +
-                        club.total + ' club(s)'
-                    );
+
+                    let contenu = '<div class="popup-club">';
+                    contenu += '<div class="popup-titre">' + club.nomCommune + '</div>';
+                    contenu += '<div class="popup-region">' + club.departement + ' - ' + club.region + '</div>';
+                    contenu += '<div class="popup-federation">' + club.nomFederation + '</div>';
+                    contenu += '<div class="popup-stats">';
+                    contenu += '<div><span class="nombre">' + club.clubs + '</span><span class="label">Clubs</span></div>';
+                    contenu += '<div><span class="nombre">' + club.epa + '</span><span class="label">EPA</span></div>';
+                    contenu += '<div><span class="nombre">' + club.total + '</span><span class="label">Total</span></div>';
+                    contenu += '</div>';
+                    if (club.distanceKm != null) {
+                        contenu += '<div class="popup-distance">📍 ' + club.distanceKm.toFixed(1) + ' km</div>';
+                    }
+                    contenu += '</div>';
+
+                    marker.bindPopup(contenu);
                     marqueurs.push(marker);
                     points.push([club.latitude, club.longitude]);
                 }
             });
 
-            // Mode rayon : on dessine un cercle de référence et on centre dessus
+            // Si rayon : cercle + zoom
             if (window.modeRecherche === 'rayon' && clubs.length > 0) {
-                // Le 1er club est la commune de référence (la plus proche = elle-même)
                 const centre = [clubs[0].latitude, clubs[0].longitude];
                 const rayonMetres = parseInt(window.rayonChoisi) * 1000;
-
                 cercleRayon = L.circle(centre, {
                     radius: rayonMetres,
                     color: '#0ea5b7',
@@ -169,13 +183,10 @@ function chargerMarqueurs() {
                     fillOpacity: 0.1,
                     weight: 2
                 }).addTo(map);
-
                 map.fitBounds(cercleRayon.getBounds(), { padding: [20, 20] });
             }
-            // Mode zone : on cadre sur tous les marqueurs
             else if (points.length > 0) {
                 map.fitBounds(points, { padding: [40, 40], maxZoom: 12 });
             }
-        })
-        .catch(err => console.error('Erreur chargement marqueurs :', err));
+        });
 }

@@ -45,6 +45,7 @@ public class MapDataController extends HttpServlet {
             String region     = req.getParameter("region");
             String commune    = req.getParameter("commune");
             String rayonStr   = req.getParameter("rayon");
+            String codePostal = req.getParameter("codePostal");
 
             List<Club> clubs;
 
@@ -52,7 +53,7 @@ public class MapDataController extends HttpServlet {
                 int rayon = Integer.parseInt(rayonStr);
                 clubs = service.rechercherParRayon(federation, commune, rayon);
             } else {
-                clubs = service.rechercher(federation, region);
+                clubs = service.rechercher(federation, region, codePostal);
             }
 
             out.write(gson.toJson(clubs));

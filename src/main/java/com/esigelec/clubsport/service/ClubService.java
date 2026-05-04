@@ -9,14 +9,15 @@ public class ClubService {
 
     private ClubDAO clubDAO = new ClubDAO();
 
-    // Recherche par fédération et/ou région
-    public List<Club> rechercher(String codeFederation, String region) throws Exception {
+ // Recherche par fédération et/ou région et/ou code postal
+    public List<Club> rechercher(String codeFederation, String region, String codePostal) throws Exception {
         if ((codeFederation == null || codeFederation.isEmpty())
-            && (region == null || region.isEmpty())) {
+            && (region == null || region.isEmpty())
+            && (codePostal == null || codePostal.isEmpty())) {
             throw new IllegalArgumentException(
-                "Au moins un critère est requis : fédération ou région");
+                "Au moins un critère est requis : fédération, région ou code postal");
         }
-        return clubDAO.rechercher(codeFederation, region);
+        return clubDAO.rechercher(codeFederation, region, codePostal);
     }
 
     // Recherche par rayon autour d'une commune

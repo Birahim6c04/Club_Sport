@@ -419,3 +419,66 @@ footer a {
     color: white;
     text-decoration: underline;
 }
+
+/* =========================
+   POPUP CLUB SUR LA CARTE
+========================= */
+.popup-club {
+    min-width: 220px;
+    padding: 5px;
+}
+
+.popup-titre {
+    font-size: 16px;
+    font-weight: bold;
+    color: #0ea5b7;
+    margin-bottom: 4px;
+}
+
+.popup-region {
+    font-size: 11px;
+    color: #888;
+    margin-bottom: 8px;
+}
+
+.popup-federation {
+    font-size: 13px;
+    color: #444;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eafcff;
+}
+
+.popup-stats {
+    display: flex;
+    gap: 10px;
+    text-align: center;
+}
+
+.popup-stats > div {
+    flex: 1;
+}
+
+.popup-stats .nombre {
+    display: block;
+    font-size: 18px;
+    font-weight: bold;
+    color: #0ea5b7;
+}
+
+.popup-stats .label {
+    display: block;
+    font-size: 10px;
+    color: #888;
+}
+
+.popup-distance {
+    margin-top: 10px;
+    padding: 5px 10px;
+    background: #eafcff;
+    color: #0ea5b7;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: bold;
+}

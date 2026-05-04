@@ -9,66 +9,68 @@ import java.util.List;
 
 public class ClubDAO {
 
-    // ============================================================
-    // 1. RECHERCHE PAR FEDERATION ET/OU REGION
-    // ============================================================
-    public List<Club> rechercher(String codeFederation, String region) throws Exception {
-        List<Club> resultats = new ArrayList<>();
+	// ============================================================
+	// 1. RECHERCHE PAR FEDERATION ET/OU REGION ET/OU CODE POSTAL
+	// ============================================================
+	public List<Club> rechercher(String codeFederation, String region, String codePostal) throws Exception {
+	    List<Club> resultats = new ArrayList<>();
 
-        // Requête de base : on récupère les clubs avec leur commune et leur fédération
-        String sql = "SELECT c.code_commune, c.nom_commune, c.region, c.departement, " +
-                     "       c.latitude, c.longitude, " +
-                     "       f.code_federation, f.nom_federation, " +
-                     "       cs.clubs, cs.epa, cs.total " +
-                     "FROM club_stats cs " +
-                     "JOIN commune c    ON c.code_commune = cs.code_commune " +
-                     "JOIN federation f ON f.code_federation = cs.code_federation " +
-                     "WHERE cs.total > 0 ";
+	    String sql = "SELECT c.code_commune, c.nom_commune, c.region, c.departement, " +
+	                 "       c.latitude, c.longitude, " +
+	                 "       f.code_federation, f.nom_federation, " +
+	                 "       cs.clubs, cs.epa, cs.total " +
+	                 "FROM club_stats cs " +
+	                 "JOIN commune c    ON c.code_commune = cs.code_commune " +
+	                 "JOIN federation f ON f.code_federation = cs.code_federation " +
+	                 "WHERE cs.total > 0 ";
 
-        // On ajoute les filtres si l'utilisateur les a remplis
-        if (codeFederation != null && !codeFederation.isEmpty()) {
-            sql += "AND cs.code_federation = ? ";
-        }
-        if (region != null && !region.isEmpty()) {
-            sql += "AND c.region = ? ";
-        }
-        sql += "ORDER BY cs.total DESC LIMIT 500";
+	    if (codeFederation != null && !codeFederation.isEmpty()) {
+	        sql += "AND cs.code_federation = ? ";
+	    }
+	    if (region != null && !region.isEmpty()) {
+	        sql += "AND c.region = ? ";
+	    }
+	    if (codePostal != null && !codePostal.isEmpty()) {
+	        sql += "AND c.code_postal = ? ";
+	    }
+	    sql += "ORDER BY cs.total DESC LIMIT 500";
 
-        Connection conn = DbConnection.getConnection();
-        PreparedStatement ps = conn.prepareStatement(sql);
+	    Connection conn = DbConnection.getConnection();
+	    PreparedStatement ps = conn.prepareStatement(sql);
 
-        // On remplit les paramètres
-        int i = 1;
-        if (codeFederation != null && !codeFederation.isEmpty()) {
-            ps.setString(i++, codeFederation);
-        }
-        if (region != null && !region.isEmpty()) {
-            ps.setString(i++, region);
-        }
+	    int i = 1;
+	    if (codeFederation != null && !codeFederation.isEmpty()) {
+	        ps.setString(i++, codeFederation);
+	    }
+	    if (region != null && !region.isEmpty()) {
+	        ps.setString(i++, region);
+	    }
+	    if (codePostal != null && !codePostal.isEmpty()) {
+	        ps.setString(i++, codePostal);
+	    }
 
-        // On exécute et on lit les résultats
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            Club club = new Club();
-            club.setCodeCommune(rs.getString("code_commune"));
-            club.setNomCommune(rs.getString("nom_commune"));
-            club.setRegion(rs.getString("region"));
-            club.setDepartement(rs.getString("departement"));
-            club.setLatitude(rs.getDouble("latitude"));
-            club.setLongitude(rs.getDouble("longitude"));
-            club.setCodeFederation(rs.getString("code_federation"));
-            club.setNomFederation(rs.getString("nom_federation"));
-            club.setClubs(rs.getInt("clubs"));
-            club.setEpa(rs.getInt("epa"));
-            club.setTotal(rs.getInt("total"));
-            resultats.add(club);
-        }
+	    ResultSet rs = ps.executeQuery();
+	    while (rs.next()) {
+	        Club club = new Club();
+	        club.setCodeCommune(rs.getString("code_commune"));
+	        club.setNomCommune(rs.getString("nom_commune"));
+	        club.setRegion(rs.getString("region"));
+	        club.setDepartement(rs.getString("departement"));
+	        club.setLatitude(rs.getDouble("latitude"));
+	        club.setLongitude(rs.getDouble("longitude"));
+	        club.setCodeFederation(rs.getString("code_federation"));
+	        club.setNomFederation(rs.getString("nom_federation"));
+	        club.setClubs(rs.getInt("clubs"));
+	        club.setEpa(rs.getInt("epa"));
+	        club.setTotal(rs.getInt("total"));
+	        resultats.add(club);
+	    }
 
-        rs.close();
-        ps.close();
-        conn.close();
-        return resultats;
-    }
+	    rs.close();
+	    ps.close();
+	    conn.close();
+	    return resultats;
+	}
 
     // ============================================================
     // 2. RECHERCHE PAR RAYON AUTOUR D'UNE COMMUNE
