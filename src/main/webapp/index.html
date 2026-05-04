@@ -3,38 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clubs Sportifs - Accueil</title>
-    
-    
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    
+    <title>SportIF — Clubs & Fédérations de France</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <header>
-        <h1>Recherche de Clubs Sportifs</h1>
-    </header>
+    <!-- NAV -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="nav-logo">⚽</span>
+            <span class="nav-title">SportIF</span>
+        </div>
+        <div class="nav-links">
+            <a href="#search-section" class="nav-link active">Recherche</a>
+            <a href="#stats-section" class="nav-link">Licenciés</a>
+            <a href="#club-space-section" class="nav-link">Espace clubs</a>
+        </div>
+        <div class="nav-badge">Grand Public</div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-content">
+            <p class="hero-eyebrow">Plateformenationale</p>
+            <h1 class="hero-title">Trouvez votre<br><em>club sportif</em></h1>
+            <p class="hero-sub">Plus de 100 000 clubs répartis sur tout le territoire français. Recherchez par fédération, commune ou rayon géographique.</p>
+        </div>
+        <div class="hero-numbers">
+            <div class="hero-stat">
+                <span class="hero-stat-num">100K+</span>
+                <span class="hero-stat-lbl">Clubs</span>
+            </div>
+            <div class="hero-stat">
+                <span class="hero-stat-num">100+</span>
+                <span class="hero-stat-lbl">Fédérations</span>
+            </div>
+            <div class="hero-stat">
+                <span class="hero-stat-num">36M+</span>
+                <span class="hero-stat-lbl">Licenciés</span>
+            </div>
+        </div>
+    </section>
 
     <main>
-        <!-- Zone pour le formulaire de recherche par rayon -->
-        <section id="search-section">
-            <input type="text" id="location-input" placeholder="Saisissez une ville ou un code postal...">
-            <input type="number" id="radius-input" placeholder="Rayon (ex: 10 km)">
-            <button id="search-btn">Rechercher</button>
+
+        <!-- SEARCH SECTION -->
+        <section id="search-section" class="section">
+            <div class="section-header">
+                <span class="section-tag">01</span>
+                <h2 class="section-title">Recherche de clubs</h2>
+            </div>
+
+            <div class="search-panel">
+                <div class="search-tabs">
+                    <button class="tab-btn active" data-tab="geo">Par zone géographique</button>
+                    <button class="tab-btn" data-tab="radius">Par rayon</button>
+                    <button class="tab-btn" data-tab="all">Tous les clubs</button>
+                </div>
+
+                <!-- Tab: zone géo -->
+                <div class="tab-content active" id="tab-geo">
+                    <div class="search-row">
+                        <div class="field-group">
+                            <label>Commune ou code postal</label>
+                            <input type="text" id="commune-input" placeholder="Ex : Paris, 75001, Lyon…">
+                        </div>
+                        <div class="field-group">
+                            <label>Région</label>
+                            <select id="region-select">
+                                <option value="">— Toutes les régions —</option>
+                            </select>
+                        </div>
+                        <div class="field-group">
+                            <label>Fédération</label>
+                            <select id="fed-select-geo">
+                                <option value="">— Toutes —</option>
+                            </select>
+                        </div>
+                        <button class="btn-primary" id="search-geo-btn">Rechercher</button>
+                    </div>
+                </div>
+
+                <!-- Tab: rayon -->
+                <div class="tab-content" id="tab-radius">
+                    <div class="search-row">
+                        <div class="field-group">
+                            <label>Ville de départ</label>
+                            <input type="text" id="location-input" placeholder="Ex : Bordeaux…">
+                        </div>
+                        <div class="field-group">
+                            <label>Rayon (km)</label>
+                            <input type="number" id="radius-input" placeholder="10" min="1" max="500">
+                        </div>
+                        <div class="field-group">
+                            <label>Fédération</label>
+                            <select id="fed-select-radius">
+                                <option value="">— Toutes —</option>
+                            </select>
+                        </div>
+                        <button class="btn-primary" id="search-btn">Rechercher</button>
+                    </div>
+                </div>
+
+                <!-- Tab: tous -->
+                <div class="tab-content" id="tab-all">
+                    <div class="search-row">
+                        <div class="field-group" style="flex:2">
+                            <label>Fédération sportive</label>
+                            <select id="fed-select-all">
+                                <option value="">— Toutes les fédérations —</option>
+                            </select>
+                        </div>
+                        <button class="btn-primary" id="search-all-btn">Afficher sur la carte</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MAP -->
+            <div id="map-container">
+                <div id="map"></div>
+                <div id="map-legend">
+                    <div class="legend-title">Légende</div>
+                    <div class="legend-item"><span class="legend-dot blue"></span>Club trouvé</div>
+                    <div class="legend-item"><span class="legend-dot orange"></span>Zone de recherche</div>
+                </div>
+            </div>
+
+            <!-- RESULTS LIST -->
+            <div id="results-panel">
+                <div id="results-count"></div>
+                <div id="results-list"></div>
+            </div>
         </section>
 
-        <!-- Zone où la carte s'affichera -->
-        <section id="map-container">
-            <div id="map"></div>
+        <!-- LICENCIES STATS SECTION -->
+        <section id="stats-section" class="section">
+            <div class="section-header">
+                <span class="section-tag">02</span>
+                <h2 class="section-title">Licenciés par club</h2>
+                <p class="section-desc">Visualisez la répartition Hommes / Femmes pour chaque fédération dans une commune.</p>
+            </div>
+
+            <div class="stats-controls">
+                <div class="field-group">
+                    <label>Commune</label>
+                    <input type="text" id="stats-commune-input" placeholder="Ex : Paris, Marseille…">
+                </div>
+                <div class="field-group">
+                    <label>Fédération</label>
+                    <select id="stats-fed-select">
+                        <option value="">— Toutes —</option>
+                    </select>
+                </div>
+                <button class="btn-primary" id="stats-search-btn">Analyser</button>
+            </div>
+
+            <div id="stats-results" class="stats-grid"></div>
         </section>
+
+        <!-- CLUB COMMUNICATION SPACE -->
+        <section id="club-space-section" class="section">
+            <div class="section-header">
+                <span class="section-tag">03</span>
+                <h2 class="section-title">Espace communication clubs</h2>
+                <p class="section-desc">Les acteurs du monde sportif peuvent publier leurs actualités, horaires et cotisations à destination du grand public.</p>
+            </div>
+
+            <div class="club-space-layout">
+
+                <!-- Formulaire publication -->
+                <div class="publish-panel">
+                    <h3 class="panel-title">Publier une information</h3>
+                    <div class="field-group">
+                        <label>Nom du club *</label>
+                        <input type="text" id="pub-club-name" placeholder="Ex : AS Saint-Étienne…">
+                    </div>
+                    <div class="field-group">
+                        <label>Fédération *</label>
+                        <select id="pub-fed-select">
+                            <option value="">— Choisir —</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label>Type d'information</label>
+                        <div class="radio-group">
+                            <label class="radio-label"><input type="radio" name="pub-type" value="actu" checked> Actualité</label>
+                            <label class="radio-label"><input type="radio" name="pub-type" value="horaire"> Horaires</label>
+                            <label class="radio-label"><input type="radio" name="pub-type" value="cotisation"> Cotisations</label>
+                            <label class="radio-label"><input type="radio" name="pub-type" value="autre"> Autre</label>
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label>Titre *</label>
+                        <input type="text" id="pub-title" placeholder="Titre de votre publication…">
+                    </div>
+                    <div class="field-group">
+                        <label>Contenu *</label>
+                        <textarea id="pub-content" rows="5" placeholder="Rédigez votre message pour le grand public…"></textarea>
+                    </div>
+                    <div class="field-group">
+                        <label>Contact (optionnel)</label>
+                        <input type="text" id="pub-contact" placeholder="Email ou téléphone…">
+                    </div>
+                    <div class="publish-actions">
+                        <button class="btn-primary" id="publish-btn">Publier</button>
+                        <button class="btn-secondary" id="clear-btn">Effacer</button>
+                    </div>
+                    <div id="publish-feedback"></div>
+                </div>
+
+                <!-- Feed publications -->
+                <div class="feed-panel">
+                    <div class="feed-header">
+                        <h3 class="panel-title">Publications récentes</h3>
+                        <div class="feed-filters">
+                            <button class="filter-btn active" data-filter="all">Tout</button>
+                            <button class="filter-btn" data-filter="actu">Actualités</button>
+                            <button class="filter-btn" data-filter="horaire">Horaires</button>
+                            <button class="filter-btn" data-filter="cotisation">Cotisations</button>
+                        </div>
+                    </div>
+                    <div id="publications-feed"></div>
+                </div>
+
+            </div>
+        </section>
+
     </main>
 
-    <!-- JS de Leaflet -->
+    <footer>
+        <div class="footer-inner">
+            <span>© 2024 SportIF — ESIGELEC Projet S8</span>
+            <span>Données : <a href="https://www.data.gouv.fr" target="_blank">data.gouv.fr</a> · Open Data Ministère des Sports</span>
+            <span><a href="#">Mentions légales</a> · <a href="#">Cookies</a></span>
+        </div>
+    </footer>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
-    
+    <script src="app.js"></script>
     <script src="map.js"></script>
 </body>
 </html>
