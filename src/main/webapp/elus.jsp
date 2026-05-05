@@ -11,14 +11,14 @@
 body {
     margin: 0;
     font-family: "Segoe UI", sans-serif;
-    background: #f4f6f9;
+    background: #eafcff;
     display: flex;
 }
 
 .sidebar {
     width: 250px;
     height: 100vh;
-    background: linear-gradient(180deg, #1e3c72, #2a5298);
+    background: #0ea5b7;
     color: white;
     padding: 20px;
 }
@@ -32,9 +32,17 @@ body {
     margin-bottom: 10px;
 }
 
+.sidebar a:hover {
+    background: rgba(255,255,255,0.18);
+}
+
 .main {
     flex: 1;
     padding: 25px;
+}
+
+h1 {
+    color: #0ea5b7;
 }
 
 .dashboard-container {
@@ -49,7 +57,7 @@ body {
     padding: 20px;
     border-radius: 10px;
     width: 320px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 6px 24px rgba(14, 165, 183, 0.18);
 }
 
 .filter-box form {
@@ -62,7 +70,13 @@ body {
 .filter-box input {
     padding: 8px;
     border-radius: 6px;
-    border: 1px solid #ccc;
+    border: 2px solid #c8f3f8;
+}
+
+.filter-box select:focus,
+.filter-box input:focus {
+    outline: none;
+    border-color: #0ea5b7;
 }
 
 .filter-box button {
@@ -70,14 +84,14 @@ body {
     padding: 10px;
     border: none;
     border-radius: 8px;
-    background-color: #2a5298;
+    background-color: #0ea5b7;
     color: white;
     font-weight: bold;
     cursor: pointer;
 }
 
 .filter-box button:hover {
-    background-color: #1e3c72;
+    background-color: #0b8ea0;
 }
 
 .stats-container {
@@ -95,7 +109,11 @@ body {
     padding: 20px;
     border-radius: 15px;
     text-align: center;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 6px 24px rgba(14, 165, 183, 0.18);
+}
+
+.card h3 {
+    color: #0ea5b7;
 }
 
 .card p {
@@ -106,15 +124,15 @@ body {
 small {
     font-size: 12px;
 }
+
 .chart-box {
     margin-top: 20px;
     background: white;
     padding: 20px;
     border-radius: 15px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 6px 24px rgba(14, 165, 183, 0.18);
     max-width: 500px;
 }
-
 </style>
 </head>
 
@@ -122,8 +140,10 @@ small {
 
 <div class="sidebar">
     <h2>🏛 Élus</h2>
-    <a href="ElusDashboard">Dashboard</a>
-     <a href="LeClassement">🏆 Classement</a>
+    <a href="ElusDashboard"> Dashboard</a>
+    <a href="LeClassement"> Classement</a>
+    <a href="indicateurs"> Statistiques</a>
+    <a href="#"> Export</a>
 </div>
 
 <div class="main">
@@ -168,16 +188,16 @@ small {
             </c:if>
 
             <label>Commune :</label>
-			<select name="codeCommune" onchange="this.form.submit()" ${empty departement ? 'disabled' : ''}>
-			    <option value="">Choisir une commune</option>
-			
-			    <c:forEach var="c" items="${communes}">
-			        <option value="${c[0]}" ${c[0] == codeCommune ? 'selected' : ''}>
-			            ${c[1]} (${c[2]})
-			        </option>
-			    </c:forEach>
-			</select>
-			
+            <select name="codeCommune" onchange="this.form.submit()" ${empty departement ? 'disabled' : ''}>
+                <option value="">Choisir une commune</option>
+
+                <c:forEach var="c" items="${communes}">
+                    <option value="${c[0]}" ${c[0] == codeCommune ? 'selected' : ''}>
+                        ${c[1]} (${c[2]})
+                    </option>
+                </c:forEach>
+            </select>
+
             <label>Fédération :</label>
             <select name="federation" ${empty codeCommune ? 'disabled' : ''}>
                 <option value="">Toutes les fédérations</option>
@@ -193,29 +213,30 @@ small {
         </form>
     </div>
 
-   <div class="stats-container">
-    <div class="cards">
-        <div class="card">
-            <h3>Licenciés</h3>
-            <p>${total}</p>
+    <div class="stats-container">
+        <div class="cards">
+            <div class="card">
+                <h3>Licenciés</h3>
+                <p>${total}</p>
+            </div>
+
+            <div class="card">
+                <h3>Hommes</h3>
+                <p>${hommes}</p>
+            </div>
+
+            <div class="card">
+                <h3>Femmes</h3>
+                <p>${femmes}</p>
+            </div>
         </div>
 
-        <div class="card">
-            <h3>Hommes</h3>
-            <p>${hommes}</p>
-        </div>
-
-        <div class="card">
-            <h3>Femmes</h3>
-            <p>${femmes}</p>
+        <div class="chart-box">
+            <canvas id="genreChart"></canvas>
         </div>
     </div>
 
-    <div class="chart-box">
-        <canvas id="genreChart"></canvas>
-    </div>
 </div>
-    </div>
 
 </div>
 

@@ -1,4 +1,4 @@
-package com.esigelec.clubsport.api;
+package com.esigelec.clubsport.controller;
 
 import java.io.IOException;
 import java.util.List;
