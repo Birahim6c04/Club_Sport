@@ -60,7 +60,7 @@ public class ClubController extends HttpServlet {
             req.setAttribute("clubs", clubs);
             req.setAttribute("nbResultats", clubs.size());
 
-            // Pour pré-remplir le formulaire ET pour la carte AJAX
+            // Pour pré-remplir le formulaire ET pour la carte 
             req.setAttribute("federationChoisie", federation);
             req.setAttribute("regionChoisie", region);
             req.setAttribute("communeChoisie", commune);
