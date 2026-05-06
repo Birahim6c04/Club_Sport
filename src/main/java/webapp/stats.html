@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Statistiques — Clubs Sportifs</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg:      #0f1117;
+      --surface: #1a1d27;
+      --card:    #21253a;
+      --border:  rgba(255,255,255,0.08);
+      --accent:  #4f8ef7;
+      --accent2: #e85d75;
+      --green:   #4fc896;
+      --text:    #e8eaf0;
+      --muted:   #8b8fa8;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    header {
+      padding: 18px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .logo { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; color:var(--accent); }
+    .logo span { color:var(--accent2); }
+    header p { font-size:13px; color:var(--muted); }
+    nav { display:flex; gap:8px; }
+    nav a {
+      font-size:13px; font-weight:500; color:var(--muted);
+      text-decoration:none; padding:6px 14px; border-radius:8px;
+      transition:all 0.2s;
+    }
+    nav a:hover { color:var(--text); background:var(--card); }
+    nav a.active { color:var(--accent); background:rgba(79,142,247,0.1); }
+
+    /* FILTRES */
+    .filters-bar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 32px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+    .filter-group { display:flex; flex-direction:column; gap:5px; }
+    .filter-group label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; }
+    select, input[type="number"] {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      padding: 8px 12px;
+      outline: none;
+      transition: border-color 0.2s;
+      min-width: 180px;
+      -webkit-appearance: none;
+    }
+    select:focus, input:focus { border-color: var(--accent); }
+    .btn-search {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 9px 20px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      align-self: flex-end;
+    }
+    .btn-search:hover { opacity: 0.85; }
+    .btn-reset {
+      background: var(--card);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      padding: 9px 16px;
+      cursor: pointer;
+      align-self: flex-end;
+    }
+
+    /* KPIS */
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      padding: 24px 32px 0;
+    }
+    @media(max-width:900px) { .kpis { grid-template-columns: repeat(2,1fr); } }
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 22px;
+    }
+    .kpi-label { font-size:12px; color:var(--muted); margin-bottom:6px; }
+    .kpi-value { font-family:'Syne',sans-serif; font-size:28px; font-weight:800; }
+    .kpi-value.blue   { color: var(--accent); }
+    .kpi-value.pink   { color: var(--accent2); }
+    .kpi-value.green  { color: var(--green); }
+    .kpi-value.white  { color: var(--text); }
+    .kpi-sub { font-size:11px; color:var(--muted); margin-top:4px; }
+
+    /* CHARTS GRID */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 20px;
+      padding: 20px 32px 32px;
+    }
+    @media(max-width:900px) { .charts-grid { grid-template-columns:1fr; } }
+
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px 24px;
+    }
+    .chart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .chart-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+    }
+    .chart-sub { font-size:12px; color:var(--muted); margin-top:2px; }
+    .chart-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 5px;
+      background: rgba(79,142,247,0.12);
+      color: var(--accent);
+    }
+
+    /* CANVAS wrappers */
+    .bar-wrapper { position:relative; height:340px; }
+    .pie-wrapper { position:relative; height:220px; }
+
+    /* LÉGENDE camembert custom */
+    .pie-legend {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .legend-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+    }
+    .legend-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+    .legend-label { display:flex; align-items:center; color:var(--muted); }
+    .legend-val { font-weight:600; }
+    .legend-pct { font-size:11px; color:var(--muted); margin-left:4px; }
+
+    /* LOADER */
+    .loader-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15,17,23,0.6);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .loader-overlay.visible { display:flex; }
+    .spinner-lg {
+      width: 36px; height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .loader-overlay p { font-size:14px; color:var(--muted); }
+
+    /* EMPTY STATE */
+    .empty-state {
+      text-align:center; padding:60px 20px;
+      color:var(--muted); font-size:14px;
+    }
+    .empty-state .icon { font-size:36px; display:block; margin-bottom:12px; }
+
+    ::-webkit-scrollbar { width:4px; }
+    ::-webkit-scrollbar-track { background:transparent; }
+    ::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div>
+    <div class="logo">Clubs<span>Sport</span></div>
+    <p>Statistiques des licenciés — données 2019</p>
+  </div>
+  <nav>
+    <a href="index.html">Carte</a>
+    <a href="stats.html" class="active">Statistiques</a>
+  </nav>
+</header>
+
+<!-- FILTRES -->
+<div class="filters-bar">
+  <div class="filter-group">
+    <label>Fédération</label>
+    <select id="sel-fed">
+      <option value="">Toutes les fédérations</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <label>Région</label>
+    <select id="sel-region">
+      <option value="">Toutes les régions</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <label>Top N communes</label>
+    <input type="number" id="inp-top" value="10" min="3" max="50">
+  </div>
+  <button class="btn-search" onclick="chargerStats()">Afficher</button>
+  <button class="btn-reset" onclick="resetFiltres()">Réinitialiser</button>
+</div>
+
+<!-- KPIs -->
+<div class="kpis">
+  <div class="kpi-card">
+    <div class="kpi-label">Total licenciés</div>
+    <div class="kpi-value blue" id="kpi-total">—</div>
+    <div class="kpi-sub">sur la sélection</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Femmes</div>
+    <div class="kpi-value pink" id="kpi-femmes">—</div>
+    <div class="kpi-sub" id="kpi-femmes-pct"></div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Hommes</div>
+    <div class="kpi-value green" id="kpi-hommes">—</div>
+    <div class="kpi-sub" id="kpi-hommes-pct"></div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Communes couvertes</div>
+    <div class="kpi-value white" id="kpi-communes">—</div>
+    <div class="kpi-sub">dans la sélection</div>
+  </div>
+</div>
+
+<!-- GRAPHIQUES -->
+<div class="charts-grid">
+
+  <!-- HISTOGRAMME -->
+  <div class="chart-card">
+    <div class="chart-header">
+      <div>
+        <div class="chart-title">Licenciés par commune</div>
+        <div class="chart-sub">Top communes de la sélection</div>
+      </div>
+      <span class="chart-badge" id="badge-fed">Toutes fédérations</span>
+    </div>
+    <div class="bar-wrapper">
+      <canvas id="chart-bar"></canvas>
+      <div class="empty-state" id="empty-bar" style="display:none">
+        <span class="icon">📊</span>
+        <p>Lance une recherche pour afficher le graphique.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAMEMBERT -->
+  <div class="chart-card">
+    <div class="chart-header">
+      <div>
+        <div class="chart-title">Répartition H / F</div>
+        <div class="chart-sub">Sur la sélection complète</div>
+      </div>
+    </div>
+    <div class="pie-wrapper">
+      <canvas id="chart-pie"></canvas>
+    </div>
+    <div class="pie-legend" id="pie-legend">
+      <div class="legend-row">
+        <span class="legend-label">
+          <span class="legend-dot" style="background:#e85d75"></span>Femmes
+        </span>
+        <span>
+          <span class="legend-val" id="leg-femmes">—</span>
+          <span class="legend-pct" id="leg-femmes-pct"></span>
+        </span>
+      </div>
+      <div class="legend-row">
+        <span class="legend-label">
+          <span class="legend-dot" style="background:#4fc896"></span>Hommes
+        </span>
+        <span>
+          <span class="legend-val" id="leg-hommes">—</span>
+          <span class="legend-pct" id="leg-hommes-pct"></span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- LOADER -->
+<div class="loader-overlay" id="loader">
+  <div class="spinner-lg"></div>
+  <p>Chargement des données…</p>
+</div>
+
+<script>
+// ============================================================
+// API
+// ============================================================
+const API = {
+  stats:       '/clubs/api/stats',
+  federations: '/clubs/api/federations',
+  regions:     '/clubs/api/regions'
+};
+
+// ============================================================
+// INSTANCES CHART.JS
+// ============================================================
+let barChart = null;
+let pieChart = null;
+
+const CHART_DEFAULTS = {
+  font: { family: "'DM Sans', sans-serif" },
+  color: '#8b8fa8'
+};
+Chart.defaults.font.family = CHART_DEFAULTS.font.family;
+Chart.defaults.color       = CHART_DEFAULTS.color;
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', async () => {
+  await chargerFiltres();
+  initCharts();
+  chargerStats(); // chargement initial sans filtre
+});
+
+// ============================================================
+// FILTRES
+// ============================================================
+async function chargerFiltres() {
+  try {
+    const [rF, rR] = await Promise.all([fetch(API.federations), fetch(API.regions)]);
+    const feds    = await rF.json();
+    const regions = await rR.json();
+    remplirSelect('sel-fed',    feds.map(f => ({ value: f.code, label: f.nom })));
+    remplirSelect('sel-region', regions.map(r => ({ value: r, label: r })));
+  } catch (e) {
+    console.warn('API non dispo — filtres démo');
+    remplirSelect('sel-fed', [
+      { value:'111', label:'Fédération française de football' },
+      { value:'115', label:'Fédération française de tennis' },
+      { value:'119', label:'Fédération française de basketball' }
+    ]);
+    remplirSelect('sel-region', [
+      { value:'Île-de-France',        label:'Île-de-France' },
+      { value:'Bretagne',             label:'Bretagne' },
+      { value:'Auvergne-Rhône-Alpes', label:'Auvergne-Rhône-Alpes' }
+    ]);
+  }
+}
+
+function remplirSelect(id, items) {
+  const sel = document.getElementById(id);
+  items.forEach(({ value, label }) => {
+    const o = document.createElement('option');
+    o.value = value; o.textContent = label;
+    sel.appendChild(o);
+  });
+}
+
+function resetFiltres() {
+  document.getElementById('sel-fed').value    = '';
+  document.getElementById('sel-region').value = '';
+  document.getElementById('inp-top').value    = '10';
+  chargerStats();
+}
+
+// ============================================================
+// CHARGEMENT DES DONNÉES STATS
+// ============================================================
+async function chargerStats() {
+  const federation = document.getElementById('sel-fed').value;
+  const region     = document.getElementById('sel-region').value;
+  const top        = document.getElementById('inp-top').value || 10;
+
+  document.getElementById('loader').classList.add('visible');
+
+  // Badge fédération
+  const selFed = document.getElementById('sel-fed');
+  document.getElementById('badge-fed').textContent =
+    selFed.value ? selFed.options[selFed.selectedIndex].text : 'Toutes fédérations';
+
+  let data;
+  try {
+    const params = new URLSearchParams({ federation, region, top });
+    const resp   = await fetch(`${API.stats}?${params}`);
+    data = await resp.json();
+  } catch (e) {
+    console.warn('API non dispo — données démo');
+    data = donneesDemoStats();
+  } finally {
+    document.getElementById('loader').classList.remove('visible');
+  }
+
+  mettreAJourKPIs(data);
+  mettreAJourBar(data.communes);
+  mettreAJourPie(data.totalFemmes, data.totalHommes);
+}
+
+// ============================================================
+// KPIs
+// ============================================================
+function mettreAJourKPIs(data) {
+  const total   = data.totalFemmes + data.totalHommes;
+  const pctF    = total > 0 ? Math.round(data.totalFemmes / total * 100) : 0;
+  const pctH    = 100 - pctF;
+
+  document.getElementById('kpi-total').textContent       = fmt(total);
+  document.getElementById('kpi-femmes').textContent      = fmt(data.totalFemmes);
+  document.getElementById('kpi-femmes-pct').textContent  = pctF + '% du total';
+  document.getElementById('kpi-hommes').textContent      = fmt(data.totalHommes);
+  document.getElementById('kpi-hommes-pct').textContent  = pctH + '% du total';
+  document.getElementById('kpi-communes').textContent    = data.communes.length;
+
+  // Légende camembert
+  document.getElementById('leg-femmes').textContent      = fmt(data.totalFemmes);
+  document.getElementById('leg-femmes-pct').textContent  = '(' + pctF + '%)';
+  document.getElementById('leg-hommes').textContent      = fmt(data.totalHommes);
+  document.getElementById('leg-hommes-pct').textContent  = '(' + pctH + '%)';
+}
+
+// ============================================================
+// HISTOGRAMME
+// ============================================================
+function mettreAJourBar(communes) {
+  const labels  = communes.map(c => c.nom);
+  const totaux  = communes.map(c => c.total);
+  const femmes  = communes.map(c => c.femmes);
+  const hommes  = communes.map(c => c.hommes);
+
+  const cfg = {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Femmes',
+          data: femmes,
+          backgroundColor: 'rgba(232,93,117,0.8)',
+          borderColor: '#e85d75',
+          borderWidth: 0,
+          borderRadius: 4,
+          borderSkipped: false
+        },
+        {
+          label: 'Hommes',
+          data: hommes,
+          backgroundColor: 'rgba(79,200,150,0.8)',
+          borderColor: '#4fc896',
+          borderWidth: 0,
+          borderRadius: 4,
+          borderSkipped: false
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: {
+            usePointStyle: true,
+            pointStyle: 'circle',
+            padding: 20,
+            font: { size: 12 }
+          }
+        },
+        tooltip: {
+          backgroundColor: '#21253a',
+          borderColor: 'rgba(255,255,255,0.08)',
+          borderWidth: 1,
+          titleFont: { size: 13, weight: '600' },
+          bodyFont: { size: 12 },
+          padding: 12,
+          callbacks: {
+            afterBody: (items) => {
+              const idx   = items[0].dataIndex;
+              const total = totaux[idx];
+              return ['', `Total : ${fmt(total)}`];
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          stacked: false,
+          grid: { display: false },
+          ticks: {
+            font: { size: 11 },
+            maxRotation: 35,
+            minRotation: 20
+          }
+        },
+        y: {
+          grid: { color: 'rgba(255,255,255,0.05)' },
+          ticks: {
+            font: { size: 11 },
+            callback: v => fmt(v)
+          }
+        }
+      }
+    }
+  };
+
+  if (barChart) barChart.destroy();
+  barChart = new Chart(document.getElementById('chart-bar'), cfg);
+}
+
+// ============================================================
+// CAMEMBERT
+// ============================================================
+function mettreAJourPie(femmes, hommes) {
+  const cfg = {
+    type: 'doughnut',
+    data: {
+      labels: ['Femmes', 'Hommes'],
+      datasets: [{
+        data: [femmes, hommes],
+        backgroundColor: ['rgba(232,93,117,0.85)', 'rgba(79,200,150,0.85)'],
+        borderColor:     ['#e85d75', '#4fc896'],
+        borderWidth: 2,
+        hoverOffset: 8
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '68%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#21253a',
+          borderColor: 'rgba(255,255,255,0.08)',
+          borderWidth: 1,
+          padding: 12,
+          callbacks: {
+            label: (item) => {
+              const total = femmes + hommes;
+              const pct   = total > 0 ? Math.round(item.raw / total * 100) : 0;
+              return ` ${fmt(item.raw)} licenciés (${pct}%)`;
+            }
+          }
+        }
+      }
+    }
+  };
+
+  if (pieChart) pieChart.destroy();
+  pieChart = new Chart(document.getElementById('chart-pie'), cfg);
+}
+
+// ============================================================
+// INIT CHARTS VIDES
+// ============================================================
+function initCharts() {
+  mettreAJourBar([]);
+  mettreAJourPie(0, 0);
+}
+
+// ============================================================
+// DONNÉES DÉMO (si backend absent)
+// ============================================================
+function donneesDemoStats() {
+  const communes = [
+    { nom:'Paris',       total:42800, femmes:18200, hommes:24600 },
+    { nom:'Lyon',        total:21300, femmes:9800,  hommes:11500 },
+    { nom:'Marseille',   total:19700, femmes:7900,  hommes:11800 },
+    { nom:'Toulouse',    total:16400, femmes:7200,  hommes:9200  },
+    { nom:'Nice',        total:12900, femmes:5800,  hommes:7100  },
+    { nom:'Nantes',      total:11800, femmes:5600,  hommes:6200  },
+    { nom:'Strasbourg',  total:10200, femmes:4700,  hommes:5500  },
+    { nom:'Bordeaux',    total:9800,  femmes:4500,  hommes:5300  },
+    { nom:'Lille',       total:9100,  femmes:4100,  hommes:5000  },
+    { nom:'Rennes',      total:8700,  femmes:4300,  hommes:4400  }
+  ];
+  const totalFemmes = communes.reduce((s,c) => s + c.femmes, 0);
+  const totalHommes = communes.reduce((s,c) => s + c.hommes, 0);
+  return { communes, totalFemmes, totalHommes };
+}
+
+// ============================================================
+// UTILITAIRES
+// ============================================================
+function fmt(n) {
+  return Number(n).toLocaleString('fr-FR');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clubs Sportifs — Grand Public</title>
+
+  <!-- Leaflet CSS (carte OpenStreetMap) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <!-- Nos styles -->
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* Styles spécifiques à index.html */
+    #map { flex: 1; min-height: 0; }
+    nav { display:flex; gap:8px; }
+    nav a {
+      font-size:13px; font-weight:500; color:var(--muted);
+      text-decoration:none; padding:6px 14px; border-radius:8px;
+      transition:all 0.2s;
+    }
+    nav a:hover { color:var(--text); background:var(--card); }
+    nav a.active { color:var(--accent); background:rgba(79,142,247,0.1); }
+  </style>
+</head>
+<body>
+
+<!-- EN-TÊTE -->
+<header>
+  <div>
+    <div class="logo">Clubs<span>Sport</span></div>
+    <p>Fédérations sportives agréées — données 2019</p>
+  </div>
+  <nav>
+    <a href="index.html" class="active">Carte</a>
+    <a href="stats.html">Statistiques</a>
+  </nav>
+</header>
+
+<!-- LAYOUT PRINCIPAL -->
+<div class="main">
+
+  <!-- PANNEAU GAUCHE : recherche + résultats -->
+  <div class="panel">
+
+    <!-- FILTRES -->
+    <div class="panel-section">
+      <h2>Rechercher un club</h2>
+
+      <label for="sel-fed">Fédération sportive</label>
+      <select id="sel-fed">
+        <option value="">Toutes les fédérations</option>
+      </select>
+
+      <label for="sel-region">Région</label>
+      <select id="sel-region">
+        <option value="">Toutes les régions</option>
+      </select>
+
+      <label for="inp-commune">Commune ou code postal</label>
+      <input type="text" id="inp-commune" placeholder="Ex : Lyon, 35000, Rennes…">
+
+      <label>Recherche par rayon (optionnel)</label>
+      <div class="row2">
+        <input type="number" id="inp-lat" placeholder="Latitude" step="0.0001">
+        <input type="number" id="inp-lng" placeholder="Longitude" step="0.0001">
+      </div>
+      <input type="number" id="inp-rayon" placeholder="Rayon en km (ex : 25)" min="1" max="500">
+
+      <button class="btn" onclick="rechercherClubs()">🔍 Rechercher</button>
+      <button class="btn secondary" onclick="resetRecherche()">Réinitialiser</button>
+
+      <div class="loader" id="loader">
+        <div class="spinner"></div>
+        Recherche en cours…
+      </div>
+    </div>
+
+    <!-- LISTE DES RÉSULTATS -->
+    <div class="results-panel">
+      <div class="results-count" id="results-count"></div>
+      <div id="results-list">
+        <div class="empty-state">
+          <span class="icon">🏟️</span>
+          <p>Utilise les filtres pour<br>trouver des clubs sportifs.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARTE OPENSTREETMAP -->
+  <div id="map"></div>
+
+</div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- Nos scripts (map.js AVANT app.js) -->
+<script src="map.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>

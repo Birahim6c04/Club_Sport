@@ -15,7 +15,7 @@ public class ImportCSV {
 
     static final String DB_URL  = "jdbc:mysql://localhost:3306/clubs_sportifs?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
     static final String DB_USER = "root";
-    static final String DB_PASS = "rootpassword";
+    static final String DB_PASS = " ";
 
     static final String FICHIER_FEDERATIONS = "data/liste-federations.csv";
     static final String FICHIER_CLUBS       = "data/clubs-data-2019.csv";
