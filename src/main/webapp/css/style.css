@@ -482,3 +482,107 @@ footer a {
     font-size: 12px;
     font-weight: bold;
 }
+
+
+
+
+/* =========================
+      COnexion/Inscription
+========================= */
+
+/* =========================
+   PAGES AUTH (connexion / inscription)
+========================= */
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 460px;
+    padding: 50px 40px;
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 20px 50px rgba(14, 165, 183, 0.18);
+}
+
+.auth-logo {
+    display: block;
+    text-decoration: none;
+    color: #053f48;
+    font-size: 22px;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.auth-logo strong {
+    color: #0ea5b7;
+}
+
+.auth-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #053f48;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.auth-subtitle {
+    color: #6b7d8d;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 14px;
+}
+
+.auth-erreur {
+    padding: 14px 18px;
+    background: #fee2e2;
+    color: #b91c1c;
+    border-radius: 12px;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.auth-succes {
+    padding: 14px 18px;
+    background: #dcfce7;
+    color: #166534;
+    border-radius: 12px;
+    font-size: 14px;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.champs-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 24px;
+    color: #6b7d8d;
+    font-size: 14px;
+}
+
+.auth-footer a {
+    color: #0ea5b7;
+    text-decoration: none;
+    font-weight: 600;
+    margin-left: 4px;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
