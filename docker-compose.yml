@@ -11,7 +11,7 @@ services:
       MYSQL_PASSWORD: apppassword
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./mysql/init:/docker-entrypoint-initdb.d
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
     ports:
       - "3306:3306"
     networks:
