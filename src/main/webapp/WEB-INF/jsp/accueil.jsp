@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="jakarta.tags.core" prefix="c"%>
 
 <!DOCTYPE html>
@@ -23,8 +22,9 @@
 				href="#recherche">Recherche</a> <a href="#carte">Carte</a>
 		</div>
 		<div class="nav-right">
-			<a href="#" class="btn inscription">S'inscrire</a> <a href="#"
-				class="btn connexion">Se connecter</a>
+            <!-- MODIFICATION ICI : Ajout des liens vers register.jsp et login.jsp -->
+			<a href="${pageContext.request.contextPath}/register.jsp" class="btn inscription">S'inscrire</a> 
+            <a href="${pageContext.request.contextPath}/login.jsp" class="btn connexion">Se connecter</a>
 		</div>
 	</div>
 
