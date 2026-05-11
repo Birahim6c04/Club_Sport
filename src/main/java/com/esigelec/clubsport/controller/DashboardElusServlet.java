@@ -18,10 +18,9 @@ public class DashboardElusServlet extends HttpServlet { // la classe DashboardEl
 
     @Override // je prend la methode de httpservlet doGet et je la remplace par mon propre code 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) // quand un user fait une requête cette methode doGet s'execute et lui envoie une réponse.
-            throws ServletException, IOException { // prevenir qu'il peut y avoir des erreurs 
-
+            throws ServletException, IOException { 
     	
-        try { // permet d'executer le code principal tout en capturant les erreurs possibles 
+        try {  
         	
             LicenceStatsDAO dao = new LicenceStatsDAO(); // Crée un objet DAO pour appeler les méthodes qui récupèrent les données depuis la base
             // Récuperation des valeurs de chaque paramètre envoyé dans l'url ou le formulaire

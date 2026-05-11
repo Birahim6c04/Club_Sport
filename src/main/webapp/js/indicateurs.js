@@ -1,5 +1,8 @@
+
+
 new Chart(document.getElementById('ageChart'), {
     type: 'bar',
+
     data: {
         labels: ageLabels,
         datasets: [{
@@ -11,6 +14,7 @@ new Chart(document.getElementById('ageChart'), {
 
 new Chart(document.getElementById('clubsChart'), {
     type: 'bar',
+
     data: {
         labels: clubsLabels,
         datasets: [{
@@ -18,15 +22,18 @@ new Chart(document.getElementById('clubsChart'), {
             data: clubsValues
         }]
     },
+
     options: {
         indexAxis: 'y',
         responsive: true,
         maintainAspectRatio: false,
+
         plugins: {
             legend: {
                 display: true
             }
         },
+
         scales: {
             y: {
                 ticks: {

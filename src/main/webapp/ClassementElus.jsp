@@ -1,4 +1,4 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %> 
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
 <!DOCTYPE html>
@@ -6,145 +6,8 @@
 <head>
 <meta charset="UTF-8">
 <title>Classement des communes</title>
+<link rel="stylesheet" href="css/classement.css">
 
-<style>
-body {                                                   
-    margin: 0;
-    font-family: "Segoe UI", sans-serif;
-    background: #eafcff;
-    display: flex;
-}
-
-.sidebar {
-    width: 250px;
-    height: 100vh;
-    background: #0ea5b7;
-    color: white;
-    padding: 20px;
-}
-
-.sidebar h2 {
-    margin-bottom: 40px;
-}
-
-.sidebar a {
-    display: block;
-    color: white;
-    text-decoration: none;
-    padding: 12px;
-    border-radius: 10px;
-    margin-bottom: 15px;
-}
-
-.sidebar a:hover {
-    background: rgba(255,255,255,0.18);
-}
-
-.main {
-    flex: 1;
-    padding: 30px;
-}
-
-h1 {
-    margin-bottom: 25px;
-    color: #0ea5b7;
-}
-
-.container {
-    display: flex;
-    gap: 25px;
-}
-
-.filter-box {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    width: 350px;
-    box-shadow: 0 6px 24px rgba(14, 165, 183, 0.18);
-}
-
-.filter-box form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-select {
-    padding: 8px;
-    border-radius: 6px;
-    border: 2px solid #c8f3f8;
-}
-
-select:focus {
-    outline: none;
-    border-color: #0ea5b7;
-}
-
-button {
-    margin-top: 10px;
-    padding: 10px;
-    border-radius: 8px;
-    border: none;
-    background: #0ea5b7;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-button:hover {
-    background: #0b8ea0;
-}
-
-.result-box {
-    flex: 1;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 6px 24px rgba(14, 165, 183, 0.18);
-}
-
-th {
-    background: #0ea5b7;
-    color: white;
-    padding: 12px;
-}
-
-td {
-    padding: 10px;
-    text-align: center;
-    border-bottom: 1px solid #eafcff;
-}
-
-tr:nth-child(even) {
-    background: #eafcff;
-}
-
-.rank {
-    font-weight: bold;
-    color: #0ea5b7;
-}
-
-.progress-bar {
-    background: #eafcff;
-    border-radius: 10px;
-    width: 100%;
-    padding: 3px;
-}
-
-.chart-box {
-    margin-top: 30px;
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    height: 350px;
-    box-shadow: 0 6px 24px rgba(14, 165, 183, 0.18);
-}
-</style>
 </head>
 
 <body>
@@ -154,7 +17,7 @@ tr:nth-child(even) {
     <a href="ElusDashboard"> Dashboard</a>
     <a href="LeClassement"> Classement</a>
     <a href="indicateurs"> Statistiques</a>
-    <a href="#"> Export</a>
+    
 </div>
 
 <div class="main">
@@ -195,6 +58,12 @@ tr:nth-child(even) {
 </select>
 
 <button type="submit">Appliquer</button>
+
+<a class="export-btn"
+   href="export?type=classement&region=${region}&departement=${departement}&federation=${federation}"
+   onclick="return verifierExportClassement('${region}');">
+    Exporter
+</a>
 
 </form>
 </div>
@@ -245,6 +114,17 @@ tr:nth-child(even) {
             }]
         }
     });
+</script>
+
+<script>
+function verifierExportClassement(region) {
+    if (region === null || region.trim() === "") {
+        alert("Veuillez choisir au moins une région avant d’exporter.");
+        return false;
+    }
+
+    return true;
+}
 </script>
 
 </body>

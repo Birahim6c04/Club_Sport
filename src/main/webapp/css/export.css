@@ -1,0 +1,115 @@
+body {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    background: #eafcff;
+    display: flex;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    background: #0ea5b7;
+    color: white;
+    padding: 20px;
+}
+
+.sidebar h2 {
+    margin-bottom: 40px;
+}
+
+.sidebar a {
+    display: block;
+    color: white;
+    text-decoration: none;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    transition: 0.2s;
+}
+
+.sidebar a:hover {
+    background: rgba(255,255,255,0.18);
+}
+
+/* =========================
+   MAIN
+========================= */
+
+.main {
+    flex: 1;
+    padding: 30px;
+}
+
+.main h1 {
+    color: #0ea5b7;
+    margin-bottom: 30px;
+}
+
+/* =========================
+   EXPORT CARDS
+========================= */
+
+.export-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 25px;
+}
+
+.export-card {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 6px 24px rgba(14, 165, 183, 0.18);
+}
+
+.export-card h2 {
+    color: #0ea5b7;
+    margin-bottom: 15px;
+}
+
+.export-card p {
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 25px;
+}
+
+/* =========================
+   BUTTON
+========================= */
+
+.btn-export {
+    display: inline-block;
+    background: #0ea5b7;
+    color: white;
+    text-decoration: none;
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.btn-export:hover {
+    background: #0b8ea0;
+}
+.export-zone {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+.export-btn {
+    background: #0ea5b7;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.export-btn:hover {
+    background: #0b8ea0;
+}

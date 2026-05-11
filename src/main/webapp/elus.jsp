@@ -6,134 +6,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Dashboard Élus</title>
-
-<style>
-body {
-    margin: 0;
-    font-family: "Segoe UI", sans-serif;
-    background: #eafcff;
-    display: flex;
-}
-
-.sidebar {
-    width: 250px;
-    height: 100vh;
-    background: #0ea5b7;
-    color: white;
-    padding: 20px;
-}
-
-.sidebar a {
-    display: block;
-    color: white;
-    text-decoration: none;
-    padding: 12px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-}
-
-.sidebar a:hover {
-    background: rgba(255,255,255,0.18);
-}
-
-.main {
-    flex: 1;
-    padding: 25px;
-}
-
-h1 {
-    color: #0ea5b7;
-}
-
-.dashboard-container {
-    display: flex;
-    gap: 20px;
-    align-items: flex-start;
-    margin-top: 20px;
-}
-
-.filter-box {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    width: 320px;
-    box-shadow: 0 6px 24px rgba(14, 165, 183, 0.18);
-}
-
-.filter-box form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.filter-box select,
-.filter-box input {
-    padding: 8px;
-    border-radius: 6px;
-    border: 2px solid #c8f3f8;
-}
-
-.filter-box select:focus,
-.filter-box input:focus {
-    outline: none;
-    border-color: #0ea5b7;
-}
-
-.filter-box button {
-    margin-top: 10px;
-    padding: 10px;
-    border: none;
-    border-radius: 8px;
-    background-color: #0ea5b7;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.filter-box button:hover {
-    background-color: #0b8ea0;
-}
-
-.stats-container {
-    flex: 1;
-}
-
-.cards {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-}
-
-.card {
-    background: white;
-    padding: 20px;
-    border-radius: 15px;
-    text-align: center;
-    box-shadow: 0 6px 24px rgba(14, 165, 183, 0.18);
-}
-
-.card h3 {
-    color: #0ea5b7;
-}
-
-.card p {
-    font-size: 22px;
-    font-weight: bold;
-}
-
-small {
-    font-size: 12px;
-}
-
-.chart-box {
-    margin-top: 20px;
-    background: white;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 6px 24px rgba(14, 165, 183, 0.18);
-    max-width: 500px;
-}
-</style>
+<link rel="stylesheet" href="css/elus.css">
 </head>
 
 <body>
@@ -143,7 +16,6 @@ small {
     <a href="ElusDashboard"> Dashboard</a>
     <a href="LeClassement"> Classement</a>
     <a href="indicateurs"> Statistiques</a>
-    <a href="#"> Export</a>
 </div>
 
 <div class="main">
@@ -210,10 +82,17 @@ small {
 
             <button type="submit">Appliquer</button>
 
+            <a class="export-btn"
+               href="export?type=dashboard&region=${region}&departement=${departement}&codeCommune=${codeCommune}&federation=${federation}"
+               onclick="return verifierExport('${region}');">
+                Exporter
+            </a>
+
         </form>
     </div>
 
     <div class="stats-container">
+
         <div class="cards">
             <div class="card">
                 <h3>Licenciés</h3>
@@ -234,6 +113,7 @@ small {
         <div class="chart-box">
             <canvas id="genreChart"></canvas>
         </div>
+
     </div>
 
 </div>
@@ -246,5 +126,17 @@ small {
 <script>
     drawChart(${hommes}, ${femmes});
 </script>
+
+<script>
+function verifierExport(region) {
+    if (region === null || region.trim() === "") {
+        alert("Veuillez choisir au moins une région avant d’exporter.");
+        return false;
+    }
+
+    return true;
+}
+</script>
+
 </body>
 </html>
