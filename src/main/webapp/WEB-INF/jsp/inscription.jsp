@@ -37,13 +37,13 @@
             <div class="auth-hero">
                 <div class="auth-hero-badge">
                     <span class="dot-live"></span>
-                    Inscription gratuite
+                    Inscription avec validation
                 </div>
                 <h1 class="auth-hero-title">
-                    Rejoignez la <span class="gradient-text">communauté</span> sportive française
+                    Rejoignez la <span class="gradient-text">communauté</span> sportive
                 </h1>
                 <p class="auth-hero-text">
-                    Créez votre compte en quelques secondes et accédez à toutes les fonctionnalités de la plateforme.
+                    Pour garantir la qualité de notre plateforme, chaque inscription est validée par un administrateur.
                 </p>
 
                 <div class="auth-features">
@@ -53,7 +53,7 @@
                                 <path d="M5 13l4 4L19 7"/>
                             </svg>
                         </div>
-                        <span>Inscription 100% gratuite</span>
+                        <span>Joignez un justificatif (PDF, JPG, PNG)</span>
                     </div>
                     <div class="auth-feature">
                         <div class="feature-check">
@@ -61,7 +61,7 @@
                                 <path d="M5 13l4 4L19 7"/>
                             </svg>
                         </div>
-                        <span>Espace personnel selon votre rôle</span>
+                        <span>Validation sous 48h</span>
                     </div>
                     <div class="auth-feature">
                         <div class="feature-check">
@@ -69,23 +69,8 @@
                                 <path d="M5 13l4 4L19 7"/>
                             </svg>
                         </div>
-                        <span>Sans engagement, vie privée respectée</span>
+                        <span>Vie privée respectée</span>
                     </div>
-                </div>
-            </div>
-
-            <div class="auth-stats-mini">
-                <div class="auth-stat-mini">
-                    <strong>3</strong>
-                    <span>Rôles disponibles</span>
-                </div>
-                <div class="auth-stat-mini">
-                    <strong>10s</strong>
-                    <span>Pour s'inscrire</span>
-                </div>
-                <div class="auth-stat-mini">
-                    <strong>0€</strong>
-                    <span>Toujours gratuit</span>
                 </div>
             </div>
         </div>
@@ -95,7 +80,7 @@
             <div class="auth-form-wrapper">
                 <div class="auth-form-header">
                     <h2 class="auth-form-title">Créer un compte</h2>
-                    <p class="auth-form-subtitle">Rejoignez la plateforme</p>
+                    <p class="auth-form-subtitle">Inscription soumise à validation</p>
                 </div>
 
                 <c:if test="${not empty erreur}">
@@ -109,7 +94,7 @@
                     </div>
                 </c:if>
 
-                <form action="${pageContext.request.contextPath}/inscription" method="POST" class="auth-form-modern">
+                <form action="${pageContext.request.contextPath}/inscription" method="POST" enctype="multipart/form-data" class="auth-form-modern">
 
                     <div class="champs-row">
                         <div class="champ-modern">
@@ -189,8 +174,22 @@
                         </div>
                     </div>
 
+                    <!-- Champ fichier -->
+                    <div class="champ-modern">
+                        <label>Justificatif (PDF, JPG, PNG - max 10MB)</label>
+                        <div class="file-upload">
+                            <input type="file" name="pieceJointe" id="pieceJointe" accept=".pdf,.jpg,.jpeg,.png" required>
+                            <label for="pieceJointe" class="file-upload-label">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                                </svg>
+                                <span id="file-name">Cliquez pour choisir un fichier</span>
+                            </label>
+                        </div>
+                    </div>
+
                     <button type="submit" class="btn-auth-modern">
-                        <span>Créer mon compte</span>
+                        <span>Envoyer ma demande</span>
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                             <path d="M5 12h14M12 5l7 7-7 7"/>
                         </svg>
@@ -205,6 +204,14 @@
         </div>
 
     </div>
+
+    <script>
+        // Affiche le nom du fichier choisi
+        document.getElementById('pieceJointe').addEventListener('change', function(e) {
+            var nom = e.target.files[0] ? e.target.files[0].name : 'Cliquez pour choisir un fichier';
+            document.getElementById('file-name').textContent = nom;
+        });
+    </script>
 
 </body>
 </html>

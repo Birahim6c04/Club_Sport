@@ -2008,3 +2008,51 @@ body.auth-page {
         grid-template-columns: 1fr;
     }
 }
+
+/* =========================
+   UPLOAD FICHIER
+========================= */
+.file-upload {
+    position: relative;
+}
+
+.file-upload input[type="file"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 1px;
+    height: 1px;
+}
+
+.file-upload-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1.5px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.file-upload-label svg {
+    width: 20px;
+    height: 20px;
+    color: #5fcedb;
+}
+
+.file-upload-label:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: #5fcedb;
+    color: white;
+}
+
+.file-upload input[type="file"]:focus + .file-upload-label {
+    border-color: #5fcedb;
+    box-shadow: 0 0 0 4px rgba(95, 206, 219, 0.1);
+}
