@@ -29,6 +29,8 @@ public class UtilisateurDAO {
             u.setPrenom(rs.getString("prenom"));
             u.setRole(rs.getString("role"));
             u.setActif(rs.getBoolean("actif"));
+            u.setPieceJointe(rs.getString("piece_jointe"));
+            u.setStatut(rs.getString("statut"));
         }
 
         rs.close();
@@ -54,7 +56,6 @@ public class UtilisateurDAO {
         return existe;
     }
 
-    // Vérifier si l'email existe déjà
     public boolean emailExiste(String email) throws Exception {
         Connection conn = DbConnection.getConnection();
 
@@ -75,8 +76,8 @@ public class UtilisateurDAO {
     public void creer(Utilisateur u) throws Exception {
         Connection conn = DbConnection.getConnection();
 
-        String sql = "INSERT INTO utilisateur (login, mot_de_passe, email, nom, prenom, role, actif) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO utilisateur (login, mot_de_passe, email, nom, prenom, role, actif, piece_jointe, statut) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1, u.getLogin());
         ps.setString(2, u.getMotDePasse());
@@ -85,6 +86,8 @@ public class UtilisateurDAO {
         ps.setString(5, u.getPrenom());
         ps.setString(6, u.getRole());
         ps.setBoolean(7, u.isActif());
+        ps.setString(8, u.getPieceJointe());
+        ps.setString(9, u.getStatut());
 
         ps.executeUpdate();
 

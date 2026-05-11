@@ -9,7 +9,6 @@ public class AuthService {
 
     private UtilisateurDAO utilisateurDAO = new UtilisateurDAO();
 
-    // Connexion : retourne l'utilisateur si OK, lance une exception sinon
     public Utilisateur connecter(String login, String motDePasseClair) throws Exception {
 
         if (login == null || login.isEmpty()) {
@@ -24,11 +23,18 @@ public class AuthService {
             throw new IllegalArgumentException("Login ou mot de passe incorrect");
         }
 
+        // Vérifier le statut
+        if (u.getStatut().equals("EN_ATTENTE")) {
+            throw new IllegalArgumentException("Votre compte est en attente de validation par un administrateur");
+        }
+        if (u.getStatut().equals("REFUSE")) {
+            throw new IllegalArgumentException("Votre inscription a ete refusee");
+        }
+
         if (!u.isActif()) {
             throw new IllegalArgumentException("Votre compte est desactive");
         }
 
-        // Vérification BCrypt
         if (!BCrypt.checkpw(motDePasseClair, u.getMotDePasse())) {
             throw new IllegalArgumentException("Login ou mot de passe incorrect");
         }
@@ -36,11 +42,10 @@ public class AuthService {
         return u;
     }
 
-    // Inscription : crée un nouvel utilisateur avec mot de passe hashé
     public void inscrire(String login, String motDePasseClair, String email,
-                         String nom, String prenom, String role) throws Exception {
+                         String nom, String prenom, String role,
+                         String cheminPieceJointe) throws Exception {
 
-        // Validations
         if (login == null || login.length() < 3) {
             throw new IllegalArgumentException("Le login doit faire au moins 3 caracteres");
         }
@@ -56,8 +61,10 @@ public class AuthService {
         if (!role.equals("ADMIN") && !role.equals("ELU") && !role.equals("CLUB")) {
             throw new IllegalArgumentException("Role invalide");
         }
+        if (cheminPieceJointe == null || cheminPieceJointe.isEmpty()) {
+            throw new IllegalArgumentException("La piece jointe est obligatoire");
+        }
 
-        // Vérifier unicité
         if (utilisateurDAO.loginExiste(login)) {
             throw new IllegalArgumentException("Ce login est deja pris");
         }
@@ -65,10 +72,8 @@ public class AuthService {
             throw new IllegalArgumentException("Cet email est deja utilise");
         }
 
-        // Hash du mot de passe
         String hash = BCrypt.hashpw(motDePasseClair, BCrypt.gensalt(10));
 
-        // Création
         Utilisateur u = new Utilisateur();
         u.setLogin(login);
         u.setMotDePasse(hash);
@@ -76,7 +81,9 @@ public class AuthService {
         u.setNom(nom);
         u.setPrenom(prenom);
         u.setRole(role);
-        u.setActif(true);
+        u.setActif(false);   // En attente : pas actif
+        u.setPieceJointe(cheminPieceJointe);
+        u.setStatut("EN_ATTENTE");
 
         utilisateurDAO.creer(u);
     }

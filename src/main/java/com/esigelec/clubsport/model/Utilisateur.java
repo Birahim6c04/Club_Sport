@@ -2,7 +2,9 @@ package com.esigelec.clubsport.model;
 
 public class Utilisateur {
 
-    private int id;
+    private String statut;
+	private String pieceJointe;
+	private int id;
     private String login;
     private String motDePasse;
     private String email;
@@ -34,4 +36,10 @@ public class Utilisateur {
 
     public boolean isActif() { return actif; }
     public void setActif(boolean actif) { this.actif = actif; }
+    
+    public String getPieceJointe() { return pieceJointe; }
+    public void setPieceJointe(String pieceJointe) { this.pieceJointe = pieceJointe; }
+ 
+    public String getStatut() { return statut; }
+    public void setStatut(String statut) { this.statut = statut; }
 }

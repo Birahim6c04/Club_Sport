@@ -108,6 +108,8 @@ CREATE TABLE utilisateur (
     role             ENUM('ADMIN','ELU','PRESIDENT','ENTRAINEUR','LICENCIE') NOT NULL,
     actif            BOOLEAN      NOT NULL DEFAULT TRUE,
     date_creation    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    piece_jointe     VARCHAR(255) DEFAULT NULL,
+    statut           ENUM('EN_ATTENTE','VALIDE','REFUSE') NOT NULL DEFAULT 'EN_ATTENTE',
     INDEX idx_user_role (role)
 ) ENGINE=InnoDB;
 
