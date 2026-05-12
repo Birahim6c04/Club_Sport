@@ -5,20 +5,23 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**
- * Connexion MySQL.
- * host.docker.internal = ton PC Windows vu depuis Docker (Tomcat).
+ * Utilitaire de connexion à la base de données MySQL réelle.
+ * host.docker.internal = PC Windows vu depuis le container Docker (Tomcat).
  */
 public class DBConnection {
 
-    private static final String URL  =
-        "jdbc:mysql://host.docker.internal:3306/clubs_sportifs"
+    private static final String URL =
+        "jdbc:mysql://mysql:3306/clubs_sportifs"
         + "?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8";
-    private static final String USER = "localhost";
-    private static final String PASS = ""; 
+    private static final String USER = "appuser";
+    private static final String PASS = "apppassword";
 
     static {
-        try { Class.forName("com.mysql.cj.jdbc.Driver"); }
-        catch (ClassNotFoundException e) { throw new RuntimeException("Driver MySQL introuvable", e); }
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Driver MySQL introuvable", e);
+        }
     }
 
     public static Connection get() throws SQLException {

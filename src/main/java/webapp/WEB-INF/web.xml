@@ -12,7 +12,7 @@
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>
 
-  <!-- Encodage UTF-8 pour tous les échanges -->
+  <!-- Filtre encodage UTF-8 sur toutes les requêtes -->
   <filter>
     <filter-name>EncodingFilter</filter-name>
     <filter-class>com.esigelec.clubsport.filter.EncodingFilter</filter-class>

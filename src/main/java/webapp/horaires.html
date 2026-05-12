@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Horaires du club</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#f7f5f0; --surface:#fff; --card:#f0ede8;
+      --border:rgba(0,0,0,0.09); --accent:#1a3a5c;
+      --accent2:#e85d30; --red:#dc3545; --text:#1a1a1a; --muted:#6b6b6b;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+    header{background:var(--accent);color:#fff;padding:16px 32px;display:flex;align-items:center;justify-content:space-between;}
+    .logo{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;}
+    .logo span{color:var(--accent2);}
+    nav a{color:rgba(255,255,255,0.7);text-decoration:none;font-size:13px;padding:6px 14px;border-radius:7px;transition:all 0.2s;margin-left:4px;}
+    nav a:hover{background:rgba(255,255,255,0.1);color:#fff;}
+    nav a.active{background:rgba(255,255,255,0.15);color:#fff;}
+
+    /* HERO avec vraies données */
+    .hero{background:var(--accent);color:#fff;padding:24px 32px 20px;border-bottom:3px solid var(--accent2);}
+    .hero h1{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:4px;}
+    .hero-meta{font-size:13px;opacity:0.7;margin-bottom:12px;}
+    .hero-stats{display:flex;gap:24px;flex-wrap:wrap;}
+    .stat-item .num{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;}
+    .stat-item .lbl{font-size:11px;opacity:0.6;}
+
+    .container{max-width:900px;margin:28px auto;padding:0 24px;}
+
+    /* FORMULAIRE */
+    .form-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px 28px;margin-bottom:28px;}
+    .form-card h2{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:18px;color:var(--accent);}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;}
+    .form-grid-2{grid-template-columns:1fr 1fr;}
+    .form-group{display:flex;flex-direction:column;gap:4px;}
+    .form-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;}
+    .form-input,.form-select{border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:14px;padding:8px 12px;outline:none;transition:border-color 0.2s;color:var(--text);background:#fff;}
+    .form-input:focus,.form-select:focus{border-color:var(--accent);}
+    .btn-add{background:var(--accent);color:#fff;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;padding:10px 24px;cursor:pointer;transition:opacity 0.2s;margin-top:4px;}
+    .btn-add:hover{opacity:0.85;}
+
+    /* PLANNING */
+    .section-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--accent);margin-bottom:14px;}
+    .jour-badge{background:var(--accent);color:#fff;font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;letter-spacing:0.5px;display:inline-block;margin-bottom:8px;}
+    .jour-block{margin-bottom:18px;}
+    .seance-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;transition:border-color 0.2s;}
+    .seance-card:hover{border-color:var(--accent);}
+    .seance-info{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+    .seance-heure{font-size:14px;font-weight:700;color:var(--accent);min-width:105px;}
+    .seance-activite{font-size:14px;font-weight:600;}
+    .seance-niveau{font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;background:var(--card);color:var(--muted);}
+    .seance-actions{display:flex;gap:7px;}
+    .btn-edit,.btn-del{border:none;border-radius:6px;font-size:12px;font-weight:600;padding:5px 11px;cursor:pointer;transition:opacity 0.2s;}
+    .btn-edit{background:#EEF4FF;color:var(--accent);}
+    .btn-del{background:#FFF0EE;color:var(--red);}
+    .btn-edit:hover,.btn-del:hover{opacity:0.75;}
+
+    .empty{text-align:center;padding:32px;color:var(--muted);font-size:14px;}
+    .empty span{font-size:28px;display:block;margin-bottom:8px;}
+
+    /* MODAL */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:100;align-items:center;justify-content:center;}
+    .modal-overlay.open{display:flex;}
+    .modal{background:#fff;border-radius:16px;padding:26px;width:100%;max-width:480px;margin:16px;}
+    .modal h2{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;margin-bottom:16px;}
+    .modal-actions{display:flex;gap:10px;margin-top:18px;justify-content:flex-end;}
+    .btn-save{background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;padding:9px 20px;cursor:pointer;}
+    .btn-cancel{background:var(--card);color:var(--muted);border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;padding:9px 16px;cursor:pointer;}
+
+    .toast{position:fixed;bottom:24px;right:24px;background:var(--accent);color:#fff;padding:11px 18px;border-radius:9px;font-size:14px;font-weight:500;transform:translateY(70px);opacity:0;transition:all 0.3s;z-index:200;}
+    .toast.show{transform:translateY(0);opacity:1;}
+    .loader{text-align:center;padding:40px;color:var(--muted);}
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Clubs<span>Sport</span></div>
+  <nav>
+    <a href="club.html" id="lien-club">← Club</a>
+    <a href="horaires.html" class="active">Horaires</a>
+    <a href="actualites.html">Actualités</a>
+  </nav>
+</header>
+
+<!-- HERO : nom réel du club depuis la BDD -->
+<div class="hero">
+  <h1 id="hero-nom">Chargement…</h1>
+  <div class="hero-meta" id="hero-meta"></div>
+  <div class="hero-stats">
+    <div class="stat-item"><div class="num" id="stat-total">—</div><div class="lbl">Licenciés</div></div>
+    <div class="stat-item"><div class="num" id="stat-f" style="color:#e85d75">—</div><div class="lbl">Femmes</div></div>
+    <div class="stat-item"><div class="num" id="stat-h" style="color:#4fc896">—</div><div class="lbl">Hommes</div></div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="form-card">
+    <h2>➕ Ajouter une séance</h2>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Jour *</label>
+        <select class="form-select" id="add-jour">
+          <option value="">— Choisir —</option>
+          <option>Lundi</option><option>Mardi</option><option>Mercredi</option>
+          <option>Jeudi</option><option>Vendredi</option><option>Samedi</option><option>Dimanche</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Heure début *</label>
+        <input type="time" class="form-input" id="add-debut">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Heure fin *</label>
+        <input type="time" class="form-input" id="add-fin">
+      </div>
+    </div>
+    <div class="form-grid form-grid-2" style="margin-bottom:14px">
+      <div class="form-group">
+        <label class="form-label">Activité</label>
+        <input type="text" class="form-input" id="add-activite" placeholder="ex : Tennis adultes">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Niveau</label>
+        <select class="form-select" id="add-niveau">
+          <option value="">— Tous niveaux —</option>
+          <option>Débutant</option><option>Intermédiaire</option>
+          <option>Avancé</option><option>Compétition</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn-add" onclick="ajouterSeance()">Ajouter la séance</button>
+  </div>
+
+  <div class="section-title">Planning de la semaine</div>
+  <div id="planning"><div class="loader">Chargement des horaires…</div></div>
+</div>
+
+<!-- MODAL MODIFICATION -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h2>Modifier la séance</h2>
+    <input type="hidden" id="edit-id">
+    <div class="form-grid" style="margin-bottom:12px">
+      <div class="form-group">
+        <label class="form-label">Jour</label>
+        <select class="form-select" id="edit-jour">
+          <option>Lundi</option><option>Mardi</option><option>Mercredi</option>
+          <option>Jeudi</option><option>Vendredi</option><option>Samedi</option><option>Dimanche</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Heure début</label>
+        <input type="time" class="form-input" id="edit-debut">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Heure fin</label>
+        <input type="time" class="form-input" id="edit-fin">
+      </div>
+    </div>
+    <div class="form-grid form-grid-2">
+      <div class="form-group">
+        <label class="form-label">Activité</label>
+        <input type="text" class="form-input" id="edit-activite">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Niveau</label>
+        <select class="form-select" id="edit-niveau">
+          <option value="">— Tous niveaux —</option>
+          <option>Débutant</option><option>Intermédiaire</option>
+          <option>Avancé</option><option>Compétition</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="fermerModal()">Annuler</button>
+      <button class="btn-save" onclick="sauvegarderModif()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+  const CODE_COMMUNE = new URLSearchParams(window.location.search).get('id') || '';
+  const JOURS = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+  let horaires = [];
+
+  document.getElementById('lien-club').href = `club.html?id=${CODE_COMMUNE}`;
+  document.querySelector('nav a[href="actualites.html"]').href = `actualites.html?id=${CODE_COMMUNE}`;
+
+  if (!CODE_COMMUNE) {
+    document.getElementById('hero-nom').textContent = 'Code commune manquant dans l\'URL';
+  }
+
+  // ── CHARGEMENT DEPUIS LA VRAIE BASE ──────────────────────────────────
+  async function charger() {
+    if (!CODE_COMMUNE) return;
+    try {
+      const r = await fetch(`/clubs/api/horaires?codeCommune=${CODE_COMMUNE}`);
+      if (!r.ok) throw new Error(r.status);
+      const data = await r.json();
+
+      // Remplir l'en-tête avec les vraies données
+      const s = data.stats;
+      document.getElementById('hero-nom').textContent  = s.nom || CODE_COMMUNE;
+      document.getElementById('hero-meta').textContent = (s.federation || '') + ' · ' + (s.region || '');
+      document.getElementById('stat-total').textContent = (s.total  || 0).toLocaleString('fr-FR');
+      document.getElementById('stat-f').textContent     = (s.femmes || 0).toLocaleString('fr-FR');
+      document.getElementById('stat-h').textContent     = (s.hommes || 0).toLocaleString('fr-FR');
+
+      horaires = data.horaires || [];
+      afficher();
+    } catch(e) {
+      document.getElementById('hero-nom').textContent = 'Erreur de connexion à la base';
+      document.getElementById('planning').innerHTML =
+        '<div class="empty"><span>⚠️</span>Impossible de charger les données. Vérifiez que Tomcat est lancé.</div>';
+    }
+  }
+
+  function afficher() {
+    const planning = document.getElementById('planning');
+    if (!horaires.length) {
+      planning.innerHTML = '<div class="empty"><span>📅</span>Aucune séance programmée.<br>Ajoutez une séance ci-dessus.</div>';
+      return;
+    }
+    const parJour = {};
+    JOURS.forEach(j => parJour[j] = []);
+    horaires.forEach(h => { if (parJour[h.jour]) parJour[h.jour].push(h); });
+
+    planning.innerHTML = JOURS
+      .filter(j => parJour[j].length > 0)
+      .map(jour => `
+        <div class="jour-block">
+          <span class="jour-badge">${jour}</span>
+          ${parJour[jour].map(h => `
+            <div class="seance-card">
+              <div class="seance-info">
+                <span class="seance-heure">${fmt(h.heureDebut)} – ${fmt(h.heureFin)}</span>
+                <span class="seance-activite">${esc(h.activite || 'Séance')}</span>
+                ${h.niveau ? `<span class="seance-niveau">${esc(h.niveau)}</span>` : ''}
+              </div>
+              <div class="seance-actions">
+                <button class="btn-edit" onclick="ouvrirModal(${h.idHoraire})">✏️ Modifier</button>
+                <button class="btn-del"  onclick="supprimer(${h.idHoraire})">🗑️ Supprimer</button>
+              </div>
+            </div>`).join('')}
+        </div>`).join('');
+  }
+
+  // ── AJOUTER ──────────────────────────────────────────────────────────
+  async function ajouterSeance() {
+    const jour     = document.getElementById('add-jour').value;
+    const debut    = document.getElementById('add-debut').value;
+    const fin      = document.getElementById('add-fin').value;
+    const activite = document.getElementById('add-activite').value.trim();
+    const niveau   = document.getElementById('add-niveau').value;
+
+    if (!jour || !debut || !fin) { alert('Jour, heure début et heure fin sont obligatoires.'); return; }
+
+    const r = await fetch(`/clubs/api/horaires?codeCommune=${CODE_COMMUNE}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jour, heureDebut: debut, heureFin: fin, activite, niveau })
+    });
+    if (!r.ok) { alert('Erreur lors de l\'ajout.'); return; }
+    const nouveau = await r.json();
+    horaires.push(nouveau);
+    afficher();
+    document.getElementById('add-jour').value = '';
+    document.getElementById('add-debut').value = '';
+    document.getElementById('add-fin').value = '';
+    document.getElementById('add-activite').value = '';
+    document.getElementById('add-niveau').value = '';
+    toast('Séance ajoutée !');
+  }
+
+  // ── MODIFIER ──────────────────────────────────────────────────────────
+  function ouvrirModal(id) {
+    const h = horaires.find(x => x.idHoraire === id);
+    if (!h) return;
+    document.getElementById('edit-id').value       = h.idHoraire;
+    document.getElementById('edit-jour').value     = h.jour;
+    document.getElementById('edit-debut').value    = fmt(h.heureDebut);
+    document.getElementById('edit-fin').value      = fmt(h.heureFin);
+    document.getElementById('edit-activite').value = h.activite || '';
+    document.getElementById('edit-niveau').value   = h.niveau || '';
+    document.getElementById('modal').classList.add('open');
+  }
+
+  function fermerModal() { document.getElementById('modal').classList.remove('open'); }
+
+  async function sauvegarderModif() {
+    const id       = +document.getElementById('edit-id').value;
+    const jour     = document.getElementById('edit-jour').value;
+    const debut    = document.getElementById('edit-debut').value;
+    const fin      = document.getElementById('edit-fin').value;
+    const activite = document.getElementById('edit-activite').value.trim();
+    const niveau   = document.getElementById('edit-niveau').value;
+
+    const r = await fetch(`/clubs/api/horaires/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jour, heureDebut: debut, heureFin: fin, activite, niveau })
+    });
+    if (!r.ok) { alert('Erreur lors de la modification.'); return; }
+
+    const idx = horaires.findIndex(x => x.idHoraire === id);
+    if (idx !== -1) horaires[idx] = { ...horaires[idx], jour, heureDebut: debut+':00', heureFin: fin+':00', activite, niveau };
+    afficher();
+    fermerModal();
+    toast('Séance modifiée !');
+  }
+
+  // ── SUPPRIMER ────────────────────────────────────────────────────────
+  async function supprimer(id) {
+    if (!confirm('Supprimer cette séance ?')) return;
+    const r = await fetch(`/clubs/api/horaires/${id}`, { method: 'DELETE' });
+    if (!r.ok) { alert('Erreur lors de la suppression.'); return; }
+    horaires = horaires.filter(x => x.idHoraire !== id);
+    afficher();
+    toast('Séance supprimée.');
+  }
+
+  // ── UTILITAIRES ──────────────────────────────────────────────────────
+  function fmt(t)  { return t ? String(t).substring(0,5) : ''; }
+  function esc(s)  { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = '✓ ' + msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  document.getElementById('modal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) fermerModal();
+  });
+
+  charger();
+</script>
+</body>
+</html>

@@ -5,8 +5,8 @@
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.esigelec</groupId>
-  <artifactId>clubsport</artifactId>
+  <groupId>fr.esigelec</groupId>
+  <artifactId>clubs</artifactId>
   <version>1.0</version>
   <packaging>war</packaging>
   <name>Clubs Sportifs</name>
@@ -19,7 +19,7 @@
 
   <dependencies>
 
-    <!-- Jakarta EE (Servlet API) — fourni par Tomcat, scope provided -->
+    <!-- API Servlet Jakarta EE — fournie par Tomcat, non incluse dans le WAR -->
     <dependency>
       <groupId>jakarta.servlet</groupId>
       <artifactId>jakarta.servlet-api</artifactId>
@@ -27,21 +27,21 @@
       <scope>provided</scope>
     </dependency>
 
-    <!-- MySQL JDBC driver -->
+    <!-- Driver JDBC MySQL -->
     <dependency>
       <groupId>com.mysql</groupId>
       <artifactId>mysql-connector-j</artifactId>
       <version>8.3.0</version>
     </dependency>
 
-    <!-- Gson — sérialisation JSON facile -->
+    <!-- Sérialisation JSON -->
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
       <version>2.10.1</version>
     </dependency>
 
-    <!-- BCrypt pour les mots de passe -->
+    <!-- Hachage Bcrypt pour les mots de passe -->
     <dependency>
       <groupId>org.mindrot</groupId>
       <artifactId>jbcrypt</artifactId>
@@ -57,6 +57,9 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <version>3.4.0</version>
+        <configuration>
+          <warSourceDirectory>src/main/java/webapp</warSourceDirectory>
+        </configuration>
       </plugin>
     </plugins>
   </build>

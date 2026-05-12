@@ -1,13 +1,16 @@
-FROM tomcat:10-jdk21
+# Stage 1 — compilation Maven
+FROM maven:3.9-eclipse-temurin-17 AS builder
+WORKDIR /app
+COPY pom.xml .
+RUN mvn dependency:go-offline -q
+COPY src ./src
+RUN mvn package -DskipTests -q
 
-# Supprimer les applis par défaut de Tomcat
+# Stage 2 — image Tomcat finale
+FROM tomcat:10-jdk17
+
 RUN rm -rf /usr/local/tomcat/webapps/*
 
-# Copier le WAR (contient tout le projet compilé)
-COPY clubs.war /usr/local/tomcat/webapps/ROOT.war
-
-# Copier les JARs dans le classpath de Tomcat
-COPY lib/mysql-connector-java-8.0.28.jar /usr/local/tomcat/lib/
-COPY lib/gson-2.10.1.jar /usr/local/tomcat/lib/
+COPY --from=builder /app/target/clubs.war /usr/local/tomcat/webapps/ROOT.war
 
 EXPOSE 8080

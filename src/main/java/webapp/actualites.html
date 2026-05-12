@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Actualités du club</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#f7f5f0;--surface:#fff;--card:#f0ede8;--border:rgba(0,0,0,0.09);--accent:#1a3a5c;--accent2:#e85d30;--red:#dc3545;--text:#1a1a1a;--muted:#6b6b6b;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+    header{background:var(--accent);color:#fff;padding:16px 32px;display:flex;align-items:center;justify-content:space-between;}
+    .logo{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;}
+    .logo span{color:var(--accent2);}
+    nav a{color:rgba(255,255,255,0.7);text-decoration:none;font-size:13px;padding:6px 14px;border-radius:7px;transition:all 0.2s;margin-left:4px;}
+    nav a:hover{background:rgba(255,255,255,0.1);color:#fff;}
+    nav a.active{background:rgba(255,255,255,0.15);color:#fff;}
+
+    .hero{background:var(--accent);color:#fff;padding:24px 32px 20px;border-bottom:3px solid var(--accent2);}
+    .hero h1{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:4px;}
+    .hero-meta{font-size:13px;opacity:0.7;margin-bottom:12px;}
+    .hero-stats{display:flex;gap:24px;flex-wrap:wrap;}
+    .stat-item .num{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;}
+    .stat-item .lbl{font-size:11px;opacity:0.6;}
+
+    .container{max-width:860px;margin:28px auto;padding:0 24px;}
+
+    .form-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px 28px;margin-bottom:28px;}
+    .form-card h2{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:16px;color:var(--accent);}
+    .form-group{display:flex;flex-direction:column;gap:4px;margin-bottom:12px;}
+    .form-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;}
+    .form-input,.form-select,.form-textarea{border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:14px;padding:8px 12px;outline:none;transition:border-color 0.2s;color:var(--text);background:#fff;}
+    .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--accent);}
+    .form-textarea{resize:vertical;min-height:110px;line-height:1.6;}
+    .form-row{display:grid;grid-template-columns:1fr 200px;gap:12px;margin-bottom:14px;}
+    .btn-pub{background:var(--accent2);color:#fff;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;padding:10px 26px;cursor:pointer;transition:opacity 0.2s;}
+    .btn-pub:hover{opacity:0.85;}
+
+    .section-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--accent);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;}
+    .count-badge{font-size:12px;font-weight:600;background:var(--accent);color:#fff;padding:3px 10px;border-radius:20px;}
+
+    .actu-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:12px;transition:border-color 0.2s;}
+    .actu-card:hover{border-color:var(--accent);}
+    .actu-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+    .actu-meta{display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;}
+    .actu-cat{font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:0.4px;}
+    .cat-Tournoi{background:#FFF3CD;color:#856404;}
+    .cat-Entraînement{background:#D1ECF1;color:#0C5460;}
+    .cat-Recrutement{background:#D4EDDA;color:#155724;}
+    .cat-Résultat{background:#F8D7DA;color:#721C24;}
+    .cat-Information{background:#E2E3E5;color:#383D41;}
+    .actu-date{font-size:12px;color:var(--muted);}
+    .actu-titre{font-size:15px;font-weight:700;margin-bottom:6px;line-height:1.3;}
+    .actu-contenu{font-size:13px;color:var(--muted);line-height:1.7;}
+    .actu-actions{display:flex;gap:7px;flex-shrink:0;}
+    .btn-edit,.btn-del{border:none;border-radius:6px;font-size:12px;font-weight:600;padding:5px 11px;cursor:pointer;transition:opacity 0.2s;white-space:nowrap;}
+    .btn-edit{background:#EEF4FF;color:var(--accent);}
+    .btn-del{background:#FFF0EE;color:var(--red);}
+    .btn-edit:hover,.btn-del:hover{opacity:0.75;}
+
+    .empty{text-align:center;padding:36px;color:var(--muted);font-size:14px;}
+    .empty span{font-size:30px;display:block;margin-bottom:8px;}
+    .loader{text-align:center;padding:40px;color:var(--muted);}
+
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:100;align-items:center;justify-content:center;}
+    .modal-overlay.open{display:flex;}
+    .modal{background:#fff;border-radius:16px;padding:26px;width:100%;max-width:540px;margin:16px;max-height:85vh;overflow-y:auto;}
+    .modal h2{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;margin-bottom:16px;}
+    .modal-actions{display:flex;gap:10px;margin-top:18px;justify-content:flex-end;}
+    .btn-save{background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;padding:9px 20px;cursor:pointer;}
+    .btn-cancel{background:var(--card);color:var(--muted);border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;padding:9px 16px;cursor:pointer;}
+
+    .toast{position:fixed;bottom:24px;right:24px;background:var(--accent);color:#fff;padding:11px 18px;border-radius:9px;font-size:14px;font-weight:500;transform:translateY(70px);opacity:0;transition:all 0.3s;z-index:200;}
+    .toast.show{transform:translateY(0);opacity:1;}
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Clubs<span>Sport</span></div>
+  <nav>
+    <a href="club.html" id="lien-club">← Club</a>
+    <a href="horaires.html" id="lien-horaires">Horaires</a>
+    <a href="actualites.html" class="active">Actualités</a>
+  </nav>
+</header>
+
+<!-- HERO : vraies données depuis la BDD -->
+<div class="hero">
+  <h1 id="hero-nom">Chargement…</h1>
+  <div class="hero-meta" id="hero-meta"></div>
+  <div class="hero-stats">
+    <div class="stat-item"><div class="num" id="stat-total">—</div><div class="lbl">Licenciés</div></div>
+    <div class="stat-item"><div class="num" id="stat-f" style="color:#e85d75">—</div><div class="lbl">Femmes</div></div>
+    <div class="stat-item"><div class="num" id="stat-h" style="color:#4fc896">—</div><div class="lbl">Hommes</div></div>
+  </div>
+</div>
+
+<div class="container">
+  <!-- FORMULAIRE PUBLICATION -->
+  <div class="form-card">
+    <h2>✏️ Publier une actualité</h2>
+    <div class="form-group">
+      <label class="form-label">Titre *</label>
+      <input type="text" class="form-input" id="add-titre" placeholder="Ex : Tournoi de printemps — inscriptions ouvertes !">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Contenu *</label>
+      <textarea class="form-textarea" id="add-contenu" placeholder="Rédigez votre actualité…"></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label">Catégorie</label>
+        <select class="form-select" id="add-cat">
+          <option>Information</option><option>Tournoi</option>
+          <option>Entraînement</option><option>Recrutement</option><option>Résultat</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn-pub" onclick="publier()">📢 Publier</button>
+  </div>
+
+  <!-- LISTE -->
+  <div class="section-title">
+    Actualités publiées
+    <span class="count-badge" id="count-badge">0</span>
+  </div>
+  <div id="liste"><div class="loader">Chargement…</div></div>
+</div>
+
+<!-- MODAL MODIFICATION -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h2>Modifier l'actualité</h2>
+    <input type="hidden" id="edit-id">
+    <div class="form-group">
+      <label class="form-label">Titre</label>
+      <input type="text" class="form-input" id="edit-titre">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Contenu</label>
+      <textarea class="form-textarea" id="edit-contenu"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Catégorie</label>
+      <select class="form-select" id="edit-cat">
+        <option>Information</option><option>Tournoi</option>
+        <option>Entraînement</option><option>Recrutement</option><option>Résultat</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="fermerModal()">Annuler</button>
+      <button class="btn-save"   onclick="sauvegarderModif()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+  const CODE_COMMUNE = new URLSearchParams(window.location.search).get('id') || '';
+  let actualites = [];
+
+  // Mettre à jour les liens nav avec le code commune
+  document.getElementById('lien-club').href     = `club.html?id=${CODE_COMMUNE}`;
+  document.getElementById('lien-horaires').href = `horaires.html?id=${CODE_COMMUNE}`;
+
+  if (!CODE_COMMUNE) {
+    document.getElementById('hero-nom').textContent = 'Code commune manquant dans l\'URL';
+  }
+
+  // ── CHARGEMENT DEPUIS LA VRAIE BASE ──────────────────────────────────
+  async function charger() {
+    if (!CODE_COMMUNE) return;
+    try {
+      const r = await fetch(`/clubs/api/actualites?codeCommune=${CODE_COMMUNE}`);
+      if (!r.ok) throw new Error(r.status);
+      const data = await r.json();
+
+      // Vraies données statistiques
+      const s = data.stats;
+      document.getElementById('hero-nom').textContent  = s.nom || CODE_COMMUNE;
+      document.getElementById('hero-meta').textContent = (s.federation || '') + ' · ' + (s.region || '');
+      document.getElementById('stat-total').textContent = (s.total  || 0).toLocaleString('fr-FR');
+      document.getElementById('stat-f').textContent     = (s.femmes || 0).toLocaleString('fr-FR');
+      document.getElementById('stat-h').textContent     = (s.hommes || 0).toLocaleString('fr-FR');
+
+      actualites = data.actualites || [];
+      afficher();
+    } catch(e) {
+      document.getElementById('hero-nom').textContent = 'Erreur de connexion à la base';
+      document.getElementById('liste').innerHTML =
+        '<div class="empty"><span>⚠️</span>Impossible de charger les données. Vérifiez que Tomcat est lancé.</div>';
+    }
+  }
+
+  function afficher() {
+    const liste = document.getElementById('liste');
+    document.getElementById('count-badge').textContent = actualites.length;
+    if (!actualites.length) {
+      liste.innerHTML = '<div class="empty"><span>📰</span>Aucune actualité publiée.<br>Rédigez votre première actualité ci-dessus.</div>';
+      return;
+    }
+    liste.innerHTML = actualites.map(a => `
+      <div class="actu-card">
+        <div class="actu-top">
+          <div style="flex:1">
+            <div class="actu-meta">
+              <span class="actu-cat cat-${esc(a.categorie)}">${esc(a.categorie)}</span>
+              <span class="actu-date">${fmtDate(a.datePublication)}</span>
+            </div>
+            <div class="actu-titre">${esc(a.titre)}</div>
+            <div class="actu-contenu">${esc(a.contenu)}</div>
+          </div>
+          <div class="actu-actions">
+            <button class="btn-edit" onclick="ouvrirModal(${a.idActualite})">✏️ Modifier</button>
+            <button class="btn-del"  onclick="supprimer(${a.idActualite})">🗑️ Supprimer</button>
+          </div>
+        </div>
+      </div>`).join('');
+  }
+
+  // ── PUBLIER ───────────────────────────────────────────────────────────
+  async function publier() {
+    const titre     = document.getElementById('add-titre').value.trim();
+    const contenu   = document.getElementById('add-contenu').value.trim();
+    const categorie = document.getElementById('add-cat').value;
+    if (!titre || !contenu) { alert('Titre et contenu sont obligatoires.'); return; }
+
+    const r = await fetch(`/clubs/api/actualites?codeCommune=${CODE_COMMUNE}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ titre, contenu, categorie })
+    });
+    if (!r.ok) { alert('Erreur lors de la publication.'); return; }
+    const nouvelle = await r.json();
+    actualites.unshift(nouvelle);
+    afficher();
+    document.getElementById('add-titre').value   = '';
+    document.getElementById('add-contenu').value = '';
+    toast('Actualité publiée !');
+  }
+
+  // ── MODIFIER ──────────────────────────────────────────────────────────
+  function ouvrirModal(id) {
+    const a = actualites.find(x => x.idActualite === id);
+    if (!a) return;
+    document.getElementById('edit-id').value      = a.idActualite;
+    document.getElementById('edit-titre').value   = a.titre;
+    document.getElementById('edit-contenu').value = a.contenu;
+    document.getElementById('edit-cat').value     = a.categorie;
+    document.getElementById('modal').classList.add('open');
+  }
+
+  function fermerModal() { document.getElementById('modal').classList.remove('open'); }
+
+  async function sauvegarderModif() {
+    const id        = +document.getElementById('edit-id').value;
+    const titre     = document.getElementById('edit-titre').value.trim();
+    const contenu   = document.getElementById('edit-contenu').value.trim();
+    const categorie = document.getElementById('edit-cat').value;
+
+    const r = await fetch(`/clubs/api/actualites/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ titre, contenu, categorie })
+    });
+    if (!r.ok) { alert('Erreur lors de la modification.'); return; }
+
+    const idx = actualites.findIndex(x => x.idActualite === id);
+    if (idx !== -1) actualites[idx] = { ...actualites[idx], titre, contenu, categorie };
+    afficher();
+    fermerModal();
+    toast('Actualité modifiée !');
+  }
+
+  // ── SUPPRIMER ─────────────────────────────────────────────────────────
+  async function supprimer(id) {
+    if (!confirm('Supprimer cette actualité ?')) return;
+    const r = await fetch(`/clubs/api/actualites/${id}`, { method: 'DELETE' });
+    if (!r.ok) { alert('Erreur lors de la suppression.'); return; }
+    actualites = actualites.filter(x => x.idActualite !== id);
+    afficher();
+    toast('Actualité supprimée.');
+  }
+
+  // ── UTILITAIRES ──────────────────────────────────────────────────────
+  function fmtDate(d) {
+    if (!d) return '';
+    return new Date(d).toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' });
+  }
+  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = '✓ ' + msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  document.getElementById('modal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) fermerModal();
+  });
+
+  charger();
+</script>
+</body>
+</html>
