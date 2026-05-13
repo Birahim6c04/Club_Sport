@@ -1,0 +1,167 @@
+package com.esigelec.clubsport.controller;
+
+import com.esigelec.clubsport.model.Utilisateur;
+import com.esigelec.clubsport.service.AuthService;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Part;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+@WebServlet(urlPatterns = {"/connexion", "/inscription", "/deconnexion"})
+@MultipartConfig(
+    fileSizeThreshold = 1024 * 1024,        // 1 MB en mémoire
+    maxFileSize       = 10 * 1024 * 1024,   // 10 MB max par fichier
+    maxRequestSize    = 15 * 1024 * 1024    // 15 MB max requête totale
+)
+public class AuthController extends HttpServlet {
+
+    private static final long serialVersionUID = 1L;
+    private AuthService authService = new AuthService();
+
+    // Dossier d'upload dans le conteneur Docker
+    private static final String DOSSIER_UPLOAD = "/app/uploads";
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        String path = req.getServletPath();
+
+        if (path.equals("/deconnexion")) {
+            HttpSession session = req.getSession(false);
+            if (session != null) {
+                session.invalidate();
+            }
+            resp.sendRedirect(req.getContextPath() + "/accueil");
+            return;
+        }
+
+        if (path.equals("/inscription")) {
+            req.getRequestDispatcher("/WEB-INF/jsp/inscription.jsp").forward(req, resp);
+            return;
+        }
+
+        req.getRequestDispatcher("/WEB-INF/jsp/connexion.jsp").forward(req, resp);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        String path = req.getServletPath();
+
+        if (path.equals("/connexion")) {
+            traiterConnexion(req, resp);
+        } else if (path.equals("/inscription")) {
+            traiterInscription(req, resp);
+        }
+    }
+
+    private void traiterConnexion(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        String login = req.getParameter("login");
+        String motDePasse = req.getParameter("motDePasse");
+
+        try {
+            Utilisateur u = authService.connecter(login, motDePasse);
+
+            HttpSession session = req.getSession(true);
+            session.setAttribute("utilisateur", u);
+            session.setAttribute("role", u.getRole());
+
+            resp.sendRedirect(req.getContextPath() + "/accueil");
+
+        } catch (IllegalArgumentException e) {
+            req.setAttribute("erreur", e.getMessage());
+            req.setAttribute("login", login);
+            req.getRequestDispatcher("/WEB-INF/jsp/connexion.jsp").forward(req, resp);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            req.setAttribute("erreur", "Erreur serveur");
+            req.getRequestDispatcher("/WEB-INF/jsp/connexion.jsp").forward(req, resp);
+        }
+    }
+
+    private void traiterInscription(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        String login = req.getParameter("login");
+        String motDePasse = req.getParameter("motDePasse");
+        String email = req.getParameter("email");
+        String nom = req.getParameter("nom");
+        String prenom = req.getParameter("prenom");
+        String role = req.getParameter("role");
+
+        try {
+            // Gestion du fichier uploadé
+            Part filePart = req.getPart("pieceJointe");
+
+            if (filePart == null || filePart.getSize() == 0) {
+                throw new IllegalArgumentException("Veuillez joindre un fichier justificatif");
+            }
+
+            // Vérifier l'extension
+            String nomOriginal = filePart.getSubmittedFileName();
+            String extension = "";
+            int point = nomOriginal.lastIndexOf('.');
+            if (point > 0) {
+                extension = nomOriginal.substring(point).toLowerCase();
+            }
+
+            if (!extension.equals(".pdf") && !extension.equals(".jpg")
+                && !extension.equals(".jpeg") && !extension.equals(".png")) {
+                throw new IllegalArgumentException("Format de fichier non autorise (PDF, JPG, PNG uniquement)");
+            }
+
+            // Créer le dossier s'il n'existe pas
+            File dossier = new File(DOSSIER_UPLOAD);
+            if (!dossier.exists()) {
+                dossier.mkdirs();
+            }
+
+            // Nom unique : date_login_nomOriginal
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+            String nomFichier = sdf.format(new Date()) + "_" + login + "_" + nomOriginal;
+            // Nettoyer le nom (enlever espaces et caractères bizarres)
+            nomFichier = nomFichier.replaceAll("[^a-zA-Z0-9._-]", "_");
+
+            // Chemin complet pour l'écriture
+            String cheminComplet = DOSSIER_UPLOAD + "/" + nomFichier;
+
+            // Écriture du fichier
+            filePart.write(cheminComplet);
+
+            // On stocke uniquement le nom du fichier en BDD (pas le chemin complet)
+            authService.inscrire(login, motDePasse, email, nom, prenom, role, nomFichier);
+
+            req.setAttribute("succes", "Inscription envoyee ! En attente de validation par un administrateur.");
+            req.getRequestDispatcher("/WEB-INF/jsp/connexion.jsp").forward(req, resp);
+
+        } catch (IllegalArgumentException e) {
+            req.setAttribute("erreur", e.getMessage());
+            req.setAttribute("login", login);
+            req.setAttribute("email", email);
+            req.setAttribute("nom", nom);
+            req.setAttribute("prenom", prenom);
+            req.setAttribute("role", role);
+            req.getRequestDispatcher("/WEB-INF/jsp/inscription.jsp").forward(req, resp);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            req.setAttribute("erreur", "Erreur serveur : " + e.getMessage());
+            req.getRequestDispatcher("/WEB-INF/jsp/inscription.jsp").forward(req, resp);
+        }
+    }
+}

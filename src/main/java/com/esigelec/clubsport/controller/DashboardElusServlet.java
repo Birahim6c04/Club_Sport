@@ -69,7 +69,7 @@ public class DashboardElusServlet extends HttpServlet { // la classe DashboardEl
             e.printStackTrace(); // pour afficher les erreurs dans la console 
 
             request.setAttribute("erreur", "Erreur lors du chargement du dashboard élus."); 
-            request.getRequestDispatcher("/elus.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/jsp/elus.jsp").forward(request, response);
         }
     }
 }

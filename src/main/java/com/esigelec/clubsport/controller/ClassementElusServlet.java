@@ -87,7 +87,7 @@ public class ClassementElusServlet extends HttpServlet {
             e.printStackTrace();
 
             request.setAttribute("erreur", "Erreur lors du chargement du classement élus.");
-            request.getRequestDispatcher("/ClassementElus.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/jsp/ClassementElus.jsp").forward(request, response);
         }
     }
 }

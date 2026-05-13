@@ -71,7 +71,7 @@ public class IndicateursServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("erreur", "Erreur lors du chargement des indicateurs.");
-            request.getRequestDispatcher("/indicateurs.jsp")
+            request.getRequestDispatcher("/WEB-INF/jsp/indicateurs.jsp")
                     .forward(request, response);
         }
     }
