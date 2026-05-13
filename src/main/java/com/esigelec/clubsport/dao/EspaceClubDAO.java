@@ -117,6 +117,7 @@ public class EspaceClubDAO implements DAO<EspaceClub, Integer> {
     public List<EspaceClub> findAll() throws SQLException {
         String sql = "SELECT * FROM espace_club ORDER BY nom_club";
         List<EspaceClub> list = new ArrayList<>();
+        
         try (Connection conn = DBConnection.get();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
