@@ -63,7 +63,7 @@ public class DashboardElusServlet extends HttpServlet { // la classe DashboardEl
             request.setAttribute("codeCommune", codeCommune);
             request.setAttribute("federation", federation);
 
-            request.getRequestDispatcher("/elus.jsp").forward(request, response); // Transfert de la requête et de la réponse vers la page elus.jsp
+            request.getRequestDispatcher("/WEB-INF/jsp/elus.jsp").forward(request, response); // Transfert de la requête et de la réponse vers la page elus.jsp
 
         } catch (Exception e) { // pour capturer les erreurs du bloc try . 
             e.printStackTrace(); // pour afficher les erreurs dans la console 

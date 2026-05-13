@@ -10,8 +10,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="css/style.css">
+     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
 </head>
 <body>
 
@@ -106,7 +107,7 @@
     <!-- COMMENT ÇA MARCHE -->
     <section class="section-howto reveal">
         <div class="section-header">
-            <div class="section-tag">Simple & rapide</div>
+            <div class="section-tag">Simple &amp; rapide</div>
             <h2>Trouvez votre club en <span class="gradient-text">3 étapes</span></h2>
             <p>Une recherche intuitive conçue pour vous accompagner dans votre choix d'activité sportive</p>
         </div>
@@ -157,115 +158,174 @@
 
     <!-- RECHERCHE -->
     <section class="recherche-section" id="recherche">
-        <div class="recherche-header">
-            <div class="section-tag">Recherche avancée</div>
-            <h2>Démarrez votre <span class="gradient-text">recherche</span></h2>
+    <div class="recherche-header">
+        <div class="section-tag">Recherche avancée</div>
+        <h2>Démarrez votre <span class="gradient-text">recherche</span></h2>
+    </div>
+
+    <div class="onglets">
+        <button class="onglet ${modeRecherche ne 'rayon' ? 'actif' : ''}"
+                data-mode="zone"
+                type="button">
+            Par zone géographique
+        </button>
+
+        <button class="onglet ${modeRecherche eq 'rayon' ? 'actif' : ''}"
+                data-mode="rayon"
+                type="button">
+            Par rayon
+        </button>
+    </div>
+
+    <c:choose>
+        <c:when test="${modeRecherche == 'rayon'}">
+            <c:set var="styleZone" value="display:none" />
+            <c:set var="styleRayon" value="" />
+        </c:when>
+        <c:otherwise>
+            <c:set var="styleZone" value="" />
+            <c:set var="styleRayon" value="display:none" />
+        </c:otherwise>
+    </c:choose>
+
+    <form id="form-zone"
+      class="formulaire"
+      action="clubs/rechercher"
+      method="POST">
+
+        <input type="hidden" name="mode" value="zone">
+
+        <div class="champ">
+            <label>Fédération sportive *</label>
+            <select name="federation" required>
+                <option value="">-- Choisir une fédération --</option>
+                <jsp:include page="/WEB-INF/jsp/federations.jsp" />
+            </select>
         </div>
 
-        <div class="onglets">
-            <button class="onglet ${modeRecherche != 'rayon' ? 'actif' : ''}" data-mode="zone" type="button">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
-                    <circle cx="12" cy="10" r="3"/>
-                </svg>
-                Par zone géographique
-            </button>
-            <button class="onglet ${modeRecherche == 'rayon' ? 'actif' : ''}" data-mode="rayon" type="button">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M12 2v20M2 12h20"/>
-                </svg>
-                Par rayon
-            </button>
+        <div class="champ">
+            <label>Code postal (optionnel)</label>
+            <input type="text"
+                   name="codePostal"
+                   value="${codePostalChoisi}"
+                   placeholder="Ex : 76000"
+                   maxlength="5">
         </div>
 
-        <form id="form-zone" class="formulaire" action="${pageContext.request.contextPath}/clubs/rechercher" method="POST" style="${modeRecherche == 'rayon' ? 'display:none' : ''}">
-            <input type="hidden" name="mode" value="zone">
+        <div class="champ">
+            <label>Région</label>
+            <select name="region">
+                <option value="">-- Toutes les régions --</option>
 
-            <div class="champ">
-                <label>Fédération sportive *</label>
-                <select name="federation" required>
-                    <option value="">-- Choisir une fédération --</option>
-                    <jsp:include page="/WEB-INF/jsp/federations.jsp" />
-                </select>
-            </div>
-
-            <div class="champ">
-                <label>Code postal (optionnel)</label>
-                <input type="text" name="codePostal" value="${codePostalChoisi}" placeholder="Ex : 76000" maxlength="5">
-            </div>
-
-            <div class="champ">
-                <label>Région</label>
-                <select name="region">
-                    <option value="">-- Toutes les régions --</option>
-                    <c:forEach items="${regions}" var="r">
-                        <option value="${r}" ${regionChoisie == r ? 'selected' : ''}>${r}</option>
-                    </c:forEach>
-                </select>
-            </div>
-
-            <button type="submit" class="btn-rechercher">
-                Lancer la recherche
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
-            </button>
-        </form>
-
-        <form id="form-rayon" class="formulaire" action="${pageContext.request.contextPath}/clubs/rechercher" method="POST" style="${modeRecherche == 'rayon' ? '' : 'display:none'}">
-            <input type="hidden" name="mode" value="rayon">
-
-            <div class="champ">
-                <label>Fédération sportive *</label>
-                <select name="federation" required>
-                    <option value="">-- Choisir une fédération --</option>
-                    <jsp:include page="/WEB-INF/jsp/federations.jsp" />
-                </select>
-            </div>
-
-            <div class="champ">
-                <label>Commune de référence *</label>
-                <input type="text" id="commune-input" placeholder="Tapez le nom d'une commune..." autocomplete="off" required>
-                <div id="suggestions-commune" class="suggestions"></div>
-                <input type="hidden" id="commune-code" name="commune" value="${communeChoisie}">
-            </div>
-
-            <div class="champ">
-                <label>Rayon de recherche</label>
-                <select name="rayon">
-                    <option value="10"  ${rayonChoisi == '10'  ? 'selected' : ''}>10 km</option>
-                    <option value="20"  ${rayonChoisi == '20' || empty rayonChoisi ? 'selected' : ''}>20 km</option>
-                    <option value="50"  ${rayonChoisi == '50'  ? 'selected' : ''}>50 km</option>
-                    <option value="100" ${rayonChoisi == '100' ? 'selected' : ''}>100 km</option>
-                </select>
-            </div>
-
-            <button type="submit" class="btn-rechercher">
-                Lancer la recherche
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
-            </button>
-        </form>
-    </section>
-
-    <!-- RÉSULTATS -->
-    <c:if test="${not empty clubs}">
-        <div class="resultats-section">
-            <h3>📋 Résultats de la recherche</h3>
-            <p class="info-resultats">${nbResultats} commune(s) trouvée(s)</p>
+                <c:forEach items="${regions}" var="r">
+                    <c:choose>
+                        <c:when test="${regionChoisie == r}">
+                            <option value="${r}" selected>${r}</option>
+                        </c:when>
+                        <c:otherwise>
+                            <option value="${r}">${r}</option>
+                        </c:otherwise>
+                    </c:choose>
+                </c:forEach>
+            </select>
         </div>
-    </c:if>
 
-    <!-- CARTE -->
-    <section class="map-section" id="carte">
-        <div class="section-header">
-            <div class="section-tag">Vue géographique</div>
-            <h2>Explorez la <span class="gradient-text">carte interactive</span></h2>
+        <button type="submit" class="btn-rechercher">
+            Lancer la recherche
+        </button>
+    </form>
+
+    <form id="form-rayon"
+          class="formulaire"
+          action="clubs/rechercher"
+          method="POST"
+          style="${styleRayon}">
+
+        <input type="hidden" name="mode" value="rayon">
+
+        <div class="champ">
+            <label>Fédération sportive *</label>
+            <select name="federation" required>
+                <option value="">-- Choisir une fédération --</option>
+                <jsp:include page="/WEB-INF/jsp/federations.jsp" />
+            </select>
         </div>
-        <div id="map"></div>
-    </section>
+
+        <div class="champ">
+            <label>Commune de référence *</label>
+            <input type="text"
+                   id="commune-input"
+                   placeholder="Tapez le nom d'une commune..."
+                   autocomplete="off"
+                   required>
+            <div id="suggestions-commune" class="suggestions"></div>
+            <input type="hidden"
+                   id="commune-code"
+                   name="commune"
+                   value="${communeChoisie}">
+        </div>
+
+        <div class="champ">
+            <label>Rayon de recherche</label>
+            <select name="rayon">
+                <c:choose>
+                    <c:when test="${rayonChoisi == '10'}">
+                        <option value="10" selected>10 km</option>
+                    </c:when>
+                    <c:otherwise>
+                        <option value="10">10 km</option>
+                    </c:otherwise>
+                </c:choose>
+
+                <c:choose>
+                    <c:when test="${rayonChoisi == '20' || empty rayonChoisi}">
+                        <option value="20" selected>20 km</option>
+                    </c:when>
+                    <c:otherwise>
+                        <option value="20">20 km</option>
+                    </c:otherwise>
+                </c:choose>
+
+                <c:choose>
+                    <c:when test="${rayonChoisi == '50'}">
+                        <option value="50" selected>50 km</option>
+                    </c:when>
+                    <c:otherwise>
+                        <option value="50">50 km</option>
+                    </c:otherwise>
+                </c:choose>
+
+                <c:choose>
+                    <c:when test="${rayonChoisi == '100'}">
+                        <option value="100" selected>100 km</option>
+                    </c:when>
+                    <c:otherwise>
+                        <option value="100">100 km</option>
+                    </c:otherwise>
+                </c:choose>
+            </select>
+        </div>
+
+        <button type="submit" class="btn-rechercher">
+            Lancer la recherche
+        </button>
+    </form>
+</section>
+
+<c:if test="${not empty clubs}">
+    <div class="resultats-section">
+        <h3>📋 Résultats de la recherche</h3>
+        <p class="info-resultats">${nbResultats} commune(s) trouvée(s)</p>
+    </div>
+</c:if>
+
+<section class="map-section" id="carte">
+    <div class="section-header">
+        <div class="section-tag">Vue géographique</div>
+        <h2>Explorez la <span class="gradient-text">carte interactive</span></h2>
+    </div>
+    <div id="map"></div>
+</section>
 
     <!-- FÉDÉRATIONS POPULAIRES -->
     <section class="federations-section reveal" id="federations">
@@ -489,7 +549,7 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        window.contextPath       = '${pageContext.request.contextPath}';
+        window.contextPath       = '';
         window.federationChoisie = '${federationChoisie}';
         window.regionChoisie     = '${regionChoisie}';
         window.codePostalChoisi  = '${codePostalChoisi}';
@@ -545,6 +605,6 @@
             }, 100);
         }
     </script>
-    <script src="${pageContext.request.contextPath}/js/carte.js"></script>
+    <script src="js/carte.js"></script>
 </body>
 </html>

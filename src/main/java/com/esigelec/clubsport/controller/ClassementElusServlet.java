@@ -81,7 +81,7 @@ public class ClassementElusServlet extends HttpServlet {
             request.setAttribute("labelsCommunes", labelsCommunes.toString());
             request.setAttribute("dataPourcentages", dataPourcentages.toString());
 
-            request.getRequestDispatcher("/ClassementElus.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/jsp/ClassementElus.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();

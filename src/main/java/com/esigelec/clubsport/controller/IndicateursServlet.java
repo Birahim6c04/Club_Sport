@@ -65,7 +65,7 @@ public class IndicateursServlet extends HttpServlet {
             request.setAttribute("clubsFederations", clubsFederations);
             request.setAttribute("rapportAgeClubs", rapportAgeClubs);
 
-            request.getRequestDispatcher("/indicateurs.jsp")
+            request.getRequestDispatcher("/WEB-INF/jsp/indicateurs.jsp")
                     .forward(request, response);
 
         } catch (Exception e) {
