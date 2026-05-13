@@ -4,6 +4,8 @@ import com.esigelec.clubsport.client.dao.LogDAO;
 import com.esigelec.clubsport.client.dao.UtilisateurDAO;
 import com.esigelec.clubsport.client.model.LogEntry;
 import com.esigelec.clubsport.client.model.Utilisateur;
+import com.esigelec.clubsport.client.dao.ClubDAO;
+import com.esigelec.clubsport.client.model.Club;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -13,14 +15,14 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.awt.GridLayout;
 
 public class AdminFrame extends JFrame {
 
     private Utilisateur adminConnecte;
 
     // Chemin du dossier uploads (sur le PC)
-    // À adapter selon ton chemin local
-    private static final String DOSSIER_UPLOADS = "C:\\Users\\63382952.INTRANET\\Downloads\\Club_Sport\\uploads";
+    private static final String DOSSIER_UPLOADS = "C:\\Users\\63382952\\Downloads\\Club_Sport\\uploads";
 
     private DefaultTableModel modeleUtilisateurs;
     private JTable tableUtilisateurs;
@@ -33,6 +35,15 @@ public class AdminFrame extends JFrame {
 
     private DefaultTableModel modeleLogsRecherche;
     private JTable tableLogsRecherche;
+    
+    private JComboBox<String> comboRegion;
+    private JComboBox<String> comboDepartement;
+    private JTextField clubsMinField;
+    private JTextField licenciesMinField;
+    private JTextField tauxFemField;
+    private JComboBox<String> comboTri;
+    private DefaultTableModel modeleRecherche;
+    private JTable tableRecherche;
 
     public AdminFrame(Utilisateur admin) {
         this.adminConnecte = admin;
@@ -47,6 +58,7 @@ public class AdminFrame extends JFrame {
         onglets.addTab("Utilisateurs", creerOngletUtilisateurs());
         onglets.addTab("Logs de connexion", creerOngletLogsConnexion());
         onglets.addTab("Logs de recherche", creerOngletLogsRecherche());
+        onglets.addTab("Recherche clubs", creerOngletRecherche());
 
         add(onglets);
         setVisible(true);
@@ -56,6 +68,147 @@ public class AdminFrame extends JFrame {
         chargerLogsConnexion();
         chargerLogsRecherche();
     }
+    
+ // ========================================================
+ // ONGLET RECHERCHE AVANCÉE
+ // ========================================================
+ private JPanel creerOngletRecherche() {
+     JPanel panel = new JPanel(new BorderLayout(10, 10));
+     panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+     // ----- Panneau de critères -----
+     JPanel criteres = new JPanel(new GridLayout(0, 4, 10, 10));
+     criteres.setBorder(BorderFactory.createTitledBorder("Critères de recherche"));
+
+     criteres.add(new JLabel("Région :"));
+     comboRegion = new JComboBox<>();
+     comboRegion.addItem("");
+     criteres.add(comboRegion);
+
+     criteres.add(new JLabel("Département :"));
+     comboDepartement = new JComboBox<>();
+     comboDepartement.addItem("");
+     criteres.add(comboDepartement);
+
+     criteres.add(new JLabel("Nb clubs min :"));
+     clubsMinField = new JTextField();
+     criteres.add(clubsMinField);
+
+     criteres.add(new JLabel("Licenciés min :"));
+     licenciesMinField = new JTextField();
+     criteres.add(licenciesMinField);
+
+     criteres.add(new JLabel("% Féminisation min :"));
+     tauxFemField = new JTextField();
+     criteres.add(tauxFemField);
+
+     criteres.add(new JLabel("Trier par :"));
+     comboTri = new JComboBox<>(new String[]{"Licenciés", "Clubs", "Nom"});
+     criteres.add(comboTri);
+
+     panel.add(criteres, BorderLayout.NORTH);
+
+     // ----- Charger les régions et départements -----
+     try {
+         ClubDAO dao = new ClubDAO();
+         for (String r : dao.listerRegions()) comboRegion.addItem(r);
+         for (String d : dao.listerDepartements()) comboDepartement.addItem(d);
+     } catch (Exception e) {
+         e.printStackTrace();
+     }
+
+     // ----- Tableau résultats -----
+     String[] cols = {"Commune", "Département", "Région", "Fédération", "Clubs", "EPA", "Total", "H", "F", "% Fem"};
+     modeleRecherche = new DefaultTableModel(cols, 0);
+     tableRecherche = new JTable(modeleRecherche);
+     panel.add(new JScrollPane(tableRecherche), BorderLayout.CENTER);
+
+     // ----- Bouton rechercher -----
+     JButton btnRechercher = new JButton("Rechercher");
+     btnRechercher.setBackground(new Color(14, 165, 183));
+     btnRechercher.setForeground(Color.WHITE);
+     btnRechercher.addActionListener(new ActionListener() {
+         public void actionPerformed(ActionEvent e) {
+             lancerRecherche();
+         }
+     });
+
+     JPanel boutons = new JPanel();
+     boutons.add(btnRechercher);
+     panel.add(boutons, BorderLayout.SOUTH);
+
+     return panel;
+ }
+
+ private void lancerRecherche() {
+     try {
+         String region = (String) comboRegion.getSelectedItem();
+         String departement = (String) comboDepartement.getSelectedItem();
+
+         int clubsMin = 0;
+         if (!clubsMinField.getText().trim().isEmpty()) {
+             clubsMin = Integer.parseInt(clubsMinField.getText().trim());
+         }
+
+         int licenciesMin = 0;
+         if (!licenciesMinField.getText().trim().isEmpty()) {
+             licenciesMin = Integer.parseInt(licenciesMinField.getText().trim());
+         }
+
+         double tauxFem = 0;
+         if (!tauxFemField.getText().trim().isEmpty()) {
+             tauxFem = Double.parseDouble(tauxFemField.getText().trim());
+         }
+
+         String tri = "total";
+         String triSelect = (String) comboTri.getSelectedItem();
+         if ("Clubs".equals(triSelect)) tri = "clubs";
+         else if ("Nom".equals(triSelect)) tri = "nom";
+
+         System.out.println("=== RECHERCHE ===");
+         System.out.println("region=[" + region + "]");
+         System.out.println("departement=[" + departement + "]");
+         System.out.println("clubsMin=" + clubsMin);
+         System.out.println("licenciesMin=" + licenciesMin);
+         System.out.println("tauxFem=" + tauxFem);
+         System.out.println("tri=" + tri);
+
+         ClubDAO dao = new ClubDAO();
+         List<Club> resultats = dao.rechercheAdmin(region, departement, clubsMin, licenciesMin, tauxFem, tri);
+
+         System.out.println("Resultats : " + resultats.size());
+
+         modeleRecherche.setRowCount(0);
+         for (Club c : resultats) {
+             int totalLic = c.getLicencesH() + c.getLicencesF();
+             int pctFem = 0;
+             if (totalLic > 0) pctFem = (c.getLicencesF() * 100) / totalLic;
+
+             Object[] ligne = new Object[10];
+             ligne[0] = c.getNomCommune();
+             ligne[1] = c.getDepartement();
+             ligne[2] = c.getRegion();
+             ligne[3] = c.getNomFederation();
+             ligne[4] = c.getClubs();
+             ligne[5] = c.getEpa();
+             ligne[6] = c.getTotal();
+             ligne[7] = c.getLicencesH();
+             ligne[8] = c.getLicencesF();
+             ligne[9] = pctFem + "%";
+             modeleRecherche.addRow(ligne);
+         }
+
+         JOptionPane.showMessageDialog(this, resultats.size() + " resultat(s) trouve(s)");
+
+     } catch (NumberFormatException e) {
+         JOptionPane.showMessageDialog(this, "Veuillez entrer des nombres valides");
+     } catch (Exception e) {
+         e.printStackTrace();
+         JOptionPane.showMessageDialog(this, "Erreur lors de la recherche");
+     }
+     
+     
+ }
 
     // ========================================================
     // ONGLET COMPTES EN ATTENTE
