@@ -80,7 +80,16 @@ public class AuthController extends HttpServlet {
             session.setAttribute("utilisateur", u);
             session.setAttribute("role", u.getRole());
 
-            resp.sendRedirect(req.getContextPath() + "/accueil");
+            // Redirection selon le rôle
+            if (u.getRole().equals("ELU")) {
+                req.getRequestDispatcher("/WEB-INF/jsp/elus.jsp").forward(req, resp);
+            } else if (u.getRole().equals("ADMIN")) {
+                resp.sendRedirect(req.getContextPath() + "/admin");
+            } else if (u.getRole().equals("CLUB")) {
+                resp.sendRedirect(req.getContextPath() + "/club");
+            } else {
+                resp.sendRedirect(req.getContextPath() + "/accueil");
+            }
 
         } catch (IllegalArgumentException e) {
             req.setAttribute("erreur", e.getMessage());

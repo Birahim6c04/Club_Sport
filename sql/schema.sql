@@ -105,7 +105,7 @@ CREATE TABLE utilisateur (
     email            VARCHAR(150) NOT NULL UNIQUE,
     nom              VARCHAR(80)  NOT NULL,
     prenom           VARCHAR(80)  NOT NULL,
-    role             ENUM('ADMIN','ELU','PRESIDENT','ENTRAINEUR','LICENCIE') NOT NULL,
+    role             ENUM('CLUB','ELU','ADMIN') NOT NULL,
     actif            BOOLEAN      NOT NULL DEFAULT TRUE,
     date_creation    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     piece_jointe     VARCHAR(255) DEFAULT NULL,
