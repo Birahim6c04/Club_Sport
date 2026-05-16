@@ -6,9 +6,7 @@
   <title>Espace Club — Clubs Sportifs</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-
   <style>
-    /* Styles spécifiques à club.html */
     :root {
       --bg:      #f7f5f0;
       --surface: #ffffff;
@@ -24,137 +22,225 @@
     .logo  { color: #fff; }
     .logo span { color: var(--accent2); }
     header p { color: rgba(255,255,255,0.6); }
+    nav a {
+      color: rgba(255,255,255,0.7); text-decoration: none;
+      font-size: 13px; padding: 6px 14px; border-radius: 7px;
+      transition: all 0.2s; margin-left: 4px;
+    }
+    nav a:hover { background: rgba(255,255,255,0.1); color: #fff; }
 
     /* HERO */
     .club-hero {
-      background: var(--accent);
-      color: #fff;
-      padding: 48px 40px 36px;
-      position: relative;
-      overflow: hidden;
+      background: var(--accent); color: #fff;
+      padding: 40px 40px 32px; position: relative; overflow: hidden;
     }
     .club-hero::before {
-      content:'';position:absolute;right:-60px;top:-60px;
-      width:280px;height:280px;border-radius:50%;
+      content:''; position:absolute; right:-60px; top:-60px;
+      width:280px; height:280px; border-radius:50%;
       background:rgba(232,93,48,0.18);
     }
     .club-badge {
-      display:inline-block;background:var(--accent2);color:#fff;
-      font-size:11px;font-weight:600;letter-spacing:1px;
-      text-transform:uppercase;padding:4px 10px;border-radius:6px;
+      display:inline-block; background:var(--accent2); color:#fff;
+      font-size:11px; font-weight:600; letter-spacing:1px;
+      text-transform:uppercase; padding:4px 10px; border-radius:6px;
       margin-bottom:12px;
     }
-    .club-hero h1 { font-family:'Syne',sans-serif;font-size:clamp(26px,5vw,40px);font-weight:800;margin-bottom:8px; }
-    .club-hero .sub { font-size:15px;opacity:0.65; }
-    .stats-row { display:flex;gap:28px;margin-top:28px;flex-wrap:wrap; }
-    .stat-item .num { font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:#fff; }
-    .stat-item .lbl { font-size:12px;opacity:0.55;margin-top:2px; }
+    .club-hero h1 {
+      font-family:'Syne',sans-serif;
+      font-size:clamp(24px,5vw,38px); font-weight:800; margin-bottom:6px;
+    }
+    .club-hero .sub { font-size:14px; opacity:0.65; }
+    .stats-row { display:flex; gap:28px; margin-top:24px; flex-wrap:wrap; }
+    .stat-item .num {
+      font-family:'Syne',sans-serif; font-size:24px; font-weight:800; color:#fff;
+    }
+    .stat-item .lbl { font-size:11px; opacity:0.55; margin-top:2px; }
 
-    /* BARRE MODE */
-    .mode-bar {
-      background:var(--surface);border-bottom:1px solid var(--border);
-      padding:12px 36px;display:flex;align-items:center;
-      justify-content:space-between;gap:12px;flex-wrap:wrap;
+    /* BARRE ACTIONS */
+    .actions-bar {
+      background:var(--surface); border-bottom:1px solid var(--border);
+      padding:12px 36px; display:flex; align-items:center;
+      gap:10px; flex-wrap:wrap;
     }
-    .mode-bar p { font-size:13px;color:var(--muted); }
-    .btn-edit {
-      background:var(--accent);color:#fff;border:none;border-radius:8px;
-      font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;
-      padding:8px 18px;cursor:pointer;transition:opacity 0.2s;
+    .btn-action {
+      background:var(--accent); color:#fff; border:none;
+      border-radius:8px; font-family:'DM Sans',sans-serif;
+      font-size:13px; font-weight:600; padding:8px 16px;
+      cursor:pointer; transition:opacity 0.2s; text-decoration:none;
+      display:inline-flex; align-items:center; gap:6px;
     }
-    .btn-edit:hover { opacity:0.85; }
+    .btn-action:hover { opacity:0.85; }
+    .btn-action.secondary {
+      background:var(--card); color:var(--accent);
+      border:1px solid var(--border);
+    }
 
     /* CONTENU */
     .content-grid {
-      max-width:1080px;margin:36px auto;padding:0 20px;
-      display:grid;grid-template-columns:1fr 320px;gap:24px;
+      max-width:1080px; margin:32px auto; padding:0 20px;
+      display:grid; grid-template-columns:1fr 320px; gap:24px;
     }
-    @media(max-width:768px){.content-grid{grid-template-columns:1fr;}}
+    @media(max-width:768px) { .content-grid { grid-template-columns:1fr; } }
+
+    .section-header {
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:16px;
+    }
     .section-title {
-      font-family:'Syne',sans-serif;font-size:19px;font-weight:800;
-      margin-bottom:18px;
+      font-family:'Syne',sans-serif; font-size:18px; font-weight:800;
     }
     .section-title span { color:var(--accent2); }
-
-    /* NEWS */
-    .news-card {
-      background:var(--surface);border:1px solid var(--border);
-      border-radius:14px;padding:20px 22px;margin-bottom:14px;
+    .btn-manage {
+      font-size:12px; font-weight:600; color:var(--accent);
+      background:#EEF4FF; border:none; border-radius:7px;
+      padding:5px 12px; cursor:pointer; text-decoration:none;
+      display:inline-flex; align-items:center; gap:4px;
+      transition:opacity 0.2s;
     }
-    .news-date  { font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:7px; }
-    .news-title { font-size:16px;font-weight:600;margin-bottom:7px;line-height:1.3; }
-    .news-body  { font-size:14px;color:var(--muted);line-height:1.7; }
-    .news-tag   { display:inline-block;background:var(--card);color:var(--accent);font-size:11px;font-weight:600;padding:3px 8px;border-radius:5px;margin-top:10px; }
+    .btn-manage:hover { opacity:0.75; }
+
+    /* ACTUALITÉS */
+    .news-card {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:13px; padding:18px 20px; margin-bottom:12px;
+    }
+    .news-date {
+      font-size:11px; color:var(--muted); text-transform:uppercase;
+      letter-spacing:0.5px; margin-bottom:6px;
+    }
+    .news-title { font-size:15px; font-weight:600; margin-bottom:6px; line-height:1.3; }
+    .news-body  { font-size:13px; color:var(--muted); line-height:1.7; }
+    .news-cat {
+      display:inline-block; font-size:11px; font-weight:700;
+      padding:2px 8px; border-radius:4px; margin-top:8px;
+      text-transform:uppercase; letter-spacing:0.4px;
+    }
+    .cat-Tournoi      { background:#FFF3CD; color:#856404; }
+    .cat-Entraînement { background:#D1ECF1; color:#0C5460; }
+    .cat-Recrutement  { background:#D4EDDA; color:#155724; }
+    .cat-Résultat     { background:#F8D7DA; color:#721C24; }
+    .cat-Information  { background:#E2E3E5; color:#383D41; }
 
     /* SIDEBAR */
-    .sidebar { display:flex;flex-direction:column;gap:18px; }
+    .sidebar { display:flex; flex-direction:column; gap:16px; }
     .info-card {
-      background:var(--surface);border:1px solid var(--border);
-      border-radius:14px;padding:20px 22px;
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:13px; padding:18px 20px;
     }
-    .info-card h3 { font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:12px; }
-    .info-row { display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px; }
+    .info-card-header {
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:12px;
+    }
+    .info-card h3 {
+      font-family:'Syne',sans-serif; font-size:14px; font-weight:700;
+    }
+    .info-row {
+      display:flex; justify-content:space-between; padding:6px 0;
+      border-bottom:1px solid var(--border); font-size:13px;
+    }
     .info-row:last-child { border-bottom:none; }
     .info-row .key { color:var(--muted); }
-    .info-row .val { font-weight:600;text-align:right;max-width:60%; }
-    .schedule-row { display:flex;justify-content:space-between;font-size:13px;padding:5px 10px;border-radius:7px;background:var(--card);margin-bottom:4px; }
-    .schedule-row .day { font-weight:600; }
-    .schedule-row.ferme { opacity:0.38;text-decoration:line-through; }
+    .info-row .val { font-weight:600; text-align:right; max-width:60%; }
 
-    /* MODAL */
+    /* HORAIRES */
+    .schedule-row {
+      display:flex; justify-content:space-between; font-size:13px;
+      padding:5px 10px; border-radius:7px; background:var(--card);
+      margin-bottom:4px;
+    }
+    .schedule-row .day { font-weight:600; }
+    .schedule-row .activite { font-size:11px; color:var(--muted); margin-top:1px; }
+
+    /* ÉTAT VIDE */
+    .empty-block {
+      text-align:center; padding:24px 16px;
+      color:var(--muted); font-size:13px;
+    }
+    .empty-block span { font-size:24px; display:block; margin-bottom:6px; }
+
+    /* LOADER */
+    .loader-inline {
+      text-align:center; padding:20px; color:var(--muted); font-size:13px;
+    }
+
+    /* ERREUR */
+    .erreur-block {
+      background:#fff0f0; border:1px solid #e85d75;
+      border-radius:10px; padding:16px; font-size:13px;
+      color:#c0392b; text-align:center;
+    }
+
+    /* MODAL cotisation/contact uniquement */
     .modal-overlay {
-      display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);
-      z-index:1000;align-items:center;justify-content:center;
+      display:none; position:fixed; inset:0;
+      background:rgba(0,0,0,0.5); z-index:1000;
+      align-items:center; justify-content:center;
     }
     .modal-overlay.open { display:flex; }
     .modal {
-      background:#fff;border-radius:18px;padding:30px;
-      width:100%;max-width:540px;max-height:86vh;overflow-y:auto;margin:14px;
+      background:#fff; border-radius:18px; padding:28px;
+      width:100%; max-width:500px; max-height:86vh;
+      overflow-y:auto; margin:14px;
     }
-    .modal h2 { font-family:'Syne',sans-serif;font-size:19px;font-weight:800;margin-bottom:18px; }
-    .modal-tabs { display:flex;gap:5px;background:var(--bg);padding:4px;border-radius:9px;margin-bottom:22px; }
+    .modal h2 {
+      font-family:'Syne',sans-serif; font-size:18px;
+      font-weight:800; margin-bottom:18px;
+    }
+    .modal-tabs {
+      display:flex; gap:5px; background:var(--bg);
+      padding:4px; border-radius:9px; margin-bottom:20px;
+    }
     .tab-btn {
-      flex:1;background:none;border:none;font-family:'DM Sans',sans-serif;
-      font-size:13px;padding:7px;border-radius:7px;cursor:pointer;color:var(--muted);transition:all 0.2s;
+      flex:1; background:none; border:none;
+      font-family:'DM Sans',sans-serif; font-size:13px;
+      padding:7px; border-radius:7px; cursor:pointer;
+      color:var(--muted); transition:all 0.2s;
     }
-    .tab-btn.active { background:#fff;color:var(--text);font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,0.1); }
+    .tab-btn.active {
+      background:#fff; color:var(--text); font-weight:600;
+      box-shadow:0 1px 4px rgba(0,0,0,0.1);
+    }
     .tab-panel { display:none; }
     .tab-panel.active { display:block; }
-    .form-group { margin-bottom:14px; }
-    .form-label { font-size:12px;font-weight:500;color:var(--muted);display:block;margin-bottom:5px; }
-    .form-input,.form-textarea,.form-select {
-      width:100%;border:1.5px solid var(--border);border-radius:9px;
-      font-family:'DM Sans',sans-serif;font-size:14px;padding:9px 13px;
-      outline:none;transition:border-color 0.2s;color:var(--text);background:#fff;
+    .form-group { margin-bottom:13px; }
+    .form-label {
+      font-size:12px; font-weight:500; color:var(--muted);
+      display:block; margin-bottom:4px;
     }
-    .form-input:focus,.form-textarea:focus,.form-select:focus { border-color:var(--accent); }
-    .form-textarea { resize:vertical;min-height:75px; }
-    .modal-actions { display:flex;gap:10px;margin-top:20px;justify-content:flex-end; }
+    .form-input, .form-textarea, .form-select {
+      width:100%; border:1.5px solid var(--border); border-radius:9px;
+      font-family:'DM Sans',sans-serif; font-size:14px;
+      padding:9px 13px; outline:none; transition:border-color 0.2s;
+      color:var(--text); background:#fff;
+    }
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      border-color:var(--accent);
+    }
+    .form-textarea { resize:vertical; min-height:70px; }
+    .modal-actions {
+      display:flex; gap:10px; margin-top:18px; justify-content:flex-end;
+    }
     .btn-save {
-      background:var(--accent);color:#fff;border:none;border-radius:8px;
-      font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;
-      padding:10px 22px;cursor:pointer;transition:opacity 0.2s;
+      background:var(--accent); color:#fff; border:none;
+      border-radius:8px; font-family:'DM Sans',sans-serif;
+      font-size:14px; font-weight:600; padding:9px 20px; cursor:pointer;
     }
-    .btn-save:hover { opacity:0.85; }
     .btn-cancel {
-      background:var(--card);color:var(--muted);border:1px solid var(--border);
-      border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 18px;cursor:pointer;
+      background:var(--card); color:var(--muted);
+      border:1px solid var(--border); border-radius:8px;
+      font-family:'DM Sans',sans-serif; font-size:14px;
+      padding:9px 16px; cursor:pointer;
     }
-    .pub-btn {
-      width:100%;background:var(--accent2);color:#fff;border:none;border-radius:8px;
-      font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;
-      padding:10px;cursor:pointer;margin-top:4px;transition:opacity 0.2s;
-    }
-    .pub-btn:hover { opacity:0.85; }
 
     /* TOAST */
     .toast {
-      position:fixed;bottom:24px;right:24px;
-      background:var(--accent);color:#fff;
-      padding:11px 18px;border-radius:9px;font-size:14px;font-weight:500;
-      transform:translateY(70px);opacity:0;transition:all 0.3s;z-index:2000;
+      position:fixed; bottom:24px; right:24px;
+      background:var(--accent); color:#fff;
+      padding:11px 18px; border-radius:9px; font-size:14px;
+      font-weight:500; transform:translateY(70px); opacity:0;
+      transition:all 0.3s; z-index:2000;
     }
-    .toast.show { transform:translateY(0);opacity:1; }
+    .toast.show { transform:translateY(0); opacity:1; }
   </style>
 </head>
 <body>
@@ -164,100 +250,406 @@
     <div class="logo">Clubs<span>Sport</span></div>
     <p>Espace club — informations publiques</p>
   </div>
+  <nav>
+    <a href="index.html">← Carte</a>
+  </nav>
 </header>
 
-<!-- HERO CLUB -->
+<!-- HERO — vraies données depuis la BDD -->
 <div class="club-hero">
   <div class="club-badge" id="hero-fed">Chargement…</div>
   <h1 id="hero-nom">—</h1>
   <p class="sub" id="hero-region"></p>
   <div class="stats-row">
-    <div class="stat-item"><div class="num" id="stat-total">—</div><div class="lbl">Licenciés 2019</div></div>
-    <div class="stat-item"><div class="num" id="stat-femmes">—</div><div class="lbl">Femmes</div></div>
-    <div class="stat-item"><div class="num" id="stat-hommes">—</div><div class="lbl">Hommes</div></div>
+    <div class="stat-item">
+      <div class="num" id="stat-total">—</div>
+      <div class="lbl">Licenciés 2019</div>
+    </div>
+    <div class="stat-item">
+      <div class="num" id="stat-femmes" style="color:#e85d75">—</div>
+      <div class="lbl">Femmes</div>
+    </div>
+    <div class="stat-item">
+      <div class="num" id="stat-hommes" style="color:#4fc896">—</div>
+      <div class="lbl">Hommes</div>
+    </div>
   </div>
 </div>
 
-<!-- BARRE MODE -->
-<div class="mode-bar">
-  <p>Page publique du club. <span style="color:var(--accent)">Connectez-vous</span> pour modifier.</p>
-  <button class="btn-edit" onclick="ouvrirModal()">✏️ Modifier les informations</button>
+<!-- BARRE ACTIONS — liens vers pages de gestion -->
+<div class="actions-bar">
+  <a class="btn-action" id="lien-horaires" href="#">📅 Gérer les horaires</a>
+  <a class="btn-action" id="lien-actualites" href="#">📢 Gérer les actualités</a>
+  <button class="btn-action secondary" onclick="ouvrirModal()">⚙️ Cotisations &amp; Contact</button>
 </div>
 
-<!-- CONTENU -->
+<!-- CONTENU PRINCIPAL -->
 <div class="content-grid">
+
+  <!-- ACTUALITÉS — chargées depuis /api/actualites -->
   <div>
-    <div class="section-title">Actualités <span>&</span> Infos</div>
-    <div id="news-list"><p style="color:var(--muted);font-size:14px">Chargement…</p></div>
+    <div class="section-header">
+      <div class="section-title">Actualités <span>&</span> Infos</div>
+      <a class="btn-manage" id="lien-actu-manage" href="#">✏️ Gérer</a>
+    </div>
+    <div id="actualites-list">
+      <div class="loader-inline">Chargement des actualités…</div>
+    </div>
   </div>
+
+  <!-- SIDEBAR -->
   <div class="sidebar">
-    <div class="info-card"><h3>🕐 Horaires</h3><div id="horaires-display"></div></div>
-    <div class="info-card"><h3>💳 Cotisations</h3><div id="cotisations-display"></div></div>
-    <div class="info-card"><h3>📍 Contact</h3><div id="contact-display"></div></div>
+
+    <!-- HORAIRES — chargés depuis /api/horaires -->
+    <div class="info-card">
+      <div class="info-card-header">
+        <h3>🕐 Horaires d'entraînement</h3>
+        <a class="btn-manage" id="lien-hor-manage" href="#">✏️ Modifier</a>
+      </div>
+      <div id="horaires-display">
+        <div class="loader-inline">Chargement…</div>
+      </div>
+    </div>
+
+    <!-- COTISATIONS — depuis espace_club -->
+    <div class="info-card">
+      <div class="info-card-header">
+        <h3>💳 Cotisations</h3>
+      </div>
+      <div id="cotisations-display">
+        <p style="font-size:13px;color:var(--muted)">Non renseigné.</p>
+      </div>
+    </div>
+
+    <!-- CONTACT — depuis espace_club -->
+    <div class="info-card">
+      <div class="info-card-header">
+        <h3>📍 Contact</h3>
+      </div>
+      <div id="contact-display">
+        <p style="font-size:13px;color:var(--muted)">Non renseigné.</p>
+      </div>
+    </div>
+
   </div>
 </div>
 
-<!-- MODAL EDITION -->
+<!-- MODAL cotisations + contact uniquement -->
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
-    <h2>Modifier les informations du club</h2>
+    <h2>Modifier cotisations &amp; contact</h2>
     <div class="modal-tabs">
-      <button class="tab-btn active" onclick="switchTab('actualites')">Actualités</button>
-      <button class="tab-btn" onclick="switchTab('horaires')">Horaires</button>
-      <button class="tab-btn" onclick="switchTab('cotisations')">Cotisations</button>
+      <button class="tab-btn active" onclick="switchTab('cotisations')">Cotisations</button>
       <button class="tab-btn" onclick="switchTab('contact')">Contact</button>
     </div>
 
-    <!-- ACTUALITÉS -->
-    <div class="tab-panel active" id="tab-actualites">
+    <div class="tab-panel active" id="tab-cotisations">
       <div class="form-group">
-        <label class="form-label">Titre</label>
-        <input type="text" class="form-input" id="news-titre" placeholder="Ex : Tournoi de printemps 2025">
+        <label class="form-label">Adulte (€/an)</label>
+        <input type="number" class="form-input" id="cotis-adulte">
       </div>
       <div class="form-group">
-        <label class="form-label">Contenu</label>
-        <textarea class="form-textarea" id="news-corps" rows="4" placeholder="Décrivez l'actualité…"></textarea>
+        <label class="form-label">Jeune – 18 ans (€/an)</label>
+        <input type="number" class="form-input" id="cotis-jeune">
       </div>
       <div class="form-group">
-        <label class="form-label">Catégorie</label>
-        <select class="form-select" id="news-tag">
-          <option>Tournoi</option><option>Entraînement</option>
-          <option>Recrutement</option><option>Résultat</option><option>Information</option>
-        </select>
+        <label class="form-label">Famille (€/an)</label>
+        <input type="number" class="form-input" id="cotis-famille">
       </div>
-      <button class="pub-btn" onclick="ajouterActualite()">📢 Publier cette actualité</button>
+      <div class="form-group">
+        <label class="form-label">Note</label>
+        <textarea class="form-textarea" id="cotis-note"></textarea>
+      </div>
     </div>
 
-    <!-- HORAIRES -->
-    <div class="tab-panel" id="tab-horaires">
-      <div id="horaires-form"></div>
-    </div>
-
-    <!-- COTISATIONS -->
-    <div class="tab-panel" id="tab-cotisations">
-      <div class="form-group"><label class="form-label">Adulte (€/an)</label><input type="number" class="form-input" id="cotis-adulte"></div>
-      <div class="form-group"><label class="form-label">Jeune – 18 ans (€/an)</label><input type="number" class="form-input" id="cotis-jeune"></div>
-      <div class="form-group"><label class="form-label">Famille (€/an)</label><input type="number" class="form-input" id="cotis-famille"></div>
-      <div class="form-group"><label class="form-label">Note (réductions…)</label><textarea class="form-textarea" id="cotis-note"></textarea></div>
-    </div>
-
-    <!-- CONTACT -->
     <div class="tab-panel" id="tab-contact">
-      <div class="form-group"><label class="form-label">Adresse</label><input type="text" class="form-input" id="contact-adresse"></div>
-      <div class="form-group"><label class="form-label">Téléphone</label><input type="tel" class="form-input" id="contact-tel"></div>
-      <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="contact-email"></div>
-      <div class="form-group"><label class="form-label">Site web</label><input type="url" class="form-input" id="contact-web"></div>
+      <div class="form-group">
+        <label class="form-label">Adresse</label>
+        <input type="text" class="form-input" id="contact-adresse">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Téléphone</label>
+        <input type="tel" class="form-input" id="contact-tel">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" id="contact-email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Site web</label>
+        <input type="url" class="form-input" id="contact-web">
+      </div>
     </div>
 
     <div class="modal-actions">
       <button class="btn-cancel" onclick="fermerModal()">Annuler</button>
-      <button class="btn-save" onclick="sauvegarder()">💾 Enregistrer</button>
+      <button class="btn-save" onclick="sauvegarderInfos()">💾 Enregistrer</button>
     </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<script src="club-app.js"></script>
+<script>
+  // ── Code commune depuis l'URL ──────────────────────────────
+  const CODE = new URLSearchParams(window.location.search).get('id') || '';
+
+  // APIs
+  const API_CLUB      = `/clubs/api/club/${CODE}`;
+  const API_CLUB_SAVE = `/clubs/api/club/${CODE}/update`;
+  const API_HORAIRES  = `/clubs/api/horaires?codeCommune=${CODE}`;
+  const API_ACTU      = `/clubs/api/actualites?codeCommune=${CODE}`;
+
+  // Données locales cotisations/contact
+  let infosLocales = {
+    cotisations: { adulte: 0, jeune: 0, famille: 0, note: '' },
+    contact:     { adresse: '', tel: '', email: '', web: '' }
+  };
+
+  // Mettre à jour les liens de gestion
+  document.getElementById('lien-horaires').href    = `horaires.html?id=${CODE}`;
+  document.getElementById('lien-actualites').href  = `actualites.html?id=${CODE}`;
+  document.getElementById('lien-actu-manage').href = `actualites.html?id=${CODE}`;
+  document.getElementById('lien-hor-manage').href  = `horaires.html?id=${CODE}`;
+
+  // ── CHARGEMENT AU DÉMARRAGE ───────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!CODE) {
+      document.getElementById('hero-nom').textContent = 'Code commune manquant dans l\'URL';
+      return;
+    }
+    chargerClub();
+    chargerHoraires();
+    chargerActualites();
+  });
+
+  // ── 1. STATS DU CLUB (vraies données) ────────────────────
+  async function chargerClub() {
+    try {
+      const r = await fetch(API_CLUB);
+      if (!r.ok) throw new Error(r.status);
+      const data = await r.json();
+
+      document.getElementById('hero-nom').textContent    = data.nom        || '—';
+      document.getElementById('hero-fed').textContent    = data.federation || '—';
+      document.getElementById('hero-region').textContent = data.region     || '—';
+      document.getElementById('stat-total').textContent  = (data.total  ?? 0).toLocaleString('fr-FR');
+      document.getElementById('stat-femmes').textContent = (data.femmes ?? 0).toLocaleString('fr-FR');
+      document.getElementById('stat-hommes').textContent = (data.hommes ?? 0).toLocaleString('fr-FR');
+
+      // Contenu espace_club (cotisations + contact)
+      if (data.contenu) {
+        const c = data.contenu;
+        if (c.cotisation || c.adresse) {
+          infosLocales.cotisations = {
+            adulte:  c.cotisation || 0,
+            jeune:   0, famille: 0, note: ''
+          };
+          infosLocales.contact = {
+            adresse: c.adresse || '',
+            tel: '', email: '', web: ''
+          };
+        }
+        renderCotisations();
+        renderContact();
+      }
+    } catch(e) {
+      document.getElementById('hero-nom').textContent = 'Erreur de connexion à la base de données';
+      document.getElementById('hero-fed').textContent = '';
+    }
+  }
+
+  // ── 2. HORAIRES depuis /api/horaires ─────────────────────
+  async function chargerHoraires() {
+    const el = document.getElementById('horaires-display');
+    try {
+      const r = await fetch(API_HORAIRES);
+      if (!r.ok) throw new Error(r.status);
+      const data = await r.json();
+      const horaires = data.horaires || [];
+
+      if (!horaires.length) {
+        el.innerHTML = `
+          <div class="empty-block">
+            <span>📅</span>
+            Aucune séance programmée.
+            <a href="horaires.html?id=${CODE}" style="color:var(--accent);display:block;margin-top:6px;font-size:12px">
+              + Ajouter des horaires
+            </a>
+          </div>`;
+        return;
+      }
+
+      const JOURS = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+      const parJour = {};
+      JOURS.forEach(j => parJour[j] = []);
+      horaires.forEach(h => { if (parJour[h.jour]) parJour[h.jour].push(h); });
+
+      el.innerHTML = JOURS
+        .filter(j => parJour[j].length > 0)
+        .map(jour => parJour[jour].map(h => `
+          <div class="schedule-row">
+            <span class="day">${esc(jour)}</span>
+            <div style="text-align:right">
+              <div>${fmt(h.heureDebut)} – ${fmt(h.heureFin)}</div>
+              ${h.activite ? `<div class="activite">${esc(h.activite)}${h.niveau ? ' · '+esc(h.niveau) : ''}</div>` : ''}
+            </div>
+          </div>`).join('')
+        ).join('');
+
+    } catch(e) {
+      el.innerHTML = `<div class="erreur-block">⚠️ Impossible de charger les horaires.</div>`;
+    }
+  }
+
+  // ── 3. ACTUALITÉS depuis /api/actualites ─────────────────
+  async function chargerActualites() {
+    const el = document.getElementById('actualites-list');
+    try {
+      const r = await fetch(API_ACTU);
+      if (!r.ok) throw new Error(r.status);
+      const data = await r.json();
+      const actualites = data.actualites || [];
+
+      if (!actualites.length) {
+        el.innerHTML = `
+          <div class="empty-block">
+            <span>📰</span>
+            Aucune actualité publiée pour ce club.
+            <a href="actualites.html?id=${CODE}" style="color:var(--accent);display:block;margin-top:6px;font-size:12px">
+              + Publier une actualité
+            </a>
+          </div>`;
+        return;
+      }
+
+      el.innerHTML = actualites.map(a => `
+        <div class="news-card">
+          <div class="news-date">${fmtDate(a.datePublication)}</div>
+          <div class="news-title">${esc(a.titre)}</div>
+          <div class="news-body">${esc(a.contenu)}</div>
+          <span class="news-cat cat-${esc(a.categorie)}">${esc(a.categorie)}</span>
+        </div>`).join('');
+
+    } catch(e) {
+      el.innerHTML = `<div class="erreur-block">⚠️ Impossible de charger les actualités.</div>`;
+    }
+  }
+
+  // ── RENDU cotisations et contact ─────────────────────────
+  function renderCotisations() {
+    const c  = infosLocales.cotisations;
+    const el = document.getElementById('cotisations-display');
+    if (!c.adulte && !c.jeune && !c.famille) {
+      el.innerHTML = '<p style="font-size:13px;color:var(--muted)">Non renseigné.</p>';
+      return;
+    }
+    el.innerHTML = `
+      ${c.adulte  ? `<div class="info-row"><span class="key">Adulte</span><span class="val">${c.adulte} €/an</span></div>` : ''}
+      ${c.jeune   ? `<div class="info-row"><span class="key">Jeune (–18 ans)</span><span class="val">${c.jeune} €/an</span></div>` : ''}
+      ${c.famille ? `<div class="info-row"><span class="key">Famille</span><span class="val">${c.famille} €/an</span></div>` : ''}
+      ${c.note    ? `<p style="font-size:12px;color:var(--muted);margin-top:8px">${esc(c.note)}</p>` : ''}`;
+  }
+
+  function renderContact() {
+    const c  = infosLocales.contact;
+    const el = document.getElementById('contact-display');
+    if (!c.adresse && !c.tel && !c.email) {
+      el.innerHTML = '<p style="font-size:13px;color:var(--muted)">Non renseigné.</p>';
+      return;
+    }
+    el.innerHTML = `
+      ${c.adresse ? `<div class="info-row"><span class="key">Adresse</span><span class="val">${esc(c.adresse)}</span></div>` : ''}
+      ${c.tel     ? `<div class="info-row"><span class="key">Tél</span><span class="val">${esc(c.tel)}</span></div>` : ''}
+      ${c.email   ? `<div class="info-row"><span class="key">Email</span><span class="val">${esc(c.email)}</span></div>` : ''}
+      ${c.web     ? `<div class="info-row"><span class="key">Web</span><a href="${esc(c.web)}" target="_blank" style="color:var(--accent);font-size:12px">${esc(c.web)}</a></div>` : ''}`;
+  }
+
+  // ── MODAL cotisations/contact ─────────────────────────────
+  function ouvrirModal() {
+    const c  = infosLocales.cotisations;
+    const ct = infosLocales.contact;
+    document.getElementById('cotis-adulte').value    = c.adulte   || '';
+    document.getElementById('cotis-jeune').value     = c.jeune    || '';
+    document.getElementById('cotis-famille').value   = c.famille  || '';
+    document.getElementById('cotis-note').value      = c.note     || '';
+    document.getElementById('contact-adresse').value = ct.adresse || '';
+    document.getElementById('contact-tel').value     = ct.tel     || '';
+    document.getElementById('contact-email').value   = ct.email   || '';
+    document.getElementById('contact-web').value     = ct.web     || '';
+    document.getElementById('modal-overlay').classList.add('open');
+  }
+
+  function fermerModal() {
+    document.getElementById('modal-overlay').classList.remove('open');
+  }
+
+  function switchTab(name) {
+    const tabs = ['cotisations', 'contact'];
+    document.querySelectorAll('.tab-btn').forEach((b, i) =>
+      b.classList.toggle('active', tabs[i] === name));
+    document.querySelectorAll('.tab-panel').forEach(p =>
+      p.classList.toggle('active', p.id === 'tab-' + name));
+  }
+
+  async function sauvegarderInfos() {
+    infosLocales.cotisations = {
+      adulte:  +document.getElementById('cotis-adulte').value  || 0,
+      jeune:   +document.getElementById('cotis-jeune').value   || 0,
+      famille: +document.getElementById('cotis-famille').value || 0,
+      note:     document.getElementById('cotis-note').value
+    };
+    infosLocales.contact = {
+      adresse: document.getElementById('contact-adresse').value,
+      tel:     document.getElementById('contact-tel').value,
+      email:   document.getElementById('contact-email').value,
+      web:     document.getElementById('contact-web').value
+    };
+
+    try {
+      const r = await fetch(API_CLUB_SAVE, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(infosLocales)
+      });
+      if (!r.ok) throw new Error(r.status);
+    } catch(e) {
+      alert('Erreur lors de la sauvegarde : ' + e.message);
+      return;
+    }
+
+    renderCotisations();
+    renderContact();
+    fermerModal();
+    toast('Informations mises à jour !');
+  }
+
+  document.getElementById('modal-overlay').addEventListener('click', e => {
+    if (e.target === e.currentTarget) fermerModal();
+  });
+
+  // ── UTILITAIRES ──────────────────────────────────────────
+  function fmt(t)  { return t ? String(t).substring(0, 5) : ''; }
+
+  function fmtDate(d) {
+    if (!d) return '';
+    return new Date(d).toLocaleDateString('fr-FR', {
+      day: 'numeric', month: 'long', year: 'numeric'
+    });
+  }
+
+  function esc(s) {
+    if (!s) return '';
+    return String(s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = '✓ ' + msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+</script>
 </body>
 </html>
