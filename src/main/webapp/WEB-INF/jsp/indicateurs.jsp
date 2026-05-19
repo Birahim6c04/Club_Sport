@@ -4,24 +4,33 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<title>Indicateurs statistiques</title>
-<link rel="stylesheet" href="css/indicateurs.css">
+    <meta charset="UTF-8">
+    <title>Indicateurs statistiques</title>
+    <link rel="stylesheet" href="css/indicateurs.css">
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
 
 <div class="sidebar">
     <h2>🏛 Élus</h2>
-    <a href="ElusDashboard"> Dashboard</a>
-    <a href="LeClassement"> Classement</a>
-    <a href="indicateurs"> Statistiques</a>
-   
+    <a href="ElusDashboard">Dashboard</a>
+    <a href="LeClassement">Classement</a>
+    <a href="indicateurs">Statistiques</a>
 </div>
 
 <div class="main">
+
+    <div class="top-navbar">
+        <div class="nav-left">
+            <a href="accueil">Accueil</a>
+        </div>
+
+        <div class="nav-right">
+            <a href="#">Déconnexion</a>
+        </div>
+    </div>
 
     <h1>Indicateurs statistiques</h1>
 
@@ -100,12 +109,16 @@
 
                 <button type="submit">Appliquer</button>
             </form>
-            </form>
 
-			<a class="export-btn"
-			   href="export?type=indicateurs&region=${region}&departement=${departement}&codeCommune=${codeCommune}&federation=${federation}"
-			   onclick="return verifierExportIndicateurs('${region}');">
-			    Exporter
+            <a class="export-btn"
+               href="export?type=indicateurs&region=${region}&departement=${departement}&codeCommune=${codeCommune}&federation=${federation}"
+               onclick="return verifierExportIndicateurs('${region}');">
+                Exporter Excel
+            </a>
+            <a class="export-btn"
+			   href="export-pdf?type=indicateurs&region=${region}&departement=${departement}&codeCommune=${codeCommune}&federation=${federation}"
+			   onclick="return verifierExport('${region}');">
+			    Exporter PDF
 			</a>
         </div>
 
@@ -124,7 +137,7 @@
         </div>
 
         <div class="chart-box chart-large">
-            <h2>Nombre de clubs par fédération</h2>
+            <h2>Nombre de clubs et de licenciés par fédération</h2>
             <canvas id="clubsChart"></canvas>
         </div>
 
@@ -146,14 +159,20 @@ const ageValues = [
 ];
 
 const clubsLabels = [
-    <c:forEach var="stat" items="${clubsFederations}" varStatus="status">
-        "${stat.label}"<c:if test="${!status.last}">,</c:if>
+    <c:forEach var="item" items="${clubsLicenciesFederations}" varStatus="status">
+        "${item.federation}"<c:if test="${!status.last}">,</c:if>
     </c:forEach>
 ];
 
 const clubsValues = [
-    <c:forEach var="stat" items="${clubsFederations}" varStatus="status">
-        ${stat.valeur}<c:if test="${!status.last}">,</c:if>
+    <c:forEach var="item" items="${clubsLicenciesFederations}" varStatus="status">
+        ${item.clubs}<c:if test="${!status.last}">,</c:if>
+    </c:forEach>
+];
+
+const licenciesValues = [
+    <c:forEach var="item" items="${clubsLicenciesFederations}" varStatus="status">
+        ${item.licencies}<c:if test="${!status.last}">,</c:if>
     </c:forEach>
 ];
 
@@ -187,7 +206,7 @@ new Chart(document.getElementById('rapportAgeClubsChart'), {
 });
 </script>
 
-<script src="js/indicateurs.js"></script>
+<script src="js/indicateurs.js?v=2"></script>
 
 <script>
 function verifierExportIndicateurs(region) {

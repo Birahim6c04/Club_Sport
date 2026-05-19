@@ -151,3 +151,55 @@ tr:nth-child(even) {
     height: 350px;
     box-shadow: 0 6px 24px rgba(14, 165, 183, 0.18);
 }
+/* =========================
+   TOP NAVBAR
+========================= */
+
+.top-navbar {
+    background: white;
+
+    height: 70px;
+
+    margin: -25px -25px 35px -25px;
+
+    padding: 0 35px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    box-shadow: 0 4px 12px rgba(14, 165, 183, 0.12);
+
+    border-bottom: 1px solid #dff7fb;
+}
+
+/* =========================
+   LIENS NAVBAR
+========================= */
+
+.top-navbar a {
+    text-decoration: none;
+    color: #0ea5b7;
+
+    font-weight: bold;
+    font-size: 18px;
+
+    transition: 0.2s;
+}
+
+/* =========================
+   HOVER
+========================= */
+
+.top-navbar a:hover {
+    color: #0b8ea0;
+}
+
+/* =========================
+   MAIN
+========================= */
+
+.main {
+    flex: 1;
+    padding: 25px;
+}

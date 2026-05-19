@@ -13,12 +13,23 @@
 
 <div class="sidebar">
     <h2>🏛 Élus</h2>
-    <a href="ElusDashboard"> Dashboard</a>
-    <a href="LeClassement"> Classement</a>
-    <a href="indicateurs"> Statistiques</a>
+    <a href="ElusDashboard">Dashboard</a>
+    <a href="LeClassement">Classement</a>
+    <a href="indicateurs">Statistiques</a>
 </div>
 
 <div class="main">
+
+    <div class="top-navbar">
+    <div class="nav-left">
+        <a href="accueil">Accueil</a>
+    </div>
+
+    <div class="nav-right">
+        <a href="#">Déconnexion</a>
+    </div>
+</div>
+
 
 <h1>Tableau de bord des élus</h1>
 
@@ -85,8 +96,14 @@
             <a class="export-btn"
                href="export?type=dashboard&region=${region}&departement=${departement}&codeCommune=${codeCommune}&federation=${federation}"
                onclick="return verifierExport('${region}');">
-                Exporter
+                Exporter Excel
             </a>
+            
+            <a class="export-btn"
+			   href="export-pdf?type=dashboard&region=${region}&departement=${departement}&codeCommune=${codeCommune}&federation=${federation}"
+			   onclick="return verifierExport('${region}');">
+			    Exporter PDF
+			</a>
 
         </form>
     </div>
@@ -121,7 +138,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="js/chart.js"></script>
+<script src="js/chart.js?v=2"></script>
 
 <script>
     drawChart(${hommes}, ${femmes});

@@ -1,5 +1,3 @@
-
-
 new Chart(document.getElementById('ageChart'), {
     type: 'bar',
 
@@ -17,10 +15,20 @@ new Chart(document.getElementById('clubsChart'), {
 
     data: {
         labels: clubsLabels,
-        datasets: [{
-            label: 'Nombre de clubs',
-            data: clubsValues
-        }]
+		datasets: [
+		    {
+		        label: 'Nombre de clubs',
+		        data: clubsValues,
+		        xAxisID: 'xClubs',
+		        backgroundColor: '#3498db'
+		    },
+		    {
+		        label: 'Nombre de licenciés',
+		        data: licenciesValues,
+		        xAxisID: 'xLicencies',
+		        backgroundColor: '#f39c12'
+		    }
+		]
     },
 
     options: {
@@ -35,6 +43,19 @@ new Chart(document.getElementById('clubsChart'), {
         },
 
         scales: {
+            xClubs: {
+                type: 'linear',
+                position: 'bottom'
+            },
+
+            xLicencies: {
+                type: 'linear',
+                position: 'top',
+                grid: {
+                    drawOnChartArea: false
+                }
+            },
+
             y: {
                 ticks: {
                     font: {

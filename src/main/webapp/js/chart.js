@@ -29,18 +29,41 @@ function drawChart(hommes, femmes) {
             // Le graphique s'adapte à la taille de l'écran
             responsive: true,
 
-            plugins: {
-                // Position de la légende
-                legend: {
-                    position: 'bottom'
-                },
+			plugins: {
 
-                // Titre du graphique
-                title: {
-                    display: true,
-                    text: 'Répartition des licenciés par genre'
-                }
-            }
+			    // Position de la légende
+			    legend: {
+			        position: 'bottom'
+			    },
+
+			    // Titre du graphique
+			    title: {
+			        display: true,
+			        text: 'Répartition des licenciés par genre'
+			    },
+
+			    // Tooltip au survol
+			    tooltip: {
+			        callbacks: {
+
+			            label: function(context) {
+
+			                let total = context.dataset.data.reduce(
+			                    (a, b) => a + b,
+			                    0
+			                );
+
+			                let valeur = context.raw;
+
+			                let pourcentage =
+			                    ((valeur / total) * 100).toFixed(1);
+
+			                return context.label + " : "
+			                        + pourcentage + "%";
+			            }
+			        }
+			    }
+			}
         }
     });
 }

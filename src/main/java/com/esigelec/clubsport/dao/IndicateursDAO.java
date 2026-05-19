@@ -1,6 +1,7 @@
 package com.esigelec.clubsport.dao;
 
 import com.esigelec.clubsport.model.StatDTO;
+import com.esigelec.clubsport.model.ClubsLicenciesDTO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -135,7 +136,7 @@ public class IndicateursDAO {
 
         return stats;
     }
-
+    
     public int getTotalClubsFiltre(
             String region,
             String departement,
@@ -155,6 +156,91 @@ public class IndicateursDAO {
         ajouterFiltres(sql, params, region, departement, federation, codeCommune);
 
         return executerTotal(sql.toString(), params, "total_clubs");
+    }
+    public List<ClubsLicenciesDTO> getClubsEtLicenciesParFederation(
+            String region,
+            String departement,
+            String codeCommune
+    ) throws Exception {
+
+        List<ClubsLicenciesDTO> liste = new ArrayList<>();
+
+        StringBuilder sql = new StringBuilder(
+                "SELECT " +
+                "f.nom_federation, " +
+                "SUM(cs.clubs) AS total_clubs, " +
+                "SUM(ls.total) AS total_licencies " +
+
+                "FROM club_stats cs " +
+
+                "JOIN licence_stats ls " +
+                "ON cs.code_commune = ls.code_commune " +
+                "AND cs.code_federation = ls.code_federation " +
+
+                "JOIN commune c " +
+                "ON cs.code_commune = c.code_commune " +
+
+                "JOIN federation f " +
+                "ON cs.code_federation = f.code_federation " +
+
+                "WHERE 1=1 "
+        );
+
+        List<Object> params = new ArrayList<>();
+
+        if (region != null && !region.isEmpty()) {
+            sql.append("AND c.region = ? ");
+            params.add(region);
+        }
+
+        if (departement != null && !departement.isEmpty()) {
+            sql.append("AND c.departement = ? ");
+            params.add(departement);
+        }
+
+        if (codeCommune != null && !codeCommune.isEmpty()) {
+            sql.append("AND c.code_commune = ? ");
+            params.add(codeCommune);
+        }
+
+        sql.append(
+                "GROUP BY f.nom_federation " +
+                "ORDER BY total_clubs DESC " +
+                "LIMIT 10"
+        );
+
+        try (
+                Connection conn = DbConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql.toString())
+        ) {
+
+            remplirParametres(ps, params);
+
+            try (ResultSet rs = ps.executeQuery()) {
+
+                while (rs.next()) {
+
+                    ClubsLicenciesDTO dto =
+                            new ClubsLicenciesDTO();
+
+                    dto.setFederation(
+                            rs.getString("nom_federation")
+                    );
+
+                    dto.setClubs(
+                            rs.getInt("total_clubs")
+                    );
+
+                    dto.setLicencies(
+                            rs.getInt("total_licencies")
+                    );
+
+                    liste.add(dto);
+                }
+            }
+        }
+
+        return liste;
     }
 
     public List<StatDTO> getRapportAgeClubs(
