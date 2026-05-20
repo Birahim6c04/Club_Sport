@@ -19,16 +19,14 @@ import java.util.Date;
 
 @WebServlet(urlPatterns = {"/connexion", "/inscription", "/deconnexion"})
 @MultipartConfig(
-    fileSizeThreshold = 1024 * 1024,        // 1 MB en mémoire
-    maxFileSize       = 10 * 1024 * 1024,   // 10 MB max par fichier
-    maxRequestSize    = 15 * 1024 * 1024    // 15 MB max requête totale
+    fileSizeThreshold = 1024 * 1024,
+    maxFileSize       = 10 * 1024 * 1024,
+    maxRequestSize    = 15 * 1024 * 1024
 )
 public class AuthController extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     private AuthService authService = new AuthService();
-
-    // Dossier d'upload dans le conteneur Docker
     private static final String DOSSIER_UPLOAD = "/app/uploads";
 
     @Override
@@ -72,15 +70,18 @@ public class AuthController extends HttpServlet {
 
         String login = req.getParameter("login");
         String motDePasse = req.getParameter("motDePasse");
+        String ip = req.getRemoteAddr();  // Recupere l'IP du client
 
         try {
             Utilisateur u = authService.connecter(login, motDePasse);
+
+            // LOG : connexion reussie
+            authService.loggerConnexion(login, ip, true);
 
             HttpSession session = req.getSession(true);
             session.setAttribute("utilisateur", u);
             session.setAttribute("role", u.getRole());
 
-            // Redirection selon le rôle
             if (u.getRole().equals("ELU")) {
                 req.getRequestDispatcher("/WEB-INF/jsp/elus.jsp").forward(req, resp);
             } else if (u.getRole().equals("ADMIN")) {
@@ -92,12 +93,17 @@ public class AuthController extends HttpServlet {
             }
 
         } catch (IllegalArgumentException e) {
+            // LOG : connexion echouee
+            authService.loggerConnexion(login, ip, false);
+
             req.setAttribute("erreur", e.getMessage());
             req.setAttribute("login", login);
             req.getRequestDispatcher("/WEB-INF/jsp/connexion.jsp").forward(req, resp);
 
         } catch (Exception e) {
             e.printStackTrace();
+            authService.loggerConnexion(login, ip, false);
+
             req.setAttribute("erreur", "Erreur serveur");
             req.getRequestDispatcher("/WEB-INF/jsp/connexion.jsp").forward(req, resp);
         }
@@ -114,14 +120,12 @@ public class AuthController extends HttpServlet {
         String role = req.getParameter("role");
 
         try {
-            // Gestion du fichier uploadé
             Part filePart = req.getPart("pieceJointe");
 
             if (filePart == null || filePart.getSize() == 0) {
                 throw new IllegalArgumentException("Veuillez joindre un fichier justificatif");
             }
 
-            // Vérifier l'extension
             String nomOriginal = filePart.getSubmittedFileName();
             String extension = "";
             int point = nomOriginal.lastIndexOf('.');
@@ -134,25 +138,18 @@ public class AuthController extends HttpServlet {
                 throw new IllegalArgumentException("Format de fichier non autorise (PDF, JPG, PNG uniquement)");
             }
 
-            // Créer le dossier s'il n'existe pas
             File dossier = new File(DOSSIER_UPLOAD);
             if (!dossier.exists()) {
                 dossier.mkdirs();
             }
 
-            // Nom unique : date_login_nomOriginal
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
             String nomFichier = sdf.format(new Date()) + "_" + login + "_" + nomOriginal;
-            // Nettoyer le nom (enlever espaces et caractères bizarres)
             nomFichier = nomFichier.replaceAll("[^a-zA-Z0-9._-]", "_");
 
-            // Chemin complet pour l'écriture
             String cheminComplet = DOSSIER_UPLOAD + "/" + nomFichier;
-
-            // Écriture du fichier
             filePart.write(cheminComplet);
 
-            // On stocke uniquement le nom du fichier en BDD (pas le chemin complet)
             authService.inscrire(login, motDePasse, email, nom, prenom, role, nomFichier);
 
             req.setAttribute("succes", "Inscription envoyee ! En attente de validation par un administrateur.");
