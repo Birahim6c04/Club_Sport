@@ -31,8 +31,11 @@ services:
         condition: service_healthy
     ports:
       - "8080:8080"
+      - "8443:8443"
     volumes:
       - ./uploads:/app/uploads
+      - ./tomcat/keystore.jks:/usr/local/tomcat/conf/keystore.jks
+      - ./tomcat/server.xml:/usr/local/tomcat/conf/server.xml
     networks:
       - clubs_network
 

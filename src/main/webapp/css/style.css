@@ -2432,3 +2432,213 @@ body.auth-page {
     color: #9ca3af;
     font-size: 12px;
 }
+
+
+/* =========================
+   PAGES LÉGALES
+========================= */
+.legal-page {
+    min-height: 100vh;
+    padding: 60px 20px;
+    background: linear-gradient(135deg, #f0fdfa, #ffffff);
+}
+
+.legal-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    padding: 50px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(14, 165, 183, 0.08);
+}
+
+.legal-back {
+    display: inline-block;
+    color: #0ea5b7;
+    text-decoration: none;
+    font-weight: 600;
+    margin-bottom: 30px;
+    font-size: 14px;
+}
+
+.legal-back:hover {
+    text-decoration: underline;
+}
+
+.legal-page h1 {
+    font-size: 36px;
+    color: #053f48;
+    margin-bottom: 10px;
+    font-weight: 800;
+}
+
+.legal-date {
+    color: #6b7d8d;
+    font-size: 13px;
+    margin-bottom: 40px;
+    font-style: italic;
+}
+
+.legal-page section {
+    margin-bottom: 30px;
+}
+
+.legal-page h2 {
+    font-size: 22px;
+    color: #0ea5b7;
+    margin-bottom: 12px;
+    font-weight: 700;
+}
+
+.legal-page p, .legal-page ul {
+    color: #374151;
+    line-height: 1.7;
+    margin-bottom: 10px;
+}
+
+.legal-page ul {
+    padding-left: 20px;
+}
+
+.legal-page li {
+    margin-bottom: 6px;
+}
+
+.legal-page a {
+    color: #0ea5b7;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.legal-page a:hover {
+    text-decoration: underline;
+}
+
+.cookies-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+}
+
+.cookies-table th,
+.cookies-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.cookies-table th {
+    background: #f0fdfa;
+    color: #053f48;
+    font-weight: 700;
+}
+
+.cookies-table code {
+    background: #f3f4f6;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 13px;
+    color: #0ea5b7;
+}
+
+/* =========================
+   BANNIÈRE COOKIES
+========================= */
+.cookies-banner {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 95%;
+    max-width: 900px;
+    background: white;
+    border: 1px solid rgba(14, 165, 183, 0.2);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    padding: 24px 28px;
+    z-index: 9999;
+    animation: slide-up 0.4s ease;
+}
+
+@keyframes slide-up {
+    from { transform: translate(-50%, 100px); opacity: 0; }
+    to   { transform: translate(-50%, 0);     opacity: 1; }
+}
+
+.cookies-content {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.cookies-text {
+    flex: 1;
+    min-width: 300px;
+}
+
+.cookies-text strong {
+    display: block;
+    font-size: 16px;
+    color: #053f48;
+    margin-bottom: 6px;
+}
+
+.cookies-text p {
+    color: #6b7d8d;
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.cookies-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-cookies-primary {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #0ea5b7, #5fcedb);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-cookies-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(14, 165, 183, 0.4);
+}
+
+.btn-cookies-ghost {
+    padding: 10px 20px;
+    background: white;
+    color: #6b7d8d;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-cookies-ghost:hover {
+    background: #f9fafb;
+    border-color: #6b7d8d;
+}
+
+@media (max-width: 600px) {
+    .cookies-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    .cookies-buttons {
+        width: 100%;
+        justify-content: center;
+    }
+}
