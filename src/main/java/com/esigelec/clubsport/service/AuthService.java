@@ -50,8 +50,8 @@ public class AuthService {
         if (motDePasseClair == null || motDePasseClair.length() < 6) {
             throw new IllegalArgumentException("Le mot de passe doit faire au moins 6 caracteres");
         }
-        if (email == null || !email.contains("@")) {
-            throw new IllegalArgumentException("L'email est invalide");
+        if (email == null || !email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+            throw new IllegalArgumentException("L'email est invalide (exemple : jean@example.fr)");
         }
         if (nom == null || nom.isEmpty() || prenom == null || prenom.isEmpty()) {
             throw new IllegalArgumentException("Le nom et le prenom sont obligatoires");
