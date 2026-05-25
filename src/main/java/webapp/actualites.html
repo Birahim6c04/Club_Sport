@@ -6,7 +6,11 @@
   <title>Actualités du club</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
   <style>
-    :root{--bg:#f7f5f0;--surface:#fff;--card:#f0ede8;--border:rgba(0,0,0,0.09);--accent:#1a3a5c;--accent2:#e85d30;--red:#dc3545;--text:#1a1a1a;--muted:#6b6b6b;}
+    :root {
+      --bg:#f7f5f0; --surface:#fff; --card:#f0ede8;
+      --border:rgba(0,0,0,0.09); --accent:#1a3a5c;
+      --accent2:#e85d30; --red:#dc3545; --text:#1a1a1a; --muted:#6b6b6b;
+    }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
 
@@ -26,6 +30,7 @@
 
     .container{max-width:860px;margin:28px auto;padding:0 24px;}
 
+    /* FORMULAIRE PUBLICATION */
     .form-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px 28px;margin-bottom:28px;}
     .form-card h2{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:16px;color:var(--accent);}
     .form-group{display:flex;flex-direction:column;gap:4px;margin-bottom:12px;}
@@ -37,10 +42,11 @@
     .btn-pub{background:var(--accent2);color:#fff;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;padding:10px 26px;cursor:pointer;transition:opacity 0.2s;}
     .btn-pub:hover{opacity:0.85;}
 
+    /* LISTE ACTUALITÉS */
     .section-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--accent);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;}
     .count-badge{font-size:12px;font-weight:600;background:var(--accent);color:#fff;padding:3px 10px;border-radius:20px;}
 
-    .actu-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:12px;transition:border-color 0.2s;}
+    .actu-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:14px;transition:border-color 0.2s;}
     .actu-card:hover{border-color:var(--accent);}
     .actu-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
     .actu-meta{display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;}
@@ -59,10 +65,79 @@
     .btn-del{background:#FFF0EE;color:var(--red);}
     .btn-edit:hover,.btn-del:hover{opacity:0.75;}
 
+    /* ── INTERACTIONS : LIKES + COMMENTAIRES ── */
+    .interactions-bar{
+      display:flex; align-items:center; gap:14px;
+      margin-top:14px; padding-top:12px;
+      border-top:1px solid var(--border);
+    }
+    .btn-like{
+      display:flex; align-items:center; gap:6px;
+      background:none; border:1.5px solid var(--border);
+      border-radius:20px; padding:5px 14px;
+      font-family:'DM Sans',sans-serif; font-size:13px;
+      font-weight:500; color:var(--muted);
+      cursor:pointer; transition:all 0.2s;
+    }
+    .btn-like:hover{border-color:var(--accent2);color:var(--accent2);}
+    .btn-like.liked{background:#FFF0EE;border-color:var(--accent2);color:var(--accent2);font-weight:700;}
+    .btn-like .heart{font-size:14px;}
+    .btn-comments{
+      display:flex; align-items:center; gap:6px;
+      background:none; border:none;
+      font-family:'DM Sans',sans-serif; font-size:13px;
+      color:var(--muted); cursor:pointer; transition:color 0.2s;
+    }
+    .btn-comments:hover{color:var(--accent);}
+    .btn-comments.open{color:var(--accent);font-weight:600;}
+
+    /* SECTION COMMENTAIRES */
+    .comments-section{
+      display:none; margin-top:14px;
+      padding-top:12px; border-top:1px solid var(--border);
+    }
+    .comments-section.visible{display:block;}
+    .comment-item{
+      display:flex; gap:10px; margin-bottom:10px;
+    }
+    .comment-avatar{
+      width:30px; height:30px; border-radius:50%;
+      background:var(--accent); color:#fff;
+      display:flex; align-items:center; justify-content:center;
+      font-size:12px; font-weight:700; flex-shrink:0;
+    }
+    .comment-body{flex:1;}
+    .comment-author{font-size:12px;font-weight:600;color:var(--accent);margin-bottom:2px;}
+    .comment-date{font-size:11px;color:var(--muted);margin-left:6px;font-weight:400;}
+    .comment-text{font-size:13px;color:var(--text);line-height:1.5;}
+    .comment-del{
+      background:none;border:none;font-size:11px;color:var(--muted);
+      cursor:pointer;padding:0 4px;transition:color 0.2s;
+    }
+    .comment-del:hover{color:var(--red);}
+    .comment-input-row{display:flex;gap:8px;margin-top:10px;}
+    .comment-input{
+      flex:1; border:1.5px solid var(--border); border-radius:20px;
+      font-family:'DM Sans',sans-serif; font-size:13px;
+      padding:7px 14px; outline:none; transition:border-color 0.2s;
+      background:#fff;
+    }
+    .comment-input:focus{border-color:var(--accent);}
+    .btn-send{
+      background:var(--accent); color:#fff; border:none;
+      border-radius:20px; font-family:'DM Sans',sans-serif;
+      font-size:13px; font-weight:600; padding:7px 16px;
+      cursor:pointer; transition:opacity 0.2s; white-space:nowrap;
+    }
+    .btn-send:hover{opacity:0.85;}
+    .auth-notice{font-size:12px;color:var(--muted);padding:8px 0;}
+
     .empty{text-align:center;padding:36px;color:var(--muted);font-size:14px;}
     .empty span{font-size:30px;display:block;margin-bottom:8px;}
     .loader{text-align:center;padding:40px;color:var(--muted);}
+    .erreur-block{background:#fff0f0;border:1px solid #e85d75;border-radius:10px;padding:16px;font-size:13px;color:#c0392b;text-align:center;margin-bottom:12px;}
 
+    /* MODAL */
     .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:100;align-items:center;justify-content:center;}
     .modal-overlay.open{display:flex;}
     .modal{background:#fff;border-radius:16px;padding:26px;width:100%;max-width:540px;margin:16px;max-height:85vh;overflow-y:auto;}
@@ -86,7 +161,7 @@
   </nav>
 </header>
 
-<!-- HERO : vraies données depuis la BDD -->
+<!-- HERO : vraies données -->
 <div class="hero">
   <h1 id="hero-nom">Chargement…</h1>
   <div class="hero-meta" id="hero-meta"></div>
@@ -151,58 +226,87 @@
     </div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="fermerModal()">Annuler</button>
-      <button class="btn-save"   onclick="sauvegarderModif()">Enregistrer</button>
+      <button class="btn-save" onclick="sauvegarderModif()">Enregistrer</button>
     </div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
 
 <script>
-  const CODE_COMMUNE = new URLSearchParams(window.location.search).get('id') || '';
+  const CODE = new URLSearchParams(window.location.search).get('id') || '';
+  const API_ACTU    = `/clubs/api/actualites`;
+  const API_LIKES   = `/clubs/api/likes`;
+  const API_COMMENT = `/clubs/api/commentaires`;
+
+  // Session simulée — à remplacer par la vraie session Java
+  // En production : lire depuis un cookie de session ou endpoint /api/me
+  let SESSION_USER_ID   = null; // null = non connecté
+  let SESSION_USER_NOM  = '';
+
   let actualites = [];
 
-  // Mettre à jour les liens nav avec le code commune
-  document.getElementById('lien-club').href     = `club.html?id=${CODE_COMMUNE}`;
-  document.getElementById('lien-horaires').href = `horaires.html?id=${CODE_COMMUNE}`;
+  document.getElementById('lien-club').href     = `club.html?id=${CODE}`;
+  document.getElementById('lien-horaires').href = `horaires.html?id=${CODE}`;
 
-  if (!CODE_COMMUNE) {
-    document.getElementById('hero-nom').textContent = 'Code commune manquant dans l\'URL';
-  }
-
-  // ── CHARGEMENT DEPUIS LA VRAIE BASE ──────────────────────────────────
+  // ── CHARGEMENT ────────────────────────────────────────────
   async function charger() {
-    if (!CODE_COMMUNE) return;
+    if (!CODE) {
+      document.getElementById('hero-nom').textContent = 'Code commune manquant dans l\'URL';
+      return;
+    }
     try {
-      const r = await fetch(`/clubs/api/actualites?codeCommune=${CODE_COMMUNE}`);
+      // 1. Vraies données club
+      const r = await fetch(`${API_ACTU}?codeCommune=${CODE}`);
       if (!r.ok) throw new Error(r.status);
       const data = await r.json();
-
-      // Vraies données statistiques
       const s = data.stats;
-      document.getElementById('hero-nom').textContent  = s.nom || CODE_COMMUNE;
+      document.getElementById('hero-nom').textContent  = s.nom || CODE;
       document.getElementById('hero-meta').textContent = (s.federation || '') + ' · ' + (s.region || '');
       document.getElementById('stat-total').textContent = (s.total  || 0).toLocaleString('fr-FR');
       document.getElementById('stat-f').textContent     = (s.femmes || 0).toLocaleString('fr-FR');
       document.getElementById('stat-h').textContent     = (s.hommes || 0).toLocaleString('fr-FR');
-
       actualites = data.actualites || [];
+
+      // 2. Charger les likes pour chaque actualité
+      await chargerLikes();
+
       afficher();
     } catch(e) {
-      document.getElementById('hero-nom').textContent = 'Erreur de connexion à la base';
+      document.getElementById('hero-nom').textContent = 'Erreur de connexion à la base de données';
       document.getElementById('liste').innerHTML =
-        '<div class="empty"><span>⚠️</span>Impossible de charger les données. Vérifiez que Tomcat est lancé.</div>';
+        `<div class="erreur-block">⚠️ Impossible de charger les données. Vérifiez que Tomcat est lancé.</div>`;
     }
   }
 
+  // ── LIKES — chargement initial ────────────────────────────
+  async function chargerLikes() {
+    await Promise.all(actualites.map(async a => {
+      try {
+        const r = await fetch(`${API_LIKES}?idActualite=${a.idActualite}`);
+        if (r.ok) {
+          const d = await r.json();
+          a._likeCount = d.count;
+          a._liked     = d.liked;
+        }
+      } catch(e) {
+        a._likeCount = 0;
+        a._liked     = false;
+      }
+      a._commentsOpen = false;
+      a._comments     = null; // chargé à la demande
+    }));
+  }
+
+  // ── AFFICHAGE ─────────────────────────────────────────────
   function afficher() {
     const liste = document.getElementById('liste');
     document.getElementById('count-badge').textContent = actualites.length;
     if (!actualites.length) {
-      liste.innerHTML = '<div class="empty"><span>📰</span>Aucune actualité publiée.<br>Rédigez votre première actualité ci-dessus.</div>';
+      liste.innerHTML = '<div class="empty"><span>📰</span>Aucune actualité publiée.</div>';
       return;
     }
     liste.innerHTML = actualites.map(a => `
-      <div class="actu-card">
+      <div class="actu-card" id="actu-${a.idActualite}">
         <div class="actu-top">
           <div style="flex:1">
             <div class="actu-meta">
@@ -213,35 +317,188 @@
             <div class="actu-contenu">${esc(a.contenu)}</div>
           </div>
           <div class="actu-actions">
-            <button class="btn-edit" onclick="ouvrirModal(${a.idActualite})">✏️ Modifier</button>
-            <button class="btn-del"  onclick="supprimer(${a.idActualite})">🗑️ Supprimer</button>
+            <button class="btn-edit" onclick="ouvrirModal(${a.idActualite})">✏️</button>
+            <button class="btn-del"  onclick="supprimer(${a.idActualite})">🗑️</button>
           </div>
+        </div>
+
+        <!-- BARRE INTERACTIONS -->
+        <div class="interactions-bar">
+          <button class="btn-like ${a._liked ? 'liked' : ''}"
+                  id="btn-like-${a.idActualite}"
+                  onclick="toggleLike(${a.idActualite})">
+            <span class="heart">${a._liked ? '❤️' : '🤍'}</span>
+            <span id="like-count-${a.idActualite}">${a._likeCount || 0}</span>
+          </button>
+          <button class="btn-comments ${a._commentsOpen ? 'open' : ''}"
+                  id="btn-cmt-${a.idActualite}"
+                  onclick="toggleCommentaires(${a.idActualite})">
+            💬 <span id="cmt-count-${a.idActualite}">Commentaires</span>
+          </button>
+        </div>
+
+        <!-- SECTION COMMENTAIRES -->
+        <div class="comments-section ${a._commentsOpen ? 'visible' : ''}"
+             id="comments-${a.idActualite}">
+          <div id="comments-list-${a.idActualite}">
+            <div class="loader" style="padding:12px;font-size:12px">Chargement…</div>
+          </div>
+          ${SESSION_USER_ID ? `
+            <div class="comment-input-row">
+              <input type="text" class="comment-input"
+                     id="comment-input-${a.idActualite}"
+                     placeholder="Ajouter un commentaire…"
+                     onkeydown="if(event.key==='Enter') envoyerCommentaire(${a.idActualite})">
+              <button class="btn-send" onclick="envoyerCommentaire(${a.idActualite})">Envoyer</button>
+            </div>` : `
+            <p class="auth-notice">🔒 Connectez-vous pour commenter et liker.</p>`}
         </div>
       </div>`).join('');
   }
 
-  // ── PUBLIER ───────────────────────────────────────────────────────────
+  // ── TOGGLE LIKE ───────────────────────────────────────────
+  async function toggleLike(idActualite) {
+    if (!SESSION_USER_ID) {
+      alert('Vous devez être connecté pour liker une publication.');
+      return;
+    }
+    try {
+      const r = await fetch(`${API_LIKES}?idActualite=${idActualite}`, { method: 'POST' });
+      if (!r.ok) throw new Error(r.status);
+      const d = await r.json();
+
+      // Mettre à jour l'affichage
+      const btn   = document.getElementById(`btn-like-${idActualite}`);
+      const count = document.getElementById(`like-count-${idActualite}`);
+      count.textContent = d.count;
+      btn.classList.toggle('liked', d.liked);
+      btn.querySelector('.heart').textContent = d.liked ? '❤️' : '🤍';
+
+      // Mettre à jour l'état local
+      const a = actualites.find(x => x.idActualite === idActualite);
+      if (a) { a._likeCount = d.count; a._liked = d.liked; }
+
+    } catch(e) {
+      alert('Erreur lors du like : ' + e.message);
+    }
+  }
+
+  // ── TOGGLE COMMENTAIRES ───────────────────────────────────
+  async function toggleCommentaires(idActualite) {
+    const section = document.getElementById(`comments-${idActualite}`);
+    const btn     = document.getElementById(`btn-cmt-${idActualite}`);
+    const a       = actualites.find(x => x.idActualite === idActualite);
+
+    if (!a) return;
+    a._commentsOpen = !a._commentsOpen;
+    section.classList.toggle('visible', a._commentsOpen);
+    btn.classList.toggle('open', a._commentsOpen);
+
+    // Charger les commentaires au premier affichage
+    if (a._commentsOpen && a._comments === null) {
+      await chargerCommentaires(idActualite);
+    }
+  }
+
+  // ── CHARGER LES COMMENTAIRES ──────────────────────────────
+  async function chargerCommentaires(idActualite) {
+    const listEl = document.getElementById(`comments-list-${idActualite}`);
+    const cntEl  = document.getElementById(`cmt-count-${idActualite}`);
+    try {
+      const r = await fetch(`${API_COMMENT}?idActualite=${idActualite}`);
+      if (!r.ok) throw new Error(r.status);
+      const comments = await r.json();
+
+      const a = actualites.find(x => x.idActualite === idActualite);
+      if (a) a._comments = comments;
+
+      cntEl.textContent = `${comments.length} commentaire${comments.length > 1 ? 's' : ''}`;
+
+      if (!comments.length) {
+        listEl.innerHTML = '<p style="font-size:12px;color:var(--muted);padding:8px 0">Aucun commentaire. Soyez le premier !</p>';
+        return;
+      }
+
+      listEl.innerHTML = comments.map(c => `
+        <div class="comment-item" id="comment-item-${c.idCommentaire}">
+          <div class="comment-avatar">${(c.nomUtilisateur || c.loginUtilisateur || '?').charAt(0).toUpperCase()}</div>
+          <div class="comment-body">
+            <div class="comment-author">
+              ${esc(c.nomUtilisateur || c.loginUtilisateur)}
+              <span class="comment-date">${fmtDate(c.dateCreation)}</span>
+            </div>
+            <div class="comment-text">${esc(c.contenu)}</div>
+          </div>
+          ${SESSION_USER_ID === c.idUtilisateur ? `
+            <button class="comment-del" onclick="supprimerCommentaire(${c.idCommentaire}, ${idActualite})">✕</button>
+          ` : ''}
+        </div>`).join('');
+
+    } catch(e) {
+      listEl.innerHTML = `<div class="erreur-block">⚠️ Impossible de charger les commentaires.</div>`;
+    }
+  }
+
+  // ── ENVOYER UN COMMENTAIRE ────────────────────────────────
+  async function envoyerCommentaire(idActualite) {
+    if (!SESSION_USER_ID) { alert('Connexion requise.'); return; }
+    const input   = document.getElementById(`comment-input-${idActualite}`);
+    const contenu = input.value.trim();
+    if (!contenu) return;
+
+    try {
+      const r = await fetch(`${API_COMMENT}?idActualite=${idActualite}`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ contenu })
+      });
+      if (!r.ok) throw new Error(r.status);
+      input.value = '';
+      // Recharger les commentaires
+      const a = actualites.find(x => x.idActualite === idActualite);
+      if (a) a._comments = null;
+      await chargerCommentaires(idActualite);
+    } catch(e) {
+      alert('Erreur : ' + e.message);
+    }
+  }
+
+  // ── SUPPRIMER UN COMMENTAIRE ──────────────────────────────
+  async function supprimerCommentaire(idCommentaire, idActualite) {
+    if (!confirm('Supprimer ce commentaire ?')) return;
+    try {
+      const r = await fetch(`${API_COMMENT}/${idCommentaire}`, { method: 'DELETE' });
+      if (!r.ok) throw new Error(r.status);
+      const a = actualites.find(x => x.idActualite === idActualite);
+      if (a) a._comments = null;
+      await chargerCommentaires(idActualite);
+    } catch(e) {
+      alert('Erreur : ' + e.message);
+    }
+  }
+
+  // ── PUBLIER ───────────────────────────────────────────────
   async function publier() {
     const titre     = document.getElementById('add-titre').value.trim();
     const contenu   = document.getElementById('add-contenu').value.trim();
     const categorie = document.getElementById('add-cat').value;
     if (!titre || !contenu) { alert('Titre et contenu sont obligatoires.'); return; }
-
-    const r = await fetch(`/clubs/api/actualites?codeCommune=${CODE_COMMUNE}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const r = await fetch(`${API_ACTU}?codeCommune=${CODE}`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ titre, contenu, categorie })
     });
     if (!r.ok) { alert('Erreur lors de la publication.'); return; }
     const nouvelle = await r.json();
+    nouvelle._likeCount = 0; nouvelle._liked = false;
+    nouvelle._commentsOpen = false; nouvelle._comments = null;
     actualites.unshift(nouvelle);
-    afficher();
     document.getElementById('add-titre').value   = '';
     document.getElementById('add-contenu').value = '';
+    afficher();
     toast('Actualité publiée !');
   }
 
-  // ── MODIFIER ──────────────────────────────────────────────────────────
+  // ── MODIFIER ──────────────────────────────────────────────
   function ouvrirModal(id) {
     const a = actualites.find(x => x.idActualite === id);
     if (!a) return;
@@ -251,45 +508,39 @@
     document.getElementById('edit-cat').value     = a.categorie;
     document.getElementById('modal').classList.add('open');
   }
-
   function fermerModal() { document.getElementById('modal').classList.remove('open'); }
-
   async function sauvegarderModif() {
-    const id        = +document.getElementById('edit-id').value;
-    const titre     = document.getElementById('edit-titre').value.trim();
-    const contenu   = document.getElementById('edit-contenu').value.trim();
+    const id = +document.getElementById('edit-id').value;
+    const titre = document.getElementById('edit-titre').value.trim();
+    const contenu = document.getElementById('edit-contenu').value.trim();
     const categorie = document.getElementById('edit-cat').value;
-
-    const r = await fetch(`/clubs/api/actualites/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+    const r = await fetch(`${API_ACTU}/${id}`, {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ titre, contenu, categorie })
     });
-    if (!r.ok) { alert('Erreur lors de la modification.'); return; }
-
+    if (!r.ok) { alert('Erreur.'); return; }
     const idx = actualites.findIndex(x => x.idActualite === id);
     if (idx !== -1) actualites[idx] = { ...actualites[idx], titre, contenu, categorie };
-    afficher();
-    fermerModal();
-    toast('Actualité modifiée !');
+    afficher(); fermerModal(); toast('Actualité modifiée !');
   }
 
-  // ── SUPPRIMER ─────────────────────────────────────────────────────────
+  // ── SUPPRIMER ─────────────────────────────────────────────
   async function supprimer(id) {
-    if (!confirm('Supprimer cette actualité ?')) return;
-    const r = await fetch(`/clubs/api/actualites/${id}`, { method: 'DELETE' });
-    if (!r.ok) { alert('Erreur lors de la suppression.'); return; }
+    if (!confirm('Supprimer cette actualité et tous ses commentaires ?')) return;
+    const r = await fetch(`${API_ACTU}/${id}`, { method: 'DELETE' });
+    if (!r.ok) { alert('Erreur.'); return; }
     actualites = actualites.filter(x => x.idActualite !== id);
-    afficher();
-    toast('Actualité supprimée.');
+    afficher(); toast('Actualité supprimée.');
   }
 
-  // ── UTILITAIRES ──────────────────────────────────────────────────────
+  // ── UTILITAIRES ───────────────────────────────────────────
   function fmtDate(d) {
     if (!d) return '';
     return new Date(d).toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' });
   }
-  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function esc(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
   function toast(msg) {
     const t = document.getElementById('toast');
     t.textContent = '✓ ' + msg;
