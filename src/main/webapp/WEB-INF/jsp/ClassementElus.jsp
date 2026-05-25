@@ -17,6 +17,7 @@
     <a href="ElusDashboard">Dashboard</a>
     <a href="LeClassement">Classement</a>
     <a href="indicateurs">Statistiques</a>
+    <a href="profil">Mon profil</a>
 </div>
 
 <div class="main">
@@ -109,7 +110,6 @@
 <div class="chart-box">
     <canvas id="classementChart"></canvas>
 </div>
-
 </div>
 </div>
 </div>
