@@ -1,0 +1,246 @@
+body {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    background: #eafcff;
+    display: flex;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    background: #0ea5b7;
+    color: white;
+    padding: 20px;
+}
+
+.sidebar h2 {
+    margin-bottom: 40px;
+}
+
+.sidebar a {
+    display: block;
+    color: white;
+    text-decoration: none;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.sidebar a:hover {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+/* MAIN */
+
+.main {
+    flex: 1;
+    padding: 25px;
+}
+
+/* TOP NAVBAR */
+
+.top-navbar {
+    background: white;
+    height: 70px;
+    margin: -25px -25px 35px -25px;
+    padding: 0 35px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(14, 165, 183, 0.12);
+    border-bottom: 1px solid #dff7fb;
+}
+
+.nav-left,
+.nav-right {
+    display: flex;
+    align-items: center;
+}
+
+.top-navbar a {
+    text-decoration: none;
+    color: #0ea5b7;
+    font-weight: bold;
+    font-size: 18px;
+    transition: 0.2s;
+}
+
+.top-navbar a:hover {
+    color: #0b8ea0;
+}
+
+/* TITRE */
+
+h1 {
+    color: #0ea5b7;
+    margin-bottom: 25px;
+}
+
+/* PROFILE CARD */
+
+.profile-card {
+    background: white;
+    border-radius: 18px;
+    padding: 35px;
+    box-shadow: 0 6px 24px rgba(14, 165, 183, 0.18);
+}
+
+/* PROFILE HEADER */
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 35px;
+}
+
+.profile-user {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+/* AVATAR */
+
+.profile-avatar {
+    width: 95px;
+    height: 95px;
+    min-width: 95px;
+    min-height: 95px;
+    max-width: 95px;
+    max-height: 95px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #dff7fb;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 42px;
+    color: #0ea5b7;
+}
+
+.profile-avatar img,
+.avatar-img {
+    width: 95px;
+    height: 95px;
+    max-width: 95px;
+    max-height: 95px;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+}
+
+/* PROFILE INFO */
+
+.profile-info h2 {
+    margin: 0;
+    color: #0ea5b7;
+    font-size: 32px;
+}
+
+/* BUTTONS */
+
+button,
+.edit-btn {
+    margin-top: 10px;
+    padding: 12px 24px;
+    border-radius: 10px;
+    border: none;
+    background: #0ea5b7;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover,
+.edit-btn:hover {
+    background: #0b8ea0;
+}
+
+/* PROFILE TABLE */
+
+.profile-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 6px 24px rgba(14, 165, 183, 0.18);
+    margin-top: 25px;
+}
+
+.profile-table th {
+    width: 280px;
+    background: #0ea5b7;
+    color: white;
+    padding: 18px;
+    text-align: center;
+}
+
+.profile-table td {
+    background: white;
+    padding: 18px;
+    text-align: center;
+    border-bottom: 1px solid #eafcff;
+}
+
+.profile-table tr:nth-child(even) td {
+    background: #eafcff;
+}
+
+/* EMPTY PROFILE */
+
+.empty-profile {
+    background: #f4fdff;
+    border: 1px dashed #0ea5b7;
+    border-radius: 14px;
+    padding: 25px;
+    margin-top: 20px;
+    text-align: center;
+}
+
+.empty-profile h2 {
+    color: #0ea5b7;
+}
+
+/* FORM */
+
+.profile-form {
+    margin-top: 35px;
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+    background: #f4fdff;
+    padding: 25px;
+    border-radius: 14px;
+    border: 1px solid #dff7fb;
+}
+
+.profile-form.active {
+    display: flex;
+}
+
+.profile-form h2 {
+    color: #0ea5b7;
+    margin-top: 0;
+}
+
+.profile-form input,
+.profile-form textarea {
+    padding: 10px;
+    border-radius: 8px;
+    border: 2px solid #c8f3f8;
+}
+
+.profile-form input:focus,
+.profile-form textarea:focus {
+    outline: none;
+    border-color: #0ea5b7;
+}
+
+.profile-form textarea {
+    min-height: 100px;
+    resize: vertical;
+}

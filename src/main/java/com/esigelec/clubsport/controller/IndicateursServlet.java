@@ -1,8 +1,10 @@
 package com.esigelec.clubsport.controller;
 
 import com.esigelec.clubsport.dao.LicenceStatsDAO;
+
 import com.esigelec.clubsport.dao.IndicateursDAO;
 import com.esigelec.clubsport.model.StatDTO;
+import com.esigelec.clubsport.model.ClubsLicenciesDTO;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -47,7 +49,10 @@ public class IndicateursServlet extends HttpServlet {
 
             List<StatDTO> rapportAgeClubs =
                     indicateursDao.getRapportAgeClubs(region, departement, federation, codeCommune);
-
+             
+            List<ClubsLicenciesDTO> clubsLicenciesFederations =
+                    indicateursDao.getClubsEtLicenciesParFederation(region,departement,codeCommune);
+            
             // Envoi des filtres vers la JSP
             request.setAttribute("regions", regions);
             request.setAttribute("departements", departements);
@@ -64,6 +69,7 @@ public class IndicateursServlet extends HttpServlet {
             request.setAttribute("repartitionAge", repartitionAge);
             request.setAttribute("clubsFederations", clubsFederations);
             request.setAttribute("rapportAgeClubs", rapportAgeClubs);
+            request.setAttribute("clubsLicenciesFederations", clubsLicenciesFederations);
 
             request.getRequestDispatcher("/WEB-INF/jsp/indicateurs.jsp")
                     .forward(request, response);

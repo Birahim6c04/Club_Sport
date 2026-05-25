@@ -5,55 +5,75 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Annuaire des clubs</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style_club.css">
 </head>
-<body>
+<body class="club-body">
 
-<div class="club-public-page">
+<header class="club-topbar">
+    <div class="club-topbar-inner">
+        <a href="${pageContext.request.contextPath}/accueil" class="club-brand">
+            <span class="club-brand-logo">⚽</span> Club Sportif
+        </a>
+        <a href="${pageContext.request.contextPath}/accueil" class="btn btn-light" style="padding:8px 16px;">
+            Accueil
+        </a>
+    </div>
+</header>
 
-    <header class="club-public-header">
-        <a href="${pageContext.request.contextPath}/accueil" class="club-logo">⚽ <strong>Club Sportif</strong></a>
-    </header>
+<main class="club-shell">
 
-    <main class="club-public-main">
+    <div class="club-head">
+        <span class="club-eyebrow">Découvrir</span>
+        <h1 class="club-h1">Annuaire des clubs</h1>
+        <p class="club-sub">Explorez tous les clubs inscrits sur la plateforme.</p>
+    </div>
 
-        <div class="club-title-block">
-            <h1>📋 Annuaire des clubs</h1>
-            <p>Découvrez tous les clubs inscrits sur la plateforme</p>
-        </div>
-
-        <c:choose>
-            <c:when test="${empty clubs}">
-                <div class="club-empty">
-                    <p>Aucun club inscrit pour le moment.</p>
-                </div>
-            </c:when>
-            <c:otherwise>
-                <div class="annuaire-grid">
-                    <c:forEach items="${clubs}" var="club">
-                        <a href="${pageContext.request.contextPath}/club/public?slug=${club.slug}" class="annuaire-card">
-                            <c:if test="${not empty club.photo}">
-                                <img src="${pageContext.request.contextPath}/uploads/${club.photo}" alt="${club.nomClub}" class="annuaire-photo">
+    <c:choose>
+        <c:when test="${empty clubs}">
+            <div class="club-empty">
+                <div class="club-empty-badge">📭</div>
+                <h2>Aucun club pour le moment</h2>
+                <p>Les clubs inscrits apparaîtront ici dès qu'ils auront créé leur espace.</p>
+            </div>
+        </c:when>
+        <c:otherwise>
+            <div class="dir-grid">
+                <c:forEach items="${clubs}" var="club">
+                    <a href="${pageContext.request.contextPath}/club/public?slug=${club.slug}" class="dir-card">
+                        <div class="dir-photo">
+                            <c:choose>
+                                <c:when test="${not empty club.photo}">
+                                    <img src="${pageContext.request.contextPath}/uploads/${club.photo}"
+                                         alt="${club.nomClub}">
+                                </c:when>
+                                <c:otherwise>
+                                    <div class="dir-photo-empty">⚽</div>
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
+                        <div class="dir-body">
+                            <div class="dir-name">${club.nomClub}</div>
+                            <c:if test="${not empty club.description}">
+                                <div class="dir-desc">${club.description}</div>
                             </c:if>
-                            <div class="annuaire-info">
-                                <h3>${club.nomClub}</h3>
-                                <c:if test="${not empty club.description}">
-                                    <p>${club.description}</p>
-                                </c:if>
-                                <c:if test="${not empty club.adresse}">
-                                    <small>📍 ${club.adresse}</small>
-                                </c:if>
+                            <div class="dir-foot">
+                                <span>
+                                    <c:if test="${not empty club.adresse}">📍 ${club.adresse}</c:if>
+                                </span>
+                                <span class="dir-foot-link">Voir →</span>
                             </div>
-                        </a>
-                    </c:forEach>
-                </div>
-            </c:otherwise>
-        </c:choose>
+                        </div>
+                    </a>
+                </c:forEach>
+            </div>
+        </c:otherwise>
+    </c:choose>
 
-    </main>
-
-</div>
+</main>
 
 </body>
 </html>

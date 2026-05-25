@@ -14,13 +14,23 @@
 
 <div class="sidebar">
     <h2>🏛 Élus</h2>
-    <a href="ElusDashboard"> Dashboard</a>
-    <a href="LeClassement"> Classement</a>
-    <a href="indicateurs"> Statistiques</a>
-    
+    <a href="ElusDashboard">Dashboard</a>
+    <a href="LeClassement">Classement</a>
+    <a href="indicateurs">Statistiques</a>
+    <a href="profil">Mon profil</a>
 </div>
 
 <div class="main">
+
+    <div class="top-navbar">
+        <div class="nav-left">
+            <a href="accueil">Accueil</a>
+        </div>
+
+        <div class="nav-right">
+            <a href="#">Déconnexion</a>
+        </div>
+    </div>
 
 <h1>Classement des communes</h1>
 
@@ -62,7 +72,12 @@
 <a class="export-btn"
    href="export?type=classement&region=${region}&departement=${departement}&federation=${federation}"
    onclick="return verifierExportClassement('${region}');">
-    Exporter
+    Exporter Excel
+</a>
+<a class="export-btn"
+   href="export-pdf?type=classement&region=${region}&departement=${departement}&federation=${federation}"
+   onclick="return verifierExport('${region}');">
+    Exporter PDF
 </a>
 
 </form>
@@ -95,7 +110,6 @@
 <div class="chart-box">
     <canvas id="classementChart"></canvas>
 </div>
-
 </div>
 </div>
 </div>

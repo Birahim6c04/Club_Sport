@@ -162,3 +162,18 @@ CREATE TABLE log_recherche (
     date_recherche TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_logr_date (date_recherche)
 ) ENGINE=InnoDB;
+
+
+-- =====================================================================
+-- TABLE log_audit
+-- =====================================================================
+CREATE TABLE log_audit (
+    id_audit BIGINT AUTO_INCREMENT PRIMARY KEY,
+    admin_login VARCHAR(80) NOT NULL,
+    action VARCHAR(50) NOT NULL,
+    cible VARCHAR(150) DEFAULT NULL,
+    details VARCHAR(255) DEFAULT NULL,
+    date_action TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_audit_admin (admin_login),
+    INDEX idx_audit_date (date_action)
+) ENGINE=InnoDB;

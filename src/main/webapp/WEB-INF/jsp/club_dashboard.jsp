@@ -5,113 +5,148 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mon espace club</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style_club.css">
 </head>
-<body>
+<body class="club-body">
 
-<div class="club-page">
+<header class="club-topbar">
+    <div class="club-topbar-inner">
+        <a href="${pageContext.request.contextPath}/accueil" class="club-brand">
+            <span class="club-brand-logo">⚽</span> Club Sportif
+        </a>
+        <div class="club-topbar-right">
+            <span class="club-chip">CLUB</span>
+            <span class="club-chip-name">${sessionScope.utilisateur.login}</span>
+            <a href="${pageContext.request.contextPath}/deconnexion" class="club-link-out">Déconnexion</a>
+        </div>
+    </div>
+</header>
 
-    <header class="club-header">
-        <div class="club-nav">
-            <a href="${pageContext.request.contextPath}/accueil" class="club-logo">⚽ <strong>Club Sportif</strong></a>
-            <div class="club-user">
-                <span class="club-role-badge">CLUB</span>
-                <span>${sessionScope.utilisateur.login}</span>
-                <a href="${pageContext.request.contextPath}/deconnexion" class="club-logout">Déconnexion</a>
+<main class="club-shell">
+
+    <div class="club-head">
+        <span class="club-eyebrow">Espace privé</span>
+        <h1 class="club-h1">Mon espace club</h1>
+        <p class="club-sub">Gérez les informations visibles par le grand public et vos adhérents.</p>
+    </div>
+
+    <c:if test="${not empty succes}">
+        <div class="club-alert ok"><span>✓</span> ${succes}</div>
+    </c:if>
+    <c:if test="${not empty erreur}">
+        <div class="club-alert err"><span>⚠</span> ${erreur}</div>
+    </c:if>
+
+    <c:choose>
+
+        <%-- ============ AUCUN ESPACE ============ --%>
+        <c:when test="${empty espace}">
+            <div class="club-empty">
+                <div class="club-empty-badge">🏆</div>
+                <h2>Bienvenue sur votre espace</h2>
+                <p>Vous n'avez pas encore créé votre page club. Lancez-vous pour communiquer vos actualités, horaires et cotisations au grand public.</p>
+                <a href="${pageContext.request.contextPath}/club/editer" class="btn btn-ghost">
+                    Créer mon espace →
+                </a>
             </div>
-        </div>
-    </header>
+        </c:when>
 
-    <main class="club-main">
+        <%-- ============ ESPACE EXISTANT ============ --%>
+        <c:otherwise>
+            <div class="club-card">
 
-        <c:if test="${not empty succes}">
-            <div class="club-succes">✓ ${succes}</div>
-        </c:if>
-        <c:if test="${not empty erreur}">
-            <div class="club-erreur">⚠️ ${erreur}</div>
-        </c:if>
-
-        <div class="club-title-block">
-            <h1>Mon espace club</h1>
-            <p>Gérez les informations visibles par le grand public</p>
-        </div>
-
-        <c:choose>
-            <c:when test="${empty espace}">
-                <div class="club-empty">
-                    <h2>🏆 Bienvenue !</h2>
-                    <p>Vous n'avez pas encore créé votre espace. Commencez maintenant pour communiquer avec votre communauté.</p>
-                    <a href="${pageContext.request.contextPath}/club/editer" class="btn-rechercher">Créer mon espace</a>
-                </div>
-            </c:when>
-            <c:otherwise>
-                <div class="club-preview">
-
-                    <div class="club-preview-header">
-                        <h2>${espace.nomClub}</h2>
-                        <div class="club-preview-actions">
-                            <a href="${pageContext.request.contextPath}/club/editer" class="btn-secondary">Modifier</a>
-                            <a href="${pageContext.request.contextPath}/club/public?slug=${espace.slug}" target="_blank" class="btn-rechercher">Voir page publique</a>
+                <%-- Bandeau --%>
+                <c:choose>
+                    <c:when test="${not empty espace.photo}">
+                        <div class="dash-hero with-photo">
+                            <img class="dash-hero-img"
+                                 src="${pageContext.request.contextPath}/uploads/${espace.photo}"
+                                 alt="${espace.nomClub}">
+                            <div class="dash-hero-overlay">
+                                <div class="dash-hero-title">${espace.nomClub}</div>
+                            </div>
                         </div>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="dash-hero">
+                            <div class="dash-hero-title">${espace.nomClub}</div>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
+
+                <div class="dash-body">
+
+                    <div class="dash-actions">
+                        <a href="${pageContext.request.contextPath}/club/editer" class="btn btn-primary">
+                            ✎ Modifier mon espace
+                        </a>
+                        <a href="${pageContext.request.contextPath}/club/public?slug=${espace.slug}"
+                           target="_blank" class="btn btn-light">
+                            👁 Voir la page publique
+                        </a>
                     </div>
 
-                    <p class="club-public-url">
-                        🔗 URL publique :
+                    <div class="dash-urlbar">
+                        🔗 <span>Adresse publique :</span>
                         <code>${pageContext.request.contextPath}/club/public?slug=${espace.slug}</code>
-                    </p>
-
-                    <c:if test="${not empty espace.photo}">
-                        <img src="${pageContext.request.contextPath}/uploads/${espace.photo}" class="club-photo-preview" alt="Photo du club">
-                    </c:if>
-
-                    <c:if test="${not empty espace.description}">
-                        <div class="club-section">
-                            <h3>Description</h3>
-                            <p>${espace.description}</p>
-                        </div>
-                    </c:if>
-
-                    <c:if test="${not empty espace.actualites}">
-                        <div class="club-section">
-                            <h3>📰 Actualités</h3>
-                            <p>${espace.actualites}</p>
-                        </div>
-                    </c:if>
-
-                    <c:if test="${not empty espace.horaires}">
-                        <div class="club-section">
-                            <h3>🕐 Horaires</h3>
-                            <p>${espace.horaires}</p>
-                        </div>
-                    </c:if>
-
-                    <c:if test="${espace.montantCotisation > 0}">
-                        <div class="club-section">
-                            <h3>💰 Cotisation annuelle</h3>
-                            <p>${espace.montantCotisation} €</p>
-                        </div>
-                    </c:if>
-
-                    <div class="club-contacts">
-                        <c:if test="${not empty espace.contactTel}">
-                            <div>📞 ${espace.contactTel}</div>
-                        </c:if>
-                        <c:if test="${not empty espace.contactEmail}">
-                            <div>✉ ${espace.contactEmail}</div>
-                        </c:if>
-                        <c:if test="${not empty espace.adresse}">
-                            <div>📍 ${espace.adresse}</div>
-                        </c:if>
                     </div>
 
+                    <div class="dash-grid">
+
+                        <c:if test="${not empty espace.description}">
+                            <div class="dash-tile wide">
+                                <div class="dash-tile-label">📝 Description</div>
+                                <div class="dash-tile-value">${espace.description}</div>
+                            </div>
+                        </c:if>
+
+                        <c:if test="${not empty espace.actualites}">
+                            <div class="dash-tile wide">
+                                <div class="dash-tile-label">📰 Actualités</div>
+                                <div class="dash-tile-value">${espace.actualites}</div>
+                            </div>
+                        </c:if>
+
+                        <c:if test="${not empty espace.horaires}">
+                            <div class="dash-tile">
+                                <div class="dash-tile-label">🕐 Horaires</div>
+                                <div class="dash-tile-value">${espace.horaires}</div>
+                            </div>
+                        </c:if>
+
+                        <c:if test="${espace.montantCotisation > 0}">
+                            <div class="dash-tile">
+                                <div class="dash-tile-label">💰 Cotisation annuelle</div>
+                                <div class="dash-tile-money">${espace.montantCotisation} €</div>
+                            </div>
+                        </c:if>
+
+                        <div class="dash-tile wide">
+                            <div class="dash-tile-label">📞 Contact</div>
+                            <div class="dash-contacts">
+                                <c:if test="${not empty espace.contactTel}">
+                                    <span>📞 ${espace.contactTel}</span>
+                                </c:if>
+                                <c:if test="${not empty espace.contactEmail}">
+                                    <span>✉ ${espace.contactEmail}</span>
+                                </c:if>
+                                <c:if test="${not empty espace.adresse}">
+                                    <span>📍 ${espace.adresse}</span>
+                                </c:if>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
-            </c:otherwise>
-        </c:choose>
+            </div>
+        </c:otherwise>
+    </c:choose>
 
-    </main>
-
-</div>
+</main>
 
 </body>
 </html>
