@@ -35,40 +35,43 @@ public class ClubDAO {
 	    }
 	    sql += "ORDER BY cs.total DESC LIMIT 500";
 
-	    Connection conn = DbConnection.getConnection();
-	    PreparedStatement ps = conn.prepareStatement(sql);
+	    try (Connection conn = DbConnection.getConnection();
+	         PreparedStatement ps = conn.prepareStatement(sql)) {
 
-	    int i = 1;
-	    if (codeFederation != null && !codeFederation.isEmpty()) {
-	        ps.setString(i++, codeFederation);
-	    }
-	    if (region != null && !region.isEmpty()) {
-	        ps.setString(i++, region);
-	    }
-	    if (codePostal != null && !codePostal.isEmpty()) {
-	        ps.setString(i++, codePostal);
+	        int i = 1;
+	        if (codeFederation != null && !codeFederation.isEmpty()) {
+	            ps.setString(i++, codeFederation);
+	        }
+	        if (region != null && !region.isEmpty()) {
+	            ps.setString(i++, region);
+	        }
+	        if (codePostal != null && !codePostal.isEmpty()) {
+	            ps.setString(i++, codePostal);
+	        }
+
+	        try (ResultSet rs = ps.executeQuery()) {
+	            while (rs.next()) {
+	                Club club = new Club();
+	                club.setCodeCommune(rs.getString("code_commune"));
+	                club.setNomCommune(rs.getString("nom_commune"));
+	                club.setRegion(rs.getString("region"));
+	                club.setDepartement(rs.getString("departement"));
+	                club.setLatitude(rs.getDouble("latitude"));
+	                club.setLongitude(rs.getDouble("longitude"));
+	                club.setCodeFederation(rs.getString("code_federation"));
+	                club.setNomFederation(rs.getString("nom_federation"));
+	                club.setClubs(rs.getInt("clubs"));
+	                club.setEpa(rs.getInt("epa"));
+	                club.setTotal(rs.getInt("total"));
+	                resultats.add(club);
+	            }
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        throw e;
 	    }
 
-	    ResultSet rs = ps.executeQuery();
-	    while (rs.next()) {
-	        Club club = new Club();
-	        club.setCodeCommune(rs.getString("code_commune"));
-	        club.setNomCommune(rs.getString("nom_commune"));
-	        club.setRegion(rs.getString("region"));
-	        club.setDepartement(rs.getString("departement"));
-	        club.setLatitude(rs.getDouble("latitude"));
-	        club.setLongitude(rs.getDouble("longitude"));
-	        club.setCodeFederation(rs.getString("code_federation"));
-	        club.setNomFederation(rs.getString("nom_federation"));
-	        club.setClubs(rs.getInt("clubs"));
-	        club.setEpa(rs.getInt("epa"));
-	        club.setTotal(rs.getInt("total"));
-	        resultats.add(club);
-	    }
-
-	    rs.close();
-	    ps.close();
-	    conn.close();
 	    return resultats;
 	}
 
@@ -106,42 +109,45 @@ public class ClubDAO {
         }
         sql += "HAVING distance_km <= ? ORDER BY distance_km ASC LIMIT 500";
 
-        Connection conn = DbConnection.getConnection();
-        PreparedStatement ps = conn.prepareStatement(sql);
+        try (Connection conn = DbConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-        // On remplit les paramètres dans l'ordre
-        ps.setDouble(1, latRef);
-        ps.setDouble(2, lonRef);
-        ps.setDouble(3, latRef);
+            // On remplit les paramètres dans l'ordre
+            ps.setDouble(1, latRef);
+            ps.setDouble(2, lonRef);
+            ps.setDouble(3, latRef);
 
-        int i = 4;
-        if (codeFederation != null && !codeFederation.isEmpty()) {
-            ps.setString(i++, codeFederation);
+            int i = 4;
+            if (codeFederation != null && !codeFederation.isEmpty()) {
+                ps.setString(i++, codeFederation);
+            }
+            ps.setInt(i, rayonKm);
+
+            // On exécute et on lit les résultats
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Club club = new Club();
+                    club.setCodeCommune(rs.getString("code_commune"));
+                    club.setNomCommune(rs.getString("nom_commune"));
+                    club.setRegion(rs.getString("region"));
+                    club.setDepartement(rs.getString("departement"));
+                    club.setLatitude(rs.getDouble("latitude"));
+                    club.setLongitude(rs.getDouble("longitude"));
+                    club.setCodeFederation(rs.getString("code_federation"));
+                    club.setNomFederation(rs.getString("nom_federation"));
+                    club.setClubs(rs.getInt("clubs"));
+                    club.setEpa(rs.getInt("epa"));
+                    club.setTotal(rs.getInt("total"));
+                    club.setDistanceKm(rs.getDouble("distance_km"));
+                    resultats.add(club);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
         }
-        ps.setInt(i, rayonKm);
 
-        // On exécute et on lit les résultats
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            Club club = new Club();
-            club.setCodeCommune(rs.getString("code_commune"));
-            club.setNomCommune(rs.getString("nom_commune"));
-            club.setRegion(rs.getString("region"));
-            club.setDepartement(rs.getString("departement"));
-            club.setLatitude(rs.getDouble("latitude"));
-            club.setLongitude(rs.getDouble("longitude"));
-            club.setCodeFederation(rs.getString("code_federation"));
-            club.setNomFederation(rs.getString("nom_federation"));
-            club.setClubs(rs.getInt("clubs"));
-            club.setEpa(rs.getInt("epa"));
-            club.setTotal(rs.getInt("total"));
-            club.setDistanceKm(rs.getDouble("distance_km"));
-            resultats.add(club);
-        }
-
-        rs.close();
-        ps.close();
-        conn.close();
         return resultats;
     }
 
@@ -154,16 +160,19 @@ public class ClubDAO {
                      "WHERE region IS NOT NULL AND region <> '' " +
                      "ORDER BY region";
 
-        Connection conn = DbConnection.getConnection();
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            regions.add(rs.getString(1));
+        try (Connection conn = DbConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                regions.add(rs.getString(1));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
         }
 
-        rs.close();
-        ps.close();
-        conn.close();
         return regions;
     }
 
@@ -177,23 +186,27 @@ public class ClubDAO {
                      "WHERE nom_commune LIKE ? AND latitude IS NOT NULL " +
                      "ORDER BY nom_commune LIMIT 20";
 
-        Connection conn = DbConnection.getConnection();
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setString(1, query + "%");
+        try (Connection conn = DbConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            String[] commune = new String[4];
-            commune[0] = rs.getString("code_commune");
-            commune[1] = rs.getString("nom_commune");
-            commune[2] = rs.getString("code_postal");
-            commune[3] = rs.getString("departement");
-            resultats.add(commune);
+            ps.setString(1, query + "%");
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String[] commune = new String[4];
+                    commune[0] = rs.getString("code_commune");
+                    commune[1] = rs.getString("nom_commune");
+                    commune[2] = rs.getString("code_postal");
+                    commune[3] = rs.getString("departement");
+                    resultats.add(commune);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
         }
 
-        rs.close();
-        ps.close();
-        conn.close();
         return resultats;
     }
 
@@ -201,24 +214,29 @@ public class ClubDAO {
     // METHODE INTERNE : récupère lat/lon d'une commune
     // ============================================================
     private double[] getCoordonnees(String codeCommune) throws Exception {
-        Connection conn = DbConnection.getConnection();
-        PreparedStatement ps = conn.prepareStatement(
-            "SELECT latitude, longitude FROM commune WHERE code_commune = ?");
-        ps.setString(1, codeCommune);
-        ResultSet rs = ps.executeQuery();
-
         double[] coords = null;
-        if (rs.next()) {
-            double lat = rs.getDouble("latitude");
-            double lon = rs.getDouble("longitude");
-            if (!rs.wasNull()) {
-                coords = new double[]{ lat, lon };
+
+        try (Connection conn = DbConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(
+                 "SELECT latitude, longitude FROM commune WHERE code_commune = ?")) {
+
+            ps.setString(1, codeCommune);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    double lat = rs.getDouble("latitude");
+                    double lon = rs.getDouble("longitude");
+                    if (!rs.wasNull()) {
+                        coords = new double[]{ lat, lon };
+                    }
+                }
             }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
         }
 
-        rs.close();
-        ps.close();
-        conn.close();
         return coords;
     }
 }

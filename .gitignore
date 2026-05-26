@@ -1,3 +1,6 @@
 data/*.csv
 clubs.war
 /build/
+
+uploads/*
+!uploads/.gitkeep

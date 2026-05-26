@@ -1,25 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-21">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
+
 	<classpathentry kind="src" path="src/main/java"/>
+
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry kind="lib" path="lib/gson-2.10.1.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/mysql-connector-java-8.0.28.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/chris/Downloads/jbcrypt-0.4.jar"/>
-	<classpathentry kind="lib" path="src/main/webapp/META-INF/MANIFEST.MF"/>
+
+	<!-- DB -->
+	<classpathentry kind="lib" path="lib/mysql-connector-java-8.0.28.jar"/>
+	<classpathentry kind="lib" path="lib/gson-2.10.1.jar"/>
+
+	<!-- JSTL / Jakarta -->
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/jakarta.servlet.jsp.jstl-3.0.1.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/jakarta.servlet.jsp.jstl-api-3.0.0.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/jakarta.servlet.jsp-api-3.1.1.jar"/>
+
+	<!-- Apache POI -->
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/poi-5.2.3.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/poi-ooxml-5.2.3.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/poi-ooxml-full-5.2.3.jar"/>
+
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/commons-codec-1.15.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/commons-collections4-4.4.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/commons-compress-1.21.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/commons-io-2.11.0.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/commons-logging-1.2.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/commons-math3-3.6.1.jar"/>
+
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/curvesapi-1.07.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/xmlbeans-5.1.1.jar"/>
+
+	<!-- Jakarta -->
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/jakarta.activation-2.0.1.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/jakarta.xml.bind-api-3.0.1.jar"/>
+
+	<!-- Logs -->
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/log4j-api-2.18.0.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/slf4j-api-1.7.36.jar"/>
+
+	<!-- BCrypt -->
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/jbcrypt-0.4.jar"/>
+
 	<classpathentry kind="output" path="build/classes"/>
+
 </classpath>

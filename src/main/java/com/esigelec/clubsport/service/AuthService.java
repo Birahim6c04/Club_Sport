@@ -1,17 +1,18 @@
 package com.esigelec.clubsport.service;
 
 import com.esigelec.clubsport.dao.UtilisateurDAO;
+import com.esigelec.clubsport.dao.DbConnection;
 import com.esigelec.clubsport.model.Utilisateur;
-
 import org.mindrot.jbcrypt.BCrypt;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 
 public class AuthService {
 
     private UtilisateurDAO utilisateurDAO = new UtilisateurDAO();
 
-    // Connexion : retourne l'utilisateur si OK, lance une exception sinon
     public Utilisateur connecter(String login, String motDePasseClair) throws Exception {
-
         if (login == null || login.isEmpty()) {
             throw new IllegalArgumentException("Le login est obligatoire");
         }
@@ -24,11 +25,15 @@ public class AuthService {
             throw new IllegalArgumentException("Login ou mot de passe incorrect");
         }
 
+        if (u.getStatut().equals("EN_ATTENTE")) {
+            throw new IllegalArgumentException("Votre compte est en attente de validation par un administrateur");
+        }
+        if (u.getStatut().equals("REFUSE")) {
+            throw new IllegalArgumentException("Votre inscription a ete refusee");
+        }
         if (!u.isActif()) {
             throw new IllegalArgumentException("Votre compte est desactive");
         }
-
-        // Vérification BCrypt
         if (!BCrypt.checkpw(motDePasseClair, u.getMotDePasse())) {
             throw new IllegalArgumentException("Login ou mot de passe incorrect");
         }
@@ -36,11 +41,9 @@ public class AuthService {
         return u;
     }
 
-    // Inscription : crée un nouvel utilisateur avec mot de passe hashé
     public void inscrire(String login, String motDePasseClair, String email,
-                         String nom, String prenom, String role) throws Exception {
-
-        // Validations
+                         String nom, String prenom, String role,
+                         String cheminPieceJointe) throws Exception {
         if (login == null || login.length() < 3) {
             throw new IllegalArgumentException("Le login doit faire au moins 3 caracteres");
         }
@@ -56,8 +59,9 @@ public class AuthService {
         if (!role.equals("ADMIN") && !role.equals("ELU") && !role.equals("CLUB")) {
             throw new IllegalArgumentException("Role invalide");
         }
-
-        // Vérifier unicité
+        if (cheminPieceJointe == null || cheminPieceJointe.isEmpty()) {
+            throw new IllegalArgumentException("La piece jointe est obligatoire");
+        }
         if (utilisateurDAO.loginExiste(login)) {
             throw new IllegalArgumentException("Ce login est deja pris");
         }
@@ -65,10 +69,8 @@ public class AuthService {
             throw new IllegalArgumentException("Cet email est deja utilise");
         }
 
-        // Hash du mot de passe
         String hash = BCrypt.hashpw(motDePasseClair, BCrypt.gensalt(10));
 
-        // Création
         Utilisateur u = new Utilisateur();
         u.setLogin(login);
         u.setMotDePasse(hash);
@@ -76,8 +78,29 @@ public class AuthService {
         u.setNom(nom);
         u.setPrenom(prenom);
         u.setRole(role);
-        u.setActif(true);
+        u.setActif(false);
+        u.setPieceJointe(cheminPieceJointe);
+        u.setStatut("EN_ATTENTE");
 
         utilisateurDAO.creer(u);
+    }
+
+    // ============================================================
+    // Enregistrement d'un log de connexion
+    // ============================================================
+    public void loggerConnexion(String login, String ip, boolean succes) {
+        String sql = "INSERT INTO log_connexion (login_tente, adresse_ip, succes, date_tentative) VALUES (?, ?, ?, NOW())";
+
+        try (Connection conn = DbConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, login);
+            ps.setString(2, ip);
+            ps.setBoolean(3, succes);
+            ps.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
