@@ -2,13 +2,13 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
 <c:url var="profilUrl" value="/profil" />
+<c:url var="profilCss" value="/css/profil.css" />
 
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <title>Profil élu</title>
-<c:url var="profilCss" value="/css/profil.css" />
 <link rel="stylesheet" href="${profilCss}">
 </head>
 

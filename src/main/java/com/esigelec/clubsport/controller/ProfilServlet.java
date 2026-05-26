@@ -21,6 +21,7 @@ import jakarta.servlet.http.Part;
 public class ProfilServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
+    private static final String DOSSIER_UPLOAD = "/app/uploads";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -70,7 +71,6 @@ public class ProfilServlet extends HttpServlet {
             Part photoPart = request.getPart("photoProfil");
 
             if (photoPart != null && photoPart.getSize() > 0) {
-
                 String typeFichier = photoPart.getContentType();
 
                 if (typeFichier == null || !typeFichier.startsWith("image/")) {
@@ -100,15 +100,14 @@ public class ProfilServlet extends HttpServlet {
                     return;
                 }
 
-                String cheminUpload = getServletContext().getRealPath("/uploads");
-                File dossier = new File(cheminUpload);
+                File dossier = new File(DOSSIER_UPLOAD);
 
                 if (!dossier.exists()) {
                     dossier.mkdirs();
                 }
 
                 String nomFichier = "profil_" + utilisateur.getId() + "_" + System.currentTimeMillis() + extension;
-                String cheminComplet = cheminUpload + File.separator + nomFichier;
+                String cheminComplet = DOSSIER_UPLOAD + File.separator + nomFichier;
 
                 photoPart.write(cheminComplet);
                 profil.setPhotoProfil(nomFichier);
