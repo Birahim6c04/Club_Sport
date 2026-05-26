@@ -88,7 +88,11 @@ public class AuthController extends HttpServlet {
                 resp.sendRedirect(req.getContextPath() + "/admin");
             } else if (u.getRole().equals("CLUB")) {
                 resp.sendRedirect(req.getContextPath() + "/club");
-            } else {
+            } 
+            else if (u.getRole().equals("PUBLIC")) {
+                resp.sendRedirect(req.getContextPath() + "/clubs");
+            }
+            else {
                 resp.sendRedirect(req.getContextPath() + "/accueil");
             }
 
@@ -120,37 +124,48 @@ public class AuthController extends HttpServlet {
         String role = req.getParameter("role");
 
         try {
-            Part filePart = req.getPart("pieceJointe");
+        	String nomFichier = null;
 
-            if (filePart == null || filePart.getSize() == 0) {
-                throw new IllegalArgumentException("Veuillez joindre un fichier justificatif");
-            }
+        	// Le justificatif n'est requis que pour CLUB / ELU / ADMIN
+        	if (!role.equals("PUBLIC")) {
 
-            String nomOriginal = filePart.getSubmittedFileName();
-            String extension = "";
-            int point = nomOriginal.lastIndexOf('.');
-            if (point > 0) {
-                extension = nomOriginal.substring(point).toLowerCase();
-            }
+        	    Part filePart = req.getPart("pieceJointe");
 
-            if (!extension.equals(".pdf") && !extension.equals(".jpg")
-                && !extension.equals(".jpeg") && !extension.equals(".png")) {
-                throw new IllegalArgumentException("Format de fichier non autorise (PDF, JPG, PNG uniquement)");
-            }
+        	    if (filePart == null || filePart.getSize() == 0) {
+        	        throw new IllegalArgumentException("Veuillez joindre un fichier justificatif");
+        	    }
 
-            File dossier = new File(DOSSIER_UPLOAD);
-            if (!dossier.exists()) {
-                dossier.mkdirs();
-            }
+        	    // Vérifier l'extension
+        	    String nomOriginal = filePart.getSubmittedFileName();
+        	    String extension = "";
+        	    int point = nomOriginal.lastIndexOf('.');
+        	    if (point > 0) {
+        	        extension = nomOriginal.substring(point).toLowerCase();
+        	    }
 
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
-            String nomFichier = sdf.format(new Date()) + "_" + login + "_" + nomOriginal;
-            nomFichier = nomFichier.replaceAll("[^a-zA-Z0-9._-]", "_");
+        	    if (!extension.equals(".pdf") && !extension.equals(".jpg")
+        	        && !extension.equals(".jpeg") && !extension.equals(".png")) {
+        	        throw new IllegalArgumentException("Format de fichier non autorise (PDF, JPG, PNG uniquement)");
+        	    }
 
-            String cheminComplet = DOSSIER_UPLOAD + "/" + nomFichier;
-            filePart.write(cheminComplet);
+        	    // Créer le dossier s'il n'existe pas
+        	    File dossier = new File(DOSSIER_UPLOAD);
+        	    if (!dossier.exists()) {
+        	        dossier.mkdirs();
+        	    }
 
-            authService.inscrire(login, motDePasse, email, nom, prenom, role, nomFichier);
+        	    // Nom unique
+        	    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+        	    nomFichier = sdf.format(new Date()) + "_" + login + "_" + nomOriginal;
+        	    nomFichier = nomFichier.replaceAll("[^a-zA-Z0-9._-]", "_");
+
+        	    // Écriture du fichier
+        	    String cheminComplet = DOSSIER_UPLOAD + "/" + nomFichier;
+        	    filePart.write(cheminComplet);
+        	}
+
+        	// Inscription (nomFichier vaut null pour le grand public)
+        	authService.inscrire(login, motDePasse, email, nom, prenom, role, nomFichier);
 
             req.setAttribute("succes", "Inscription envoyee ! En attente de validation par un administrateur.");
             req.getRequestDispatcher("/WEB-INF/jsp/connexion.jsp").forward(req, resp);

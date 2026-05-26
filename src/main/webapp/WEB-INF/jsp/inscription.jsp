@@ -42,13 +42,14 @@
 
 			<div class="auth-hero">
 				<div class="auth-hero-badge">
-					<span class="dot-live"></span> Inscription avec validation
+					<span class="dot-live"></span> Inscription
 				</div>
 				<h1 class="auth-hero-title">
 					Rejoignez la <span class="gradient-text">communauté</span> sportive
 				</h1>
-				<p class="auth-hero-text">Pour garantir la qualité de notre
-					plateforme, chaque inscription est validée par un administrateur.</p>
+				<p class="auth-hero-text">Le grand public accède directement à la
+					plateforme. Les clubs, élus et administrateurs sont validés par un
+					administrateur.</p>
 
 				<div class="auth-features">
 					<div class="auth-feature">
@@ -58,7 +59,7 @@
                                 <path d="M5 13l4 4L19 7" />
                             </svg>
 						</div>
-						<span>Joignez un justificatif (PDF, JPG, PNG)</span>
+						<span>Grand public : accès immédiat</span>
 					</div>
 					<div class="auth-feature">
 						<div class="feature-check">
@@ -67,7 +68,7 @@
                                 <path d="M5 13l4 4L19 7" />
                             </svg>
 						</div>
-						<span>Validation sous 48h</span>
+						<span>Club / Élu / Admin : validation sous 48h</span>
 					</div>
 					<div class="auth-feature">
 						<div class="feature-check">
@@ -87,7 +88,7 @@
 			<div class="auth-form-wrapper">
 				<div class="auth-form-header">
 					<h2 class="auth-form-title">Créer un compte</h2>
-					<p class="auth-form-subtitle">Inscription soumise à validation</p>
+					<p class="auth-form-subtitle">Choisissez votre type de compte</p>
 				</div>
 
 				<c:if test="${not empty erreur}">
@@ -171,8 +172,14 @@
 						<label>Type de compte</label>
 						<div class="role-selector">
 							<label class="role-card"> <input type="radio" name="role"
-								value="CLUB" ${role == 'CLUB' || empty role ? 'checked' : ''}
-								required>
+								value="PUBLIC"
+								${role == 'PUBLIC' || empty role ? 'checked' : ''} required>
+								<div class="role-content">
+									<div class="role-icon">👤</div>
+									<strong>Public</strong> <span>Grand public</span>
+								</div>
+							</label> <label class="role-card"> <input type="radio"
+								name="role" value="CLUB" ${role == 'CLUB' ? 'checked' : ''}>
 								<div class="role-content">
 									<div class="role-icon">🏆</div>
 									<strong>Club</strong> <span>Responsable</span>
@@ -193,12 +200,12 @@
 						</div>
 					</div>
 
-					<!-- Champ fichier -->
-					<div class="champ-modern">
+					<!-- Champ fichier : masqué pour le grand public -->
+					<div class="champ-modern" id="bloc-justificatif">
 						<label>Justificatif (PDF, JPG, PNG - max 10MB)</label>
 						<div class="file-upload">
 							<input type="file" name="pieceJointe" id="pieceJointe"
-								accept=".pdf,.jpg,.jpeg,.png" required> <label
+								accept=".pdf,.jpg,.jpeg,.png"> <label
 								for="pieceJointe" class="file-upload-label"> <svg
 									viewBox="0 0 24 24" fill="none" stroke="currentColor"
 									stroke-width="2">
@@ -210,8 +217,22 @@
 						</div>
 					</div>
 
+					<!-- Message pour le grand public -->
+					<div class="champ-modern" id="bloc-public-info"
+						style="display:none;">
+						<div class="auth-erreur"
+							style="background:#e3fbef;color:#0a7d44;border-color:#aef0cd;">
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+								stroke-width="3">
+                                <path d="M5 13l4 4L19 7" />
+                            </svg>
+							<span>Aucun justificatif requis. Votre compte sera actif
+								immédiatement.</span>
+						</div>
+					</div>
+
 					<button type="submit" class="btn-auth-modern">
-						<span>Envoyer ma demande</span>
+						<span id="btn-texte">Créer mon compte</span>
 						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
 							stroke-width="2.5">
                             <path d="M5 12h14M12 5l7 7-7 7" />
@@ -231,13 +252,42 @@
 
 	<script>
 		// Affiche le nom du fichier choisi
-		document.getElementById('pieceJointe').addEventListener(
-				'change',
-				function(e) {
-					var nom = e.target.files[0] ? e.target.files[0].name
-							: 'Cliquez pour choisir un fichier';
-					document.getElementById('file-name').textContent = nom;
-				});
+		document.getElementById('pieceJointe').addEventListener('change',
+			function(e) {
+				var nom = e.target.files[0] ? e.target.files[0].name
+						: 'Cliquez pour choisir un fichier';
+				document.getElementById('file-name').textContent = nom;
+			});
+
+		// Gere l'affichage du justificatif selon le role choisi
+		var blocJustif = document.getElementById('bloc-justificatif');
+		var blocInfo = document.getElementById('bloc-public-info');
+		var champFichier = document.getElementById('pieceJointe');
+		var btnTexte = document.getElementById('btn-texte');
+		var radios = document.querySelectorAll('input[name="role"]');
+
+		function majFormulaire() {
+			var role = document.querySelector('input[name="role"]:checked').value;
+			if (role === 'PUBLIC') {
+				// Grand public : pas de justificatif
+				blocJustif.style.display = 'none';
+				blocInfo.style.display = 'block';
+				champFichier.required = false;
+				btnTexte.textContent = 'Créer mon compte';
+			} else {
+				// Club / Elu / Admin : justificatif obligatoire
+				blocJustif.style.display = 'block';
+				blocInfo.style.display = 'none';
+				champFichier.required = true;
+				btnTexte.textContent = 'Envoyer ma demande';
+			}
+		}
+
+		// Au chargement et a chaque changement de role
+		radios.forEach(function(r) {
+			r.addEventListener('change', majFormulaire);
+		});
+		majFormulaire();
 	</script>
 
 </body>

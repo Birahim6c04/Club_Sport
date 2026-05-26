@@ -56,12 +56,18 @@ public class AuthService {
         if (nom == null || nom.isEmpty() || prenom == null || prenom.isEmpty()) {
             throw new IllegalArgumentException("Le nom et le prenom sont obligatoires");
         }
-        if (!role.equals("ADMIN") && !role.equals("ELU") && !role.equals("CLUB")) {
+        if (!role.equals("ADMIN") && !role.equals("ELU")
+            && !role.equals("CLUB") && !role.equals("PUBLIC")) {
             throw new IllegalArgumentException("Role invalide");
         }
-        if (cheminPieceJointe == null || cheminPieceJointe.isEmpty()) {
-            throw new IllegalArgumentException("La piece jointe est obligatoire");
+
+        // La piece jointe est obligatoire SAUF pour le grand public
+        if (!role.equals("PUBLIC")) {
+            if (cheminPieceJointe == null || cheminPieceJointe.isEmpty()) {
+                throw new IllegalArgumentException("La piece jointe est obligatoire");
+            }
         }
+
         if (utilisateurDAO.loginExiste(login)) {
             throw new IllegalArgumentException("Ce login est deja pris");
         }
@@ -78,9 +84,16 @@ public class AuthService {
         u.setNom(nom);
         u.setPrenom(prenom);
         u.setRole(role);
-        u.setActif(false);
         u.setPieceJointe(cheminPieceJointe);
-        u.setStatut("EN_ATTENTE");
+
+        // Le grand public est actif tout de suite, les autres en attente
+        if (role.equals("PUBLIC")) {
+            u.setActif(true);
+            u.setStatut("VALIDE");
+        } else {
+            u.setActif(false);
+            u.setStatut("EN_ATTENTE");
+        }
 
         utilisateurDAO.creer(u);
     }

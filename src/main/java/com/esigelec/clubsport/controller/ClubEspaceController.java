@@ -1,6 +1,7 @@
 package com.esigelec.clubsport.controller;
 
 import com.esigelec.clubsport.dao.EspaceClubDAO;
+import com.esigelec.clubsport.dao.InteractionDAO;
 import com.esigelec.clubsport.model.EspaceClub;
 import com.esigelec.clubsport.model.Utilisateur;
 
@@ -24,6 +25,7 @@ import java.util.List;
 public class ClubEspaceController extends HttpServlet {
 
     private EspaceClubDAO dao = new EspaceClubDAO();
+    private InteractionDAO interDao = new InteractionDAO();
     private String dossierUpload = "/app/uploads";
 
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -48,6 +50,18 @@ public class ClubEspaceController extends HttpServlet {
                     resp.sendError(404, "Club introuvable");
                     return;
                 }
+
+                // Likes et commentaires
+                req.setAttribute("nbLikes", interDao.compterLikes(e.getIdEspace()));
+                req.setAttribute("commentaires", interDao.listerCommentaires(e.getIdEspace()));
+
+                // Verifie si l'utilisateur connecte a deja like
+                HttpSession s = req.getSession(false);
+                if (s != null && s.getAttribute("utilisateur") != null) {
+                    Utilisateur uCourant = (Utilisateur) s.getAttribute("utilisateur");
+                    req.setAttribute("dejaLike", interDao.aLike(e.getIdEspace(), uCourant.getId()));
+                }
+
                 req.setAttribute("espace", e);
                 req.getRequestDispatcher("/WEB-INF/jsp/club_public.jsp").forward(req, resp);
                 return;
@@ -181,7 +195,6 @@ public class ClubEspaceController extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             req.setAttribute("erreur", "Erreur : " + e.getMessage());
-
             req.getRequestDispatcher("/WEB-INF/jsp/club_editer.jsp").forward(req, resp);
         }
     }

@@ -105,7 +105,7 @@ CREATE TABLE utilisateur (
     email            VARCHAR(150) NOT NULL UNIQUE,
     nom              VARCHAR(80)  NOT NULL,
     prenom           VARCHAR(80)  NOT NULL,
-    role             ENUM('CLUB','ELU','ADMIN') NOT NULL,
+    role             ENUM('CLUB','ELU','ADMIN','PUBLIC') NOT NULL,
     actif            BOOLEAN      NOT NULL DEFAULT TRUE,
     date_creation    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     piece_jointe     VARCHAR(255) DEFAULT NULL,
@@ -113,6 +113,25 @@ CREATE TABLE utilisateur (
     INDEX idx_user_role (role)
 ) ENGINE=InnoDB;
 
+
+-- 2. Création de la table des mentions "J'aime" (pub_like)
+CREATE TABLE pub_like (
+    id_like BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id_espace INT NOT NULL,
+    id_utilisateur INT NOT NULL,
+    date_like TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_like (id_espace, id_utilisateur)
+) ENGINE=InnoDB;
+
+-- 3. Création de la table des commentaires (pub_commentaire)
+CREATE TABLE pub_commentaire (
+    id_com BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id_espace INT NOT NULL,
+    id_utilisateur INT NOT NULL,
+    auteur VARCHAR(80) NOT NULL,
+    contenu TEXT NOT NULL,
+    date_com TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
 -- =====================================================================
 -- TABLE espace_club
 -- =====================================================================
@@ -177,3 +196,24 @@ CREATE TABLE log_audit (
     INDEX idx_audit_admin (admin_login),
     INDEX idx_audit_date (date_action)
 ) ENGINE=InnoDB;
+
+
+-- =====================================================================
+-- TABLE profil
+-- =====================================================================
+
+CREATE TABLE profil (
+   id_profil INT AUTO_INCREMENT PRIMARY KEY,
+   telephone VARCHAR(50),
+   adresse VARCHAR(255),
+   photo_profil VARCHAR(255),
+   description TEXT,
+   fonction VARCHAR(100),
+   commune VARCHAR(100),
+   departement VARCHAR(100),
+   region VARCHAR(100),
+   club_associe VARCHAR(100),
+   fonction_club VARCHAR(100),
+   id_utilisateur INT,
+   FOREIGN KEY (id_utilisateur) REFERENCES utilisateur(id_utilisateur)
+)ENGINE=InnoDB;
