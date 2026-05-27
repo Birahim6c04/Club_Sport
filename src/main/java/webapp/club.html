@@ -241,8 +241,9 @@
   const API_CLUB_SAVE = `/clubs/api/club/${CODE}/update`;
   const API_HORAIRES  = `/clubs/api/horaires?codeCommune=${CODE}`;
   const API_ACTU      = `/clubs/api/actualites?codeCommune=${CODE}`;
-  const API_ABO       = `/clubs/api/abonnements?codeCommune=${CODE}`;
-  const API_LIKES     = `/clubs/api/likes`;
+  const API_ABO       = `/clubs/mvc/abonnements?codeCommune=${CODE}`;
+  const API_ABO_POST  = `/clubs/mvc/abonnements`;
+  const API_LIKES     = `/clubs/mvc/likes`;
 
   let infosLocales = {
     cotisations: { adulte:0, jeune:0, famille:0, note:'' },
@@ -298,20 +299,17 @@
     } catch(e) { /* silencieux */ }
   }
 
-  async function toggleAbonnement() {
-    try {
-      const r = await fetch(API_ABO, { method: 'POST' });
-      if (r.status === 401) {
-        alert('Vous devez être connecté pour vous abonner.');
-        return;
-      }
-      if (!r.ok) throw new Error(r.status);
-      const d = await r.json();
-      mettreAJourBtnAbo(d.count, d.abonne);
-      toast(d.abonne ? 'Abonné ! Vous recevrez les actualités de ce club.' : 'Désabonné.');
-    } catch(e) {
-      alert('Erreur : ' + e.message);
-    }
+  function toggleAbonnement() {
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = API_ABO_POST;
+    const input = document.createElement('input');
+    input.type  = 'hidden';
+    input.name  = 'codeCommune';
+    input.value = CODE;
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
   }
 
   function mettreAJourBtnAbo(count, abonne) {

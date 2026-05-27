@@ -235,8 +235,8 @@
 <script>
   const CODE = new URLSearchParams(window.location.search).get('id') || '';
   const API_ACTU    = `/clubs/api/actualites`;
-  const API_LIKES   = `/clubs/api/likes`;
-  const API_COMMENT = `/clubs/api/commentaires`;
+  const API_LIKES   = `/clubs/mvc/likes`;
+  const API_COMMENT = `/clubs/mvc/commentaires`;
 
   // Session simulée — à remplacer par la vraie session Java
   // En production : lire depuis un cookie de session ou endpoint /api/me
@@ -356,31 +356,22 @@
       </div>`).join('');
   }
 
-  // ── TOGGLE LIKE ───────────────────────────────────────────
-  async function toggleLike(idActualite) {
+  // ── TOGGLE LIKE — soumission de formulaire MVC ───────────────────
+  function toggleLike(idActualite) {
     if (!SESSION_USER_ID) {
       alert('Vous devez être connecté pour liker une publication.');
       return;
     }
-    try {
-      const r = await fetch(`${API_LIKES}?idActualite=${idActualite}`, { method: 'POST' });
-      if (!r.ok) throw new Error(r.status);
-      const d = await r.json();
-
-      // Mettre à jour l'affichage
-      const btn   = document.getElementById(`btn-like-${idActualite}`);
-      const count = document.getElementById(`like-count-${idActualite}`);
-      count.textContent = d.count;
-      btn.classList.toggle('liked', d.liked);
-      btn.querySelector('.heart').textContent = d.liked ? '❤️' : '🤍';
-
-      // Mettre à jour l'état local
-      const a = actualites.find(x => x.idActualite === idActualite);
-      if (a) { a._likeCount = d.count; a._liked = d.liked; }
-
-    } catch(e) {
-      alert('Erreur lors du like : ' + e.message);
-    }
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `${API_LIKES}`;
+    const input = document.createElement('input');
+    input.type  = 'hidden';
+    input.name  = 'idActualite';
+    input.value = idActualite;
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
   }
 
   // ── TOGGLE COMMENTAIRES ───────────────────────────────────
@@ -439,42 +430,43 @@
     }
   }
 
-  // ── ENVOYER UN COMMENTAIRE ────────────────────────────────
-  async function envoyerCommentaire(idActualite) {
+  // ── ENVOYER UN COMMENTAIRE — formulaire MVC ──────────────────────
+  function envoyerCommentaire(idActualite) {
     if (!SESSION_USER_ID) { alert('Connexion requise.'); return; }
     const input   = document.getElementById(`comment-input-${idActualite}`);
     const contenu = input.value.trim();
     if (!contenu) return;
 
-    try {
-      const r = await fetch(`${API_COMMENT}?idActualite=${idActualite}`, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ contenu })
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = API_COMMENT;
+
+    [['action', 'ajouter'], ['idActualite', idActualite], ['contenu', contenu]]
+      .forEach(([name, value]) => {
+        const i = document.createElement('input');
+        i.type = 'hidden'; i.name = name; i.value = value;
+        form.appendChild(i);
       });
-      if (!r.ok) throw new Error(r.status);
-      input.value = '';
-      // Recharger les commentaires
-      const a = actualites.find(x => x.idActualite === idActualite);
-      if (a) a._comments = null;
-      await chargerCommentaires(idActualite);
-    } catch(e) {
-      alert('Erreur : ' + e.message);
-    }
+    document.body.appendChild(form);
+    form.submit();
   }
 
-  // ── SUPPRIMER UN COMMENTAIRE ──────────────────────────────
-  async function supprimerCommentaire(idCommentaire, idActualite) {
+  // ── SUPPRIMER UN COMMENTAIRE — formulaire MVC ────────────────────
+  function supprimerCommentaire(idCommentaire, idActualite) {
     if (!confirm('Supprimer ce commentaire ?')) return;
-    try {
-      const r = await fetch(`${API_COMMENT}/${idCommentaire}`, { method: 'DELETE' });
-      if (!r.ok) throw new Error(r.status);
-      const a = actualites.find(x => x.idActualite === idActualite);
-      if (a) a._comments = null;
-      await chargerCommentaires(idActualite);
-    } catch(e) {
-      alert('Erreur : ' + e.message);
-    }
+
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = API_COMMENT;
+
+    [['action', 'supprimer'], ['idCommentaire', idCommentaire], ['idActualite', idActualite]]
+      .forEach(([name, value]) => {
+        const i = document.createElement('input');
+        i.type = 'hidden'; i.name = name; i.value = value;
+        form.appendChild(i);
+      });
+    document.body.appendChild(form);
+    form.submit();
   }
 
   // ── PUBLIER ───────────────────────────────────────────────

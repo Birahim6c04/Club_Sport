@@ -15,48 +15,33 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * API abonnements à un espace club.
- * L'utilisateur doit être connecté (session requise).
+ * Contrôleur MVC pour les abonnements.
  *
- * GET  /api/abonnements?codeCommune=35238
- *      → { count: 42, abonne: true/false }
- *      abonne = true si l'utilisateur connecté est abonné
- *
- * POST /api/abonnements?codeCommune=35238
- *      → toggle : s'abonner si pas abonné, se désabonner sinon
- *      → { count: 43, abonne: true }  ou  { count: 41, abonne: false }
- *
- * GET  /api/abonnements/mes-clubs
- *      → liste des clubs auxquels l'utilisateur est abonné
- *
- * Chemin : src/main/java/com/esigelec/clubs/servlet/AbonnementsServlet.java
+ * GET  /mvc/abonnements?codeCommune=35238   → JSON { count, abonne }
+ * GET  /mvc/abonnements/mes-clubs           → JSON liste des clubs suivis
+ * POST /mvc/abonnements  codeCommune        → toggle abo/désabo, redirect Referer
  */
-@WebServlet("/api/abonnements/*")
-public class AbonnementsServlet extends HttpServlet {
+@WebServlet("/mvc/abonnements/*")
+public class AbonnementController extends HttpServlet {
 
-    private final Gson           gson        = new Gson();
-    private final AbonnementDAO  abonnDAO    = DAOFactory.getAbonnementDAO();
-    private final EspaceClubDAO  espaceDAO   = DAOFactory.getEspaceClubDAO();
+    private final Gson          gson      = new Gson();
+    private final AbonnementDAO abonnDAO  = DAOFactory.getAbonnementDAO();
+    private final EspaceClubDAO espaceDAO = DAOFactory.getEspaceClubDAO();
 
+    // ── GET ───────────────────────────────────────────────────────────
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
         resp.setContentType("application/json;charset=UTF-8");
-        resp.setHeader("Access-Control-Allow-Origin", "*");
 
         String pathInfo = req.getPathInfo();
-
-        // GET /api/abonnements/mes-clubs → liste des abonnements de l'utilisateur
-        if (pathInfo != null && pathInfo.equals("/mes-clubs")) {
+        if ("/mes-clubs".equals(pathInfo)) {
             getMesClubs(req, resp);
-            return;
+        } else {
+            getStatut(req, resp);
         }
-
-        // GET /api/abonnements?codeCommune=35238 → statut + compteur
-        getStatut(req, resp);
     }
 
-    // ── GET statut abonnement + nb abonnés ────────────────────────────
     private void getStatut(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
         String codeCommune = req.getParameter("codeCommune");
@@ -65,38 +50,32 @@ public class AbonnementsServlet extends HttpServlet {
             resp.getWriter().write("{\"error\":\"codeCommune requis\"}");
             return;
         }
-
         try {
             EspaceClub espace = espaceDAO.findByCodeCommune(codeCommune);
             if (espace == null) {
-                // Club sans espace créé = 0 abonnés, non abonné
                 Map<String, Object> r = new LinkedHashMap<>();
                 r.put("count",  0);
                 r.put("abonne", false);
                 gson.toJson(r, resp.getWriter());
                 return;
             }
-
-            int count  = abonnDAO.countByIdEspace(espace.getIdEspace());
-            boolean abonne = false;
+            int count   = abonnDAO.countByIdEspace(espace.getIdEspace());
+            boolean abo = false;
             HttpSession session = req.getSession(false);
             if (session != null && session.getAttribute("userId") != null) {
-                int userId = (int) session.getAttribute("userId");
-                abonne = abonnDAO.existsByUserAndEspace(userId, espace.getIdEspace());
+                abo = abonnDAO.existsByUserAndEspace(
+                        (int) session.getAttribute("userId"), espace.getIdEspace());
             }
-
             Map<String, Object> result = new LinkedHashMap<>();
             result.put("count",  count);
-            result.put("abonne", abonne);
+            result.put("abonne", abo);
             gson.toJson(result, resp.getWriter());
-
         } catch (SQLException e) {
             resp.setStatus(500);
             resp.getWriter().write("{\"error\":\"" + e.getMessage() + "\"}");
         }
     }
 
-    // ── GET mes-clubs — liste des clubs suivis ────────────────────────
     private void getMesClubs(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
         HttpSession session = req.getSession(false);
@@ -105,67 +84,55 @@ public class AbonnementsServlet extends HttpServlet {
             resp.getWriter().write("{\"error\":\"Connexion requise\"}");
             return;
         }
-
         try {
-            int userId = (int) session.getAttribute("userId");
-            gson.toJson(abonnDAO.findByIdUtilisateur(userId), resp.getWriter());
+            gson.toJson(abonnDAO.findByIdUtilisateur(
+                    (int) session.getAttribute("userId")), resp.getWriter());
         } catch (SQLException e) {
             resp.setStatus(500);
             resp.getWriter().write("{\"error\":\"" + e.getMessage() + "\"}");
         }
     }
 
-    // ── POST — toggle abonnement / désabonnement ──────────────────────
+    // ── POST — formulaire HTML (toggle) ──────────────────────────────
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
-        resp.setContentType("application/json;charset=UTF-8");
-        resp.setHeader("Access-Control-Allow-Origin", "*");
+        req.setCharacterEncoding("UTF-8");
+        String redirectUrl = referer(req);
 
-        // Session obligatoire
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("userId") == null) {
-            resp.setStatus(401);
-            resp.getWriter().write("{\"error\":\"Connexion requise pour s'abonner\"}");
+            resp.sendRedirect(redirectUrl);
             return;
         }
 
         String codeCommune = req.getParameter("codeCommune");
         if (codeCommune == null || codeCommune.isBlank()) {
-            resp.setStatus(400);
-            resp.getWriter().write("{\"error\":\"codeCommune requis\"}");
+            resp.sendRedirect(redirectUrl);
             return;
         }
 
         try {
             int idUtilisateur = (int) session.getAttribute("userId");
-
-            // Créer l'espace club si premier abonnement
             EspaceClub espace = espaceDAO.findOrCreate(codeCommune);
             int idEspace      = espace.getIdEspace();
 
-            boolean dejaAbonne = abonnDAO.existsByUserAndEspace(idUtilisateur, idEspace);
-
-            if (dejaAbonne) {
-                // Se désabonner
+            if (abonnDAO.existsByUserAndEspace(idUtilisateur, idEspace)) {
                 abonnDAO.deleteByUserAndEspace(idUtilisateur, idEspace);
             } else {
-                // S'abonner
                 Abonnement a = new Abonnement();
                 a.setIdUtilisateur(idUtilisateur);
                 a.setIdEspace(idEspace);
                 abonnDAO.insert(a);
             }
+        } catch (Exception ignored) { }
 
-            int newCount = abonnDAO.countByIdEspace(idEspace);
-            Map<String, Object> result = new LinkedHashMap<>();
-            result.put("count",  newCount);
-            result.put("abonne", !dejaAbonne);
-            gson.toJson(result, resp.getWriter());
+        resp.sendRedirect(redirectUrl);
+    }
 
-        } catch (SQLException e) {
-            resp.setStatus(500);
-            resp.getWriter().write("{\"error\":\"" + e.getMessage() + "\"}");
-        }
+    private String referer(HttpServletRequest req) {
+        String ref = req.getHeader("Referer");
+        return (ref != null && !ref.isBlank()) ? ref
+                : req.getContextPath() + "/club.html";
     }
 }

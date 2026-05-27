@@ -13,31 +13,22 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * API likes sur les actualités — système toggle (like/unlike).
- * L'utilisateur doit être connecté (session requise).
+ * Contrôleur MVC pour les likes.
  *
- * GET  /api/likes?idActualite=5
- *      → { count: 12, liked: true/false }
- *      liked = true si l'utilisateur connecté a déjà liké
- *
- * POST /api/likes?idActualite=5
- *      → toggle : like si pas encore liké, unlike sinon
- *      → { count: 13, liked: true }  ou  { count: 11, liked: false }
- *
- * Chemin : src/main/java/fr/esigelec/clubsport/servlet/LikesServlet.java
+ * GET  /mvc/likes?idActualite=5   → JSON { count, liked }
+ * POST /mvc/likes  idActualite    → toggle like/unlike, redirect Referer
  */
-@WebServlet("/api/likes/*")
-public class LikesServlet extends HttpServlet {
+@WebServlet("/mvc/likes/*")
+public class LikeController extends HttpServlet {
 
     private final Gson    gson = new Gson();
     private final LikeDAO dao  = DAOFactory.getLikeDAO();
 
-    // ── GET — nb likes + statut pour l'utilisateur connecté ──────────
+    // ── GET — compteur + statut (pour le JS) ─────────────────────────
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
         resp.setContentType("application/json;charset=UTF-8");
-        resp.setHeader("Access-Control-Allow-Origin", "*");
 
         String idStr = req.getParameter("idActualite");
         if (idStr == null || idStr.isBlank()) {
@@ -45,24 +36,19 @@ public class LikesServlet extends HttpServlet {
             resp.getWriter().write("{\"error\":\"idActualite requis\"}");
             return;
         }
-
         try {
             int idActualite = Integer.parseInt(idStr);
             int count       = dao.countByIdActualite(idActualite);
-
-            // Vérifier si l'utilisateur connecté a liké
-            boolean liked = false;
+            boolean liked   = false;
             HttpSession session = req.getSession(false);
             if (session != null && session.getAttribute("userId") != null) {
-                int userId = (int) session.getAttribute("userId");
-                liked = dao.existsByActualiteAndUser(idActualite, userId);
+                liked = dao.existsByActualiteAndUser(idActualite,
+                        (int) session.getAttribute("userId"));
             }
-
             Map<String, Object> result = new LinkedHashMap<>();
             result.put("count", count);
             result.put("liked", liked);
             gson.toJson(result, resp.getWriter());
-
         } catch (NumberFormatException e) {
             resp.setStatus(400);
             resp.getWriter().write("{\"error\":\"idActualite invalide\"}");
@@ -72,25 +58,22 @@ public class LikesServlet extends HttpServlet {
         }
     }
 
-    // ── POST — toggle like/unlike ─────────────────────────────────────
+    // ── POST — toggle via formulaire HTML ────────────────────────────
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
-        resp.setContentType("application/json;charset=UTF-8");
-        resp.setHeader("Access-Control-Allow-Origin", "*");
+        req.setCharacterEncoding("UTF-8");
+        String redirectUrl = referer(req);
 
-        // Session obligatoire
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("userId") == null) {
-            resp.setStatus(401);
-            resp.getWriter().write("{\"error\":\"Connexion requise pour liker\"}");
+            resp.sendRedirect(redirectUrl);
             return;
         }
 
         String idStr = req.getParameter("idActualite");
         if (idStr == null || idStr.isBlank()) {
-            resp.setStatus(400);
-            resp.getWriter().write("{\"error\":\"idActualite requis\"}");
+            resp.sendRedirect(redirectUrl);
             return;
         }
 
@@ -98,32 +81,22 @@ public class LikesServlet extends HttpServlet {
             int idActualite   = Integer.parseInt(idStr);
             int idUtilisateur = (int) session.getAttribute("userId");
 
-            boolean dejaLike = dao.existsByActualiteAndUser(idActualite, idUtilisateur);
-
-            if (dejaLike) {
-                // Unlike — supprimer le like existant
+            if (dao.existsByActualiteAndUser(idActualite, idUtilisateur)) {
                 dao.deleteByActualiteAndUser(idActualite, idUtilisateur);
             } else {
-                // Like — insérer un nouveau like
                 Like l = new Like();
                 l.setIdActualite(idActualite);
                 l.setIdUtilisateur(idUtilisateur);
                 dao.insert(l);
             }
+        } catch (Exception ignored) { }
 
-            // Retourner le nouveau compteur et le statut
-            int newCount = dao.countByIdActualite(idActualite);
-            Map<String, Object> result = new LinkedHashMap<>();
-            result.put("count", newCount);
-            result.put("liked", !dejaLike);
-            gson.toJson(result, resp.getWriter());
+        resp.sendRedirect(redirectUrl);
+    }
 
-        } catch (NumberFormatException e) {
-            resp.setStatus(400);
-            resp.getWriter().write("{\"error\":\"idActualite invalide\"}");
-        } catch (SQLException e) {
-            resp.setStatus(500);
-            resp.getWriter().write("{\"error\":\"" + e.getMessage() + "\"}");
-        }
+    private String referer(HttpServletRequest req) {
+        String ref = req.getHeader("Referer");
+        return (ref != null && !ref.isBlank()) ? ref
+                : req.getContextPath() + "/actualites.html";
     }
 }
