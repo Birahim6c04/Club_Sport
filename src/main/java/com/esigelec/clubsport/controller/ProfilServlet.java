@@ -17,7 +17,9 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 
 @WebServlet("/profil")
-@MultipartConfig
+@MultipartConfig(
+        maxFileSize = 1024 * 1024 * 2
+)
 public class ProfilServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
@@ -27,13 +29,14 @@ public class ProfilServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            HttpSession session = request.getSession();
-            Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
+            HttpSession session = request.getSession(false);
 
-            if (utilisateur == null) {
+            if (session == null || session.getAttribute("utilisateur") == null) {
                 response.sendRedirect("connexion");
                 return;
             }
+
+            Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
 
             ProfilDAO dao = new ProfilDAO();
             Profil profil = dao.chercherProfilParUtilisateur(utilisateur.getId());
@@ -52,13 +55,16 @@ public class ProfilServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            HttpSession session = request.getSession();
-            Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
+            request.setCharacterEncoding("UTF-8");
 
-            if (utilisateur == null) {
+            HttpSession session = request.getSession(false);
+
+            if (session == null || session.getAttribute("utilisateur") == null) {
                 response.sendRedirect("connexion");
                 return;
             }
+
+            Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
 
             ProfilDAO dao = new ProfilDAO();
             Profil profil = dao.chercherProfilParUtilisateur(utilisateur.getId());
@@ -81,9 +87,19 @@ public class ProfilServlet extends HttpServlet {
                 }
 
                 String nomOriginal = photoPart.getSubmittedFileName();
-                String extension = "";
 
+                if (nomOriginal == null || nomOriginal.trim().isEmpty()) {
+                    request.setAttribute("erreur", "Nom de fichier invalide.");
+                    request.setAttribute("profil", profil);
+                    request.getRequestDispatcher("/WEB-INF/jsp/profilElus.jsp").forward(request, response);
+                    return;
+                }
+
+                nomOriginal = new File(nomOriginal).getName();
+
+                String extension = "";
                 int point = nomOriginal.lastIndexOf('.');
+
                 if (point > 0) {
                     extension = nomOriginal.substring(point).toLowerCase();
                 }
@@ -113,12 +129,12 @@ public class ProfilServlet extends HttpServlet {
                 profil.setPhotoProfil(nomFichier);
             }
 
-            profil.setTelephone(request.getParameter("telephone"));
-            profil.setAdresse(request.getParameter("adresse"));
-            profil.setFonction(request.getParameter("fonction"));
-            profil.setCommune(request.getParameter("commune"));
-            profil.setDepartement(request.getParameter("departement"));
-            profil.setRegion(request.getParameter("region"));
+            profil.setTelephone(nettoyerTexte(request.getParameter("telephone")));
+            profil.setAdresse(nettoyerTexte(request.getParameter("adresse")));
+            profil.setFonction(nettoyerTexte(request.getParameter("fonction")));
+            profil.setCommune(nettoyerTexte(request.getParameter("commune")));
+            profil.setDepartement(nettoyerTexte(request.getParameter("departement")));
+            profil.setRegion(nettoyerTexte(request.getParameter("region")));
 
             if (profil.getIdProfil() == 0) {
                 dao.ajouterProfil(profil);
@@ -133,5 +149,18 @@ public class ProfilServlet extends HttpServlet {
             request.setAttribute("erreur", "Erreur lors de l'enregistrement du profil.");
             request.getRequestDispatcher("/WEB-INF/jsp/profilElus.jsp").forward(request, response);
         }
+    }
+
+    private String nettoyerTexte(String texte) {
+        if (texte == null) {
+            return "";
+        }
+
+        return texte
+                .trim()
+                .replace("<", "")
+                .replace(">", "")
+                .replace("\"", "")
+                .replace("'", "");
     }
 }

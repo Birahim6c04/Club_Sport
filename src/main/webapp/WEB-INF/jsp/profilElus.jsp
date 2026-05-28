@@ -7,9 +7,9 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<title>Profil élu</title>
-<link rel="stylesheet" href="${profilCss}">
+    <meta charset="UTF-8">
+    <title>Profil élu</title>
+    <link rel="stylesheet" href="${profilCss}">
 </head>
 
 <body>
@@ -37,7 +37,9 @@
     <h1>Mon profil</h1>
 
     <c:if test="${not empty erreur}">
-        <p style="color:red;">${erreur}</p>
+        <p style="color:red;">
+            <c:out value="${erreur}" />
+        </p>
     </c:if>
 
     <div class="profile-card">
@@ -48,10 +50,13 @@
                 <div class="profile-avatar">
                     <c:choose>
                         <c:when test="${not empty profil.photoProfil}">
+                            <c:url var="photoUrl" value="/uploads/${profil.photoProfil}" />
+
                             <img class="avatar-img"
-                                 src="uploads/${profil.photoProfil}"
+                                 src="${photoUrl}"
                                  alt="Photo de profil">
                         </c:when>
+
                         <c:otherwise>
                             👤
                         </c:otherwise>
@@ -59,7 +64,10 @@
                 </div>
 
                 <div class="profile-info">
-                    <h2>${sessionScope.utilisateur.prenom} ${sessionScope.utilisateur.nom}</h2>
+                    <h2>
+                        <c:out value="${sessionScope.utilisateur.prenom}" />
+                        <c:out value="${sessionScope.utilisateur.nom}" />
+                    </h2>
                 </div>
             </div>
 
@@ -86,34 +94,40 @@
             <c:otherwise>
                 <table class="profile-table">
                     <tbody>
-                        <tr>
-                            <th>Fonction</th>
-                            <td>${profil.fonction}</td>
-                        </tr>
-                        <tr>
-                            <th>Email</th>
-                            <td>${sessionScope.utilisateur.email}</td>
-                        </tr>
-                        <tr>
-                            <th>Téléphone</th>
-                            <td>${profil.telephone}</td>
-                        </tr>
-                        <tr>
-                            <th>Adresse</th>
-                            <td>${profil.adresse}</td>
-                        </tr>
-                        <tr>
-                            <th>Commune</th>
-                            <td>${profil.commune}</td>
-                        </tr>
-                        <tr>
-                            <th>Département</th>
-                            <td>${profil.departement}</td>
-                        </tr>
-                        <tr>
-                            <th>Région</th>
-                            <td>${profil.region}</td>
-                        </tr>
+                    <tr>
+                        <th>Fonction</th>
+                        <td><c:out value="${profil.fonction}" /></td>
+                    </tr>
+
+                    <tr>
+                        <th>Email</th>
+                        <td><c:out value="${sessionScope.utilisateur.email}" /></td>
+                    </tr>
+
+                    <tr>
+                        <th>Téléphone</th>
+                        <td><c:out value="${profil.telephone}" /></td>
+                    </tr>
+
+                    <tr>
+                        <th>Adresse</th>
+                        <td><c:out value="${profil.adresse}" /></td>
+                    </tr>
+
+                    <tr>
+                        <th>Commune</th>
+                        <td><c:out value="${profil.commune}" /></td>
+                    </tr>
+
+                    <tr>
+                        <th>Département</th>
+                        <td><c:out value="${profil.departement}" /></td>
+                    </tr>
+
+                    <tr>
+                        <th>Région</th>
+                        <td><c:out value="${profil.region}" /></td>
+                    </tr>
                     </tbody>
                 </table>
             </c:otherwise>
@@ -140,22 +154,22 @@
             <input type="file" name="photoProfil" accept="image/*">
 
             <label>Fonction :</label>
-            <input type="text" name="fonction" value="${profil.fonction}">
+            <input type="text" name="fonction" value="<c:out value='${profil.fonction}' />">
 
             <label>Téléphone :</label>
-            <input type="text" name="telephone" value="${profil.telephone}">
+            <input type="text" name="telephone" value="<c:out value='${profil.telephone}' />">
 
             <label>Adresse :</label>
-            <input type="text" name="adresse" value="${profil.adresse}">
+            <input type="text" name="adresse" value="<c:out value='${profil.adresse}' />">
 
             <label>Commune :</label>
-            <input type="text" name="commune" value="${profil.commune}">
+            <input type="text" name="commune" value="<c:out value='${profil.commune}' />">
 
             <label>Département :</label>
-            <input type="text" name="departement" value="${profil.departement}">
+            <input type="text" name="departement" value="<c:out value='${profil.departement}' />">
 
             <label>Région :</label>
-            <input type="text" name="region" value="${profil.region}">
+            <input type="text" name="region" value="<c:out value='${profil.region}' />">
 
             <button type="submit">
                 <c:choose>
